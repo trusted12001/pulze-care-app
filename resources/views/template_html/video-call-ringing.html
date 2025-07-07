@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Video Call</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <div
+      class="video-call-ringing-section mx-auto h-100 d-flex justify-content-between align-items-center flex-column"
+    >
+      <img
+        src="./assets/img/video-call-bg-img.png"
+        alt=""
+        class="background-img"
+      />
+      <div
+        class="d-flex justify-content-center align-items-center flex-column text-center"
+      >
+        <div class="pt-20 mt-10">
+          <img src="./assets/img/session-end-img.png" alt="" />
+        </div>
+        <h3 class="pt-5 heading-3 text-white">Dr. Dianne Johnson</h3>
+        <p class="paragraph-small pt-2 text-white">Ringing...</p>
+      </div>
+      <div
+        class="bottom-options d-flex justify-content-center align-items-center gap-4 pb-10"
+      >
+        <a href="./video-call-session-end.html" class="flex-center video-icon">
+          <i class="ph ph-phone"></i>
+        </a>
+
+        <a href="./video-call-talking.html" class="flex-center video-icon">
+          <i class="ph ph-video-camera"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

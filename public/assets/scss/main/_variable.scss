@@ -1,0 +1,25 @@
+//default font family
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Syne:wght@400..800&display=swap");
+
+//default root
+:root {
+  --body-font: "Poppins", sans-serif;
+  --transition: all 0.5s ease-in-out;
+
+  // Color Styles
+  --p1: rgba(0, 146, 129, 1);
+  --n1: rgba(14, 13, 57, 1);
+  --n2: rgba(69, 69, 103, 1);
+
+  --n40: rgba(224, 224, 229, 1);
+
+  --white: #ffff;
+  --secodayBg2: rgba(150, 210, 203, 1);
+  --borderColor: rgba(195, 195, 206, 1);
+  --g50: #e6f4f2;
+
+  --danger: #b71d18;
+  --y300: rgba(247, 85, 85, 1);
+
+  --yellow: rgba(255, 171, 0, 1);
+}

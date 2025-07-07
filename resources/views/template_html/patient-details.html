@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Patient Details - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="pb-6">
+      <section class="px-6 pt-8 notification-top-area">
+        <div class="d-flex justify-content-start align-items-center gap-4 py-3">
+          <a
+            href="./doctor-profile.html"
+            class="p1-color back-button flex-center"
+          >
+            <i class="ph ph-caret-left"></i>
+          </a>
+          <h2>Patient Details</h2>
+        </div>
+      </section>
+
+      <!-- Details Section Start -->
+      <form
+        onsubmit="return false;"
+        class="input-field-area d-flex flex-column gap-4 px-6"
+      >
+        <div class="input-field-item">
+          <p>Full Name</p>
+          <div
+            class="d-flex justify-content-between align-items-center input-field"
+          >
+            <input type="text" class="" placeholder="Full Name" />
+            <i class="ph ph-user"></i>
+          </div>
+        </div>
+
+        <div class="age-range-area">
+          <p class="title">Select Your Age Range *</p>
+          <div
+            class="d-flex justify-content-start align-items-center gap-3 flex-wrap"
+          >
+            <button class="item ageButton">20+</button>
+            <button class="item active ageButton">30+</button>
+            <button class="item ageButton">40+</button>
+            <button class="item ageButton">50+</button>
+            <button class="item ageButton">60+</button>
+          </div>
+        </div>
+
+        <div class="input-field-item">
+          <p>Phone Number</p>
+          <div
+            class="d-flex justify-content-between align-items-center input-field"
+          >
+            <input type="text" class="" placeholder="Phone Number" />
+            <i class="ph ph-phone-call"></i>
+          </div>
+        </div>
+
+        <div class="sort-options w-100">
+          <h6 class="pb-5">Gender</h6>
+          <div class="d-flex justify-content-between align-items-center gap-4">
+            <div class="gender-button">
+              <button>Male</button>
+            </div>
+            <div class="gender-button active">
+              <button>Female</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-field-item">
+          <p>Write Your Problem</p>
+          <div
+            class="d-flex justify-content-between align-items-center input-field"
+          >
+            <textarea
+              class=""
+              placeholder="Tell doctor about your problem..."
+            ></textarea>
+          </div>
+        </div>
+      </form>
+      <!-- Details Section End -->
+
+      <div class="d-flex flex-column gap-8 mt-16 mx-6">
+        <a href="./make-payment.html" class="link-button d-block text-center"
+          >Continue</a
+        >
+      </div>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

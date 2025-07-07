@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Edit Profile - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="">
+      <section class="px-6 pt-8 notification-top-area">
+        <div class="d-flex justify-content-start align-items-center gap-4 py-3">
+          <a
+            href="./doctor-profile.html"
+            class="p1-color back-button flex-center"
+          >
+            <i class="ph ph-caret-left"></i>
+          </a>
+          <h2>Edit Profile</h2>
+        </div>
+      </section>
+      <section class="sign-in-area">
+        <form class="input-field-area d-flex flex-column gap-4">
+          <div class="input-field-item">
+            <p>First Name</p>
+            <div class="input-field">
+              <input type="text" class="" placeholder="First name" />
+            </div>
+          </div>
+          <div class="input-field-item">
+            <p>Last Name</p>
+            <div class="input-field">
+              <input type="text" class="" placeholder="Last Name" />
+            </div>
+          </div>
+          <div class="input-field-item">
+            <p>Date of Birth</p>
+            <div class="input-field">
+              <input type="date" class="" />
+            </div>
+          </div>
+          <div class="input-field-item">
+            <p>Password</p>
+            <div class="input-field">
+              <input type="password" class="" placeholder="*****" />
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-8 align-items-start">
+            <label class="checkbox style-c">
+              <input type="checkbox" />
+              <span class="checkbox__checkmark"></span>
+              <span class="checkbox__body">Remember Password</span>
+            </label>
+
+            <a href="./sign-in.html" class="link-button d-block w-100">Save</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

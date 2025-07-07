@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Make Payment - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="pb-6 px-6">
+      <section class="pt-8 notification-top-area">
+        <div class="d-flex justify-content-start align-items-center gap-4 py-3">
+          <a
+            href="./doctor-profile.html"
+            class="p1-color back-button flex-center"
+          >
+            <i class="ph ph-caret-left"></i>
+          </a>
+          <h2>Make Payment</h2>
+        </div>
+      </section>
+
+      <!-- Subtotal Section Start -->
+
+      <section class="subtotal-section-area pt-8">
+        <div class="subtotal-section d-flex flex-column gap-4">
+          <div class="d-flex justify-content-between align-items-center item">
+            <p class="name">Consulting</p>
+            <p class="price">$30.00</p>
+          </div>
+          <div class="d-flex justify-content-between align-items-center item">
+            <p class="name">Other Manipulation</p>
+            <p class="price">$34.00</p>
+          </div>
+          <div class="d-flex justify-content-between align-items-center item">
+            <p class="name">Other Service</p>
+            <p class="price">$40.00</p>
+          </div>
+
+          <div class="custom-border-area position-relative w-100">
+            <div class="line-horizontal"></div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="total fw-bold">Total</p>
+            <p class="fw-bold p1-color">$104.00</p>
+          </div>
+        </div>
+      </section>
+      <!-- Subtotal Section End -->
+
+      <!-- payment methods section start -->
+      <section class="pt-8">
+        <div class="payment-method-area">
+          <h3>Payment Methods</h3>
+
+          <div class="payment-methods row g-3 pt-5">
+            <div class="col-6 payment-method-single">
+              <label
+                class="item d-flex flex-column align-items-center justify-content-center"
+              >
+                <span class="icon flex-center">
+                  <img src="./assets/img/paypal.png" alt="" />
+                </span>
+                <span class="pt-3 pb-5">Paypal</span>
+                <span class="custom-radio alt-size">
+                  <input type="radio" name="gender" value="male" hidden />
+                  <span class="form-radio-sign"></span>
+                </span>
+              </label>
+            </div>
+            <div class="col-6 payment-method-single">
+              <label
+                class="item d-flex flex-column align-items-center justify-content-center"
+              >
+                <span class="icon flex-center">
+                  <img src="./assets/img/master-card.png" alt="" />
+                </span>
+                <span class="pt-3 pb-5">Mastercard</span>
+                <span class="custom-radio alt-size">
+                  <input type="radio" name="gender" value="male" hidden />
+                  <span class="form-radio-sign"></span>
+                </span>
+              </label>
+            </div>
+            <div class="col-6 payment-method-single">
+              <label
+                class="item d-flex flex-column align-items-center justify-content-center"
+              >
+                <span class="icon flex-center">
+                  <img src="./assets/img/bank.png" alt="" />
+                </span>
+                <span class="pt-3 pb-5">Bank</span>
+                <span class="custom-radio alt-size">
+                  <input type="radio" name="gender" value="male" hidden />
+                  <span class="form-radio-sign"></span>
+                </span>
+              </label>
+            </div>
+            <div class="col-6 payment-method-single">
+              <label
+                class="item d-flex flex-column align-items-center justify-content-center"
+              >
+                <span class="icon flex-center">
+                  <img src="./assets/img/card.png" alt="" />
+                </span>
+                <span class="pt-3 pb-5">Visa</span>
+                <span class="custom-radio alt-size">
+                  <input type="radio" name="gender" value="male" hidden />
+                  <span class="form-radio-sign"></span>
+                </span>
+              </label>
+            </div>
+            <div class="col-6 payment-method-single">
+              <label
+                class="item d-flex flex-column align-items-center justify-content-center"
+              >
+                <span class="icon flex-center">
+                  <img src="./assets/img/payoneer.png" alt="" />
+                </span>
+                <span class="pt-3 pb-5">Payoneer</span>
+                <span class="custom-radio alt-size">
+                  <input type="radio" name="gender" value="male" hidden />
+                  <span class="form-radio-sign"></span>
+                </span>
+              </label>
+            </div>
+            <a href="./add-card.html" class="col-6 payment-method-single">
+              <label
+                class="item d-flex flex-column align-items-center justify-content-center"
+              >
+                <span class="add-payment flex-center">
+                  <i class="ph ph-plus"></i>
+                </span>
+                <span class="pt-3 pb-5 p1-color fw-semibold">Add Card</span>
+              </label>
+            </a>
+          </div>
+        </div>
+      </section>
+      <!-- payment methods section end -->
+
+      <div class="d-flex flex-column gap-8 mt-16 mx-6">
+        <a
+          href="./booking-confirmed.html"
+          class="link-button d-block text-center"
+          >Continue</a
+        >
+      </div>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

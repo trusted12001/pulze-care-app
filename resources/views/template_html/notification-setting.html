@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Notification Settings - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="">
+      <section class="px-6 pt-8 notification-top-area">
+        <div class="d-flex justify-content-start align-items-center gap-4 py-3">
+          <a
+            href="./doctor-profile.html"
+            class="p1-color back-button flex-center"
+          >
+            <i class="ph ph-caret-left"></i>
+          </a>
+          <h2>Edit Profile</h2>
+        </div>
+      </section>
+
+      <section class="manage-notification-area px-6 pt-8">
+        <div class="manage-notification">
+          <p class="p1-color fw-semibold">Manage Notification</p>
+
+          <ul class="pt-6 d-flex flex-column gap-4">
+            <li class="d-flex justify-content-between align-items-center">
+              <p class="fw-500">Sound</p>
+              <div class="switch">
+                <input id="switch-rounded" type="checkbox" />
+                <label for="switch-rounded"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-border-area position-relative w-100">
+                <div class="line-horizontal"></div>
+              </div>
+            </li>
+            <li class="d-flex justify-content-between align-items-center">
+              <p class="fw-500">Vibrate</p>
+              <div class="switch">
+                <input id="switch-rounded2" type="checkbox" />
+                <label for="switch-rounded2"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-border-area position-relative w-100">
+                <div class="line-horizontal"></div>
+              </div>
+            </li>
+            <li class="d-flex justify-content-between align-items-center">
+              <p class="fw-500">New tips available</p>
+              <div class="switch">
+                <input id="switch-rounded3" type="checkbox" />
+                <label for="switch-rounded3"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-border-area position-relative w-100">
+                <div class="line-horizontal"></div>
+              </div>
+            </li>
+            <li class="d-flex justify-content-between align-items-center">
+              <p class="fw-500">New service available</p>
+              <div class="switch">
+                <input id="switch-rounded4" type="checkbox" />
+                <label for="switch-rounded4"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-border-area position-relative w-100">
+                <div class="line-horizontal"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="pt-20 text-center mt-20">
+          <a href="./profile-settings.html" class="link-button d-block w-100"
+            >Save</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

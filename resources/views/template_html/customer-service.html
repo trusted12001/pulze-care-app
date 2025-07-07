@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Customer Service - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="">
+      <section class="px-6 pt-8 notification-top-area">
+        <div class="d-flex justify-content-start align-items-center gap-4 py-3">
+          <a
+            href="./doctor-profile.html"
+            class="p1-color back-button flex-center"
+          >
+            <i class="ph ph-caret-left"></i>
+          </a>
+          <h2>Help and Support</h2>
+        </div>
+      </section>
+
+      <section class="sign-in-area">
+        <form class="input-field-area d-flex flex-column gap-4">
+          <div class="input-field-item">
+            <p>Full Name</p>
+            <div class="input-field">
+              <input type="text" class="" placeholder="Full name" />
+            </div>
+          </div>
+          <div class="input-field-item">
+            <p>Phone Number</p>
+            <div class="input-field">
+              <input type="text" class="" placeholder="Phone Number" />
+            </div>
+          </div>
+          <div class="">
+            <div class="d-flex justify-content-between align-items-center pb-2">
+              <p class="fw-semibold paragraph-small">Write Your Problem</p>
+              <p class="p-sm">Max 250 words</p>
+            </div>
+            <div class="input-field-item">
+              <div
+                class="d-flex justify-content-between align-items-center input-field"
+              >
+                <textarea
+                  class=""
+                  placeholder="Tell doctor about your problem..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <a href="./sign-in.html" class="link-button d-block w-100 mt-20"
+            >Send Massage</a
+          >
+        </form>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Video Call</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <div
+      class="video-call-talking-section mx-auto h-100 d-flex justify-content-between align-items-center flex-column"
+    >
+      <img
+        src="./assets/img/video-call-bg-img.png"
+        alt=""
+        class="background-img"
+      />
+
+      <div
+        class="d-flex justify-content-end align-items-start me-20 front-camera mt-16 w-100"
+      >
+        <div class="position-relative">
+          <img src="./assets/img/front-camera.png" alt="" />
+          <button class="position-absolute p1-color rotate-button">
+            <i class="ph ph-camera-rotate"></i>
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="bottom-options d-flex justify-content-center align-items-center gap-4 pb-10"
+      >
+        <a href="./video-call-session-end.html" class="flex-center video-icon">
+          <i class="ph ph-phone"></i>
+        </a>
+
+        <button class="flex-center video-icon">
+          <i class="ph ph-video-camera"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

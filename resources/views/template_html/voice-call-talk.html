@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Voice Call - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="h-100">
+      <section
+        class="voice-call-section-area h-100 d-flex justify-content-between align-items-center flex-column"
+      >
+        <div
+          class="d-flex justify-content-center align-items-center flex-column text-center w-100"
+        >
+          <div
+            class="pt-8 notification-top-area d-flex justify-content-start align-items-start px-6 w-100"
+          >
+            <a
+              href="./doctor-profile.html"
+              class="p1-color back-button flex-center"
+            >
+              <i class="ph ph-caret-left"></i>
+            </a>
+          </div>
+
+          <div class="pt-20">
+            <img src="./assets/img/session-end-img.png" alt="" />
+          </div>
+          <h3 class="pt-5 heading-3">Dr. Dianne Johnson</h3>
+          <p class="paragraph-small pt-2 text-black">12:40 mins</p>
+        </div>
+
+        <div
+          class="pb-20 d-flex justify-content-center align-items-center gap-6 bottom-call-buttons"
+        >
+          <button class="flex-center">
+            <i class="ph ph-phone-disconnect"></i>
+          </button>
+          <button class="flex-center"><i class="ph ph-microphone"></i></button>
+          <button class="flex-center"><i class="ph ph-phone-call"></i></button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

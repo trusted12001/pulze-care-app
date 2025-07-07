@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Sign Up - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="flex-center h-100">
+      <section class="sign-in-area">
+        <h2 class="heading-2">Create an Account</h2>
+        <p class="paragraph-small pt-3">
+          Sign up today for personalized health insights and exclusive member
+          perks!
+        </p>
+
+        <form class="input-field-area d-flex flex-column gap-4">
+          <div class="input-field-item">
+            <p>Email</p>
+            <div class="input-field">
+              <input type="text" class="" placeholder="Email" />
+            </div>
+          </div>
+          <div class="input-field-item">
+            <p>Password</p>
+            <div
+              class="d-flex justify-content-between align-items-center input-field"
+            >
+              <input type="password" class="" placeholder="******" />
+              <i class="ph ph-eye-closed"></i>
+            </div>
+          </div>
+          <div class="input-field-item">
+            <p>Confirm Password</p>
+            <div
+              class="d-flex justify-content-between align-items-center input-field"
+            >
+              <input type="password" class="" placeholder="******" />
+              <i class="ph ph-eye-closed"></i>
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-8 align-items-start">
+            <label class="checkbox style-c">
+              <input type="checkbox" />
+              <span class="checkbox__checkmark"></span>
+              <span class="checkbox__body">Remember Password</span>
+            </label>
+
+            <a href="./sign-in.html" class="link-button d-block w-100"
+              >Sign Up</a
+            >
+          </div>
+
+          <div class="position-relative continue-with">
+            <img
+              src="./assets/img/line.png"
+              class="line-left position-absolute"
+              alt=""
+            />
+            <img
+              src="./assets/img/line.png"
+              class="line-right position-absolute"
+              alt=""
+            />
+            <span class="text-center continue-with">Or Continue With</span>
+          </div>
+
+          <div class="pt-3 flex-center gap-4 third-party-authentication">
+            <button class="item">
+              <img src="./assets/img/google.svg" alt="" />
+            </button>
+            <button class="item">
+              <img src="./assets/img/apple.svg" alt="" />
+            </button>
+            <button class="item">
+              <img src="./assets/img/facebook.svg" alt="" />
+            </button>
+          </div>
+
+          <div class="sign-in-up m-body">
+            Already have an account? <a href="./sign-in.html">Sign In</a> here
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

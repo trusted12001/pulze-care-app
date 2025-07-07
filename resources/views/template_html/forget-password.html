@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Reset Password - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <main class="flex-center h-100">
+      <section class="sign-in-area">
+        <h2 class="heading-2">Forgot Password</h2>
+        <p class="paragraph-small pt-3">
+          Reset your password securely for uninterrupted access to your account.
+        </p>
+
+        <form class="input-field-area d-flex flex-column gap-4">
+          <div class="input-field-item pb-20 mb-20">
+            <p>Email</p>
+            <div class="input-field">
+              <input type="text" class="" placeholder="Email" />
+            </div>
+          </div>
+        </form>
+
+        <div class="d-flex flex-column gap-8">
+          <a href="./verify-otp.html" class="link-button d-block">Send OTP</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Verify OTP - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" /> <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <main class="flex-center h-100">
+      <section class="sign-in-area">
+        <h2 class="heading-2">Verify OTP</h2>
+        <p class="paragraph-small pt-3">
+          Enter OTP code received to authenticate your identity and complete
+          verification
+        </p>
+
+        <form class="otp-form  pt-8 pb-20">
+          <div class="flex-center gap-3">
+            <input type="text" class="item neutral-border" pattern="\d*" maxlength="1" />
+            <input type="text" class="item neutral-border" maxlength="1" />
+            <input type="text" class="item neutral-border" maxlength="1" />
+            <input type="text" class="item neutral-border" maxlength="1" />
+          </div>
+
+          <div class="sign-in-up m-body pt-4">
+            Didn’t receive email? <a href="">Resend</a>
+          </div>
+          <div class="mt-20">
+            <a href="./reset-successfully.html" class="link-button d-block">Verify</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script> <script src="./assets/js/service-worker-settings.js"></script>
+    <script src="./assets/js/plugins/opt-form.js"></script>
+</html>

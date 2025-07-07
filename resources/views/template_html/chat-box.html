@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Chat Box - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="">
+      <!-- Chat box header start -->
+      <section class="chat-box-header-area">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-start align-items-center gap-4">
+            <a href="./chat-list.html" class="back-button flex-center">
+              <i class="ph ph-caret-left"></i>
+            </a>
+            <div class="d-flex justify-content-start align-items-center gap-3">
+              <div class="doctor-img">
+                <div class="img-bg">
+                  <img src="./assets/img/top-doctor-1.png" alt="" />
+                </div>
+
+                <div class="active-icon"></div>
+              </div>
+
+              <div class="">
+                <p class="fw-bold">Dr. Dianne Johnson</p>
+                <p class="online">Online</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-relative">
+            <button class="more-button flex-center" id="moreButton">
+              <i class="ph ph-dots-three"></i>
+            </button>
+            <div class="moreButtonModal position-absolute end-0 modalClose">
+              <ul class="w-100 d-flex flex-column gap-4">
+                <li>
+                  <a
+                    href="./voice-call-ringing.html"
+                    class="text-black w-100 d-flex justify-content-start align-items-center gap-3"
+                  >
+                    <span class="flex-center"><i class="ph ph-phone"></i></span>
+                    Audio Call
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="./video-call-ringing.html"
+                    class="w-100 d-flex justify-content-start text-black align-items-center gap-3"
+                  >
+                    <span class="flex-center"
+                      ><i class="ph ph-video-camera"></i></span
+                    >Video Call
+                  </a>
+                </li>
+
+                <li>
+                  <div class="custom-border-area position-relative w-100">
+                    <div class="line-horizontal"></div>
+                  </div>
+                </li>
+
+                <li>
+                  <a
+                    href="./chat-session-end.html"
+                    class="w-100 d-flex justify-content-start align-items-center gap-3 delete"
+                  >
+                    <span class="flex-center"><i class="ph ph-trash"></i></span
+                    >Close Chat
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Chat box header End -->
+
+      <!-- Chat Box Message Area Start -->
+      <section class="chat-box-message px-6 pt-8 pb-20 position-relative">
+        <div class="pb-6">
+          <div class="d-flex justify-content-center">
+            <p class="date">10 June, 2024</p>
+          </div>
+          <div class="chat-area pt-8 d-flex flex-column gap-8">
+            <div
+              class="d-flex flex-column justify-content-end align-items-end gap-3"
+            >
+              <div class="d-flex justify-content-end align-items-end gap-2">
+                <p class="my-message">Hi, good afternoon Dr. Jenny Wilson</p>
+                <span class="sent flex-center"
+                  ><i class="ph ph-check"></i
+                ></span>
+              </div>
+              <div class="d-flex justify-content-end align-items-end gap-2">
+                <div class="my-message">
+                  <p>
+                    I've been experiencing some discomfort in my lower abdomen
+                  </p>
+                  <div class="love-react s2-shadow">
+                    <span class="flex-center">
+                      <i class="ph-fill ph-heart-straight"></i>
+                    </span>
+                  </div>
+                </div>
+                <span class="sent flex-center"
+                  ><i class="ph ph-check"></i
+                ></span>
+              </div>
+            </div>
+            <div
+              class="d-flex flex-column justify-content-start align-items-start gap-3"
+            >
+              <div class="d-flex justify-content-start align-items-start gap-2">
+                <div class="reply-img flex-center flex-column">
+                  <img src="./assets/img/chat-reply-img.png" alt="" />
+                  <p class="time">09.10</p>
+                </div>
+                <div
+                  class="d-flex flex-column justify-content-start align-items-start gap-3"
+                >
+                  <div class="reply-message">
+                    <p>Hello, good afternoon</p>
+                    <div class="love-react s2-shadow">
+                      <span class="flex-center">
+                        <i class="ph-fill ph-heart-straight"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="reply-message">
+                    <p>
+                      Have you noticed any other symptoms, such as fever or
+                      changes in urination?
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="d-flex flex-column justify-content-end align-items-end gap-3"
+            >
+              <div class="d-flex justify-content-end align-items-end gap-2">
+                <p class="my-message">
+                  No fever, but I've been urinating more frequently than usual.
+                </p>
+                <span class="not-sent flex-center"
+                  ><i class="ph ph-check"></i
+                ></span>
+              </div>
+            </div>
+            <div
+              class="d-flex flex-column justify-content-start align-items-start gap-3"
+            >
+              <div class="d-flex justify-content-start align-items-start gap-2">
+                <div class="reply-img flex-center flex-column">
+                  <img src="./assets/img/chat-reply-img.png" alt="" />
+                  <p class="time">09.10</p>
+                </div>
+                <div
+                  class="d-flex flex-column justify-content-start align-items-start gap-3"
+                >
+                  <div class="reply-message">
+                    <p>Alright</p>
+                  </div>
+                  <div class="reply-message">
+                    <p>
+                      Based on your symptoms, it's possible you may have a
+                      urinary tract infection. I recommend coming in for an
+                      examination and possibly some tests to confirm.
+                    </p>
+                    <div class="love-react s2-shadow">
+                      <span class="flex-center">
+                        <i class="ph-fill ph-heart-straight"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="d-flex justify-content-between align-items-center gap-2 py-4 px-3 chat-footer-area"
+          >
+            <div
+              class="d-flex justify-content-start align-items-center gap-2 footer-icons"
+            >
+              <a href="./camera-open.html"
+                ><i class="ph-fill ph-camera p1-color"></i
+              ></a>
+              <label for="image">
+                <input type="text" id="image" class="d-none" />
+                <i class="ph-fill ph-image"></i>
+              </label>
+              <i class="ph-fill ph-microphone"></i>
+            </div>
+            <div
+              class="write-message d-flex justify-content-between align-items-center gap-2"
+            >
+              <div
+                class="d-flex justify-content-start align-items-center gap-2"
+              >
+                <i class="ph ph-smiley emoji"></i>
+                <input type="text" placeholder="message" />
+              </div>
+              <button id="attachFileButton">
+                <i class="ph ph-paperclip"></i>
+              </button>
+            </div>
+
+            <div class="flex-center send-btn">
+              <i class="ph ph-paper-plane-tilt"></i>
+            </div>
+
+            <!-- Modal Start -->
+            <div
+              class="attachFileModal modalClose d-flex justify-content-center align-items-center"
+            >
+              <button class="flex-center">
+                <i class="ph ph-file-text"></i>
+              </button>
+              <button class="flex-center"><i class="ph ph-image"></i></button>
+              <button class="flex-center">
+                <i class="ph ph-headphones"></i>
+              </button>
+            </div>
+            <!-- Modal End -->
+          </div>
+        </div>
+      </section>
+      <!-- Chat Box Message Area End -->
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

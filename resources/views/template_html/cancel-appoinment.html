@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/img/fav-logo.png"
+      type="image/x-icon"
+    />
+    <title>Cancel Appoinment - Appoinx HTML App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <main class="h-100">
+      <section class="px-6 pt-8 notification-top-area">
+        <div class="d-flex justify-content-start align-items-center gap-4 py-3">
+          <a href="./home.html" class="back-button flex-center">
+            <i class="ph ph-caret-left"></i>
+          </a>
+          <h2>Top Doctor</h2>
+        </div>
+      </section>
+
+      <section>
+        <div class="pt-8 px-6">
+          <h3 class="heading-3">Reason for Schedule Change</h3>
+          <div class="d-flex flex-column gap-4 pt-5">
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I want to change to another doctor</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I want to change package</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I don't want to consult</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I have recovered from the disease</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I have found a suitable medicine</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I just want to cancel</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">I don't want to tell</span>
+              </label>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start gap-2 cancel-item"
+            >
+              <label
+                class="custom-radio alt-size d-flex justify-content-between align-items-center"
+              >
+                <input type="radio" name="gender" value="male" hidden />
+                <span class="form-radio-sign"></span>
+                <span class="">Others</span>
+              </label>
+            </div>
+          </div>
+
+          <form class="input-field-area d-flex flex-column gap-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="fw-semibold">Write Your Problem</p>
+              <p class="p-sm">Max 250 words</p>
+            </div>
+            <div class="input-field-item">
+              <div
+                class="d-flex justify-content-between align-items-center input-field"
+              >
+                <textarea
+                  class=""
+                  placeholder="Tell doctor about your problem..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="">
+              <p class="fw-semibold">
+                Would you recommended Dr. Marvin to your friends
+              </p>
+            </div>
+
+            <div class="w-100 text-center py-10">
+              <a href="./cancel-successfully.html" class="link-button d-block"
+                >Submit</a
+              >
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- Js Dependencies -->
+    <script src="./assets/js/plugins/bootstrap.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/service-worker-settings.js"></script>
+  </body>
+</html>

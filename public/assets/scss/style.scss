@@ -1,0 +1,26 @@
+/*---------------------------------------
+    Template Name:   Appoinx - Doctor Appoinment HTML Mobile Template
+    Description:    Doctor Appoinment HTML Mobile Template
+    Author Name:    Pixelaxis
+    Author URI:     https://themeforest.net/user/pixelaxis
+    Theme URI:      https://appoinx-app-html.vercel.app/
+    Version:        1.0
+-----------------------------------------
+             Table of contents
+-----------------------------------------
+Typography
+Common Style
+Section Style
+---------------------------------------*/
+
+//css plugin import
+@import "../css/plugins/bootstrap.min.css";
+
+// Scss Main files
+@import "./main/reset";
+@import "./main/variable";
+@import "./main/global";
+@import "./main/components";
+
+//scss pages
+@import "./pages/sections";
