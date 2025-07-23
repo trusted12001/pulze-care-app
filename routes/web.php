@@ -26,7 +26,28 @@ Route::middleware('auth')->group(function () {
 
 // ✅ Admin routes (for super-admin only)
 Route::middleware(['auth', 'role:super-admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('tenants', TenantController::class);
+    Route::resource('sadmins', TenantController::class);
 });
+
+
+Route::middleware(['auth', 'role:super-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/sadmins', function () {
+        return view('admin.sadmins.index');
+    })->name('sadmins.index');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/admins', function () {
+        return view('admin.admins.index');
+    })->name('admins.index');
+});
+
+Route::middleware(['auth', 'role:carer'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/carers', function () {
+        return view('admin.carers.index');
+    })->name('carers.index');
+});
+
+
 
 require __DIR__.'/auth.php';

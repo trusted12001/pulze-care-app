@@ -17,7 +17,7 @@ class TenantController extends Controller
      */
     public function index()
     {
-        return view('admin.tenants.index'); // Make sure this view exists
+        return view('admin.sadmins.index'); // Make sure this view exists
     }
 
     /**
@@ -54,7 +54,7 @@ public function store(Request $request)
             'tenant_id' => $tenant->id,
         ]);
 
-        return redirect()->route('admin.tenants.index')->with('success', 'Tenant created with admin.');
+        return redirect()->route('admin.sadmins.index')->with('success', 'Tenant created with admin.');
     }
 
 
