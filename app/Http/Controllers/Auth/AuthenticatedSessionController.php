@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User; // Ensure this is imported
 
 class AuthenticatedSessionController extends Controller
 {
@@ -25,10 +26,18 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $role = $user->getRoleNames()->first(); // This now works with Intelephense
+
+        return match ($role) {
+            'super-admin' => redirect()->route('admin.tenants.index'),
+            'admin' => redirect('/operations'),
+            'user' => redirect('/care/feed'),
+            default => redirect('/dashboard'),
+        };
     }
 
     /**
@@ -39,7 +48,6 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

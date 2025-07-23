@@ -1,17 +1,21 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.main')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+@section('title', 'Dashboard')
+
+@section('content')
+  <h2 class="heading-2">Welcome to Your Dashboard</h2>
+  <p class="paragraph-small pt-3">
+    You're logged in to Pulze! Use the menu to access available modules.
+  </p>
+
+  @can('view operations')
+    <a href="{{ route('operations') }}" class="link-button d-inline-block mt-4">Go to Operations</a>
+  @endcan
+
+  <form method="POST" action="{{ route('logout') }}" class="mt-3">
+    @csrf
+    <button type="submit" class="text-sm underline text-gray-600">
+      Logout
+    </button>
+  </form>
+@endsection

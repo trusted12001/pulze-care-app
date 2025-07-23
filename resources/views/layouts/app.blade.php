@@ -29,7 +29,7 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+               @yield('content')  {{-- ✅ this matches @section('content') --}}
             </main>
         </div>
     </body>
