@@ -48,6 +48,17 @@ Route::middleware(['auth', 'role:carer'])->prefix('admin')->name('admin.')->grou
     })->name('carers.index');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::view('/manage-staff', 'admin.manage-staff.index')->name('manage.staff');
+    Route::view('/staff-profile', 'admin.staff-profile.index')->name('staff.profile');
+    Route::view('/assignments', 'admin.assignments.index')->name('assignments');
+    Route::view('/service-users', 'admin.service-users.index')->name('service.users');
+    Route::view('/timesheets', 'admin.timesheets.index')->name('timesheets');
+    Route::view('/reports', 'admin.reports.index')->name('reports');
+    Route::view('/urgent-cases', 'admin.urgent-cases.index')->name('urgent.cases');
+});
+
+
 
 
 require __DIR__.'/auth.php';

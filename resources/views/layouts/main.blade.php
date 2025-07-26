@@ -17,6 +17,7 @@
         @yield('content')
       </section>
 
+    <script src="{{ asset('assets/js/plugins/swiper-bundle.min.js')}}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/js/service-worker-settings.js') }}"></script>

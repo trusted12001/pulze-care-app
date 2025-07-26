@@ -32,14 +32,15 @@
           </div>
           <div class="input-field-item">
             <p>Password</p>
-            <div class="d-flex justify-content-between align-items-center input-field">
-              <input type="password" name="password" placeholder="******" required />
-              <i class="ph ph-eye-closed"></i>
-              @error('password')
+            <div class="d-flex justify-content-between align-items-center input-field position-relative">
+                <input type="password" name="password" id="passwordInput" placeholder="******" required />
+                <i id="togglePassword" class="ph ph-eye-closed" style="cursor: pointer;"></i>
+                @error('password')
                 <span class="text-danger">{{ $message }}</span>
-              @enderror
+                @enderror
             </div>
-          </div>
+         </div>
+
 
           <div class="d-flex flex-column gap-8">
             <a href="{{ route('password.request') }}" class="d-block text-end fw-semibold">Forgot Password?</a>
@@ -62,5 +63,19 @@
     <script src="{{ asset('assets/js/plugins/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/js/service-worker-settings.js') }}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggle = document.getElementById("togglePassword");
+            const input = document.getElementById("passwordInput");
+
+            toggle.addEventListener("click", function () {
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+            toggle.className = isHidden ? "ph ph-eye" : "ph ph-eye-closed";
+            });
+        });
+    </script>
+
   </body>
 </html>
