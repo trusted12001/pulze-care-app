@@ -7,6 +7,13 @@
 
 <div class="dashboard-cards">
 
+  <a href="{{ route('backend.super-admin.users.index') }}">
+    <div class="card">
+        <i class="ph ph-users"></i>
+        <span>Manage Users</span>
+    </div>
+  </a>
+
   <div class="card">
     <i class="ph ph-buildings"></i>
     <span>Manage Tenants</span>
@@ -72,10 +79,17 @@
     <span>Platform Settings</span>
   </div>
 
-  <div class="card">
-    <i class="ph ph-sign-out"></i>
-    <span>Log Out</span>
-  </div>
+    <a href="{{ route('logout') }}"
+        onclick="event.preventDefault(); document.getElementById('signout-form').submit();">
+        <div class="card">
+            <i class="ph ph-sign-out logout-form"></i>
+            <span>Log Out</span>
+        </div>
+    </a>
+
+  <form id="signout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+  </form>
 
 </div>
 @endsection

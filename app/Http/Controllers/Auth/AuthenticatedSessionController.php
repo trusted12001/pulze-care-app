@@ -33,9 +33,9 @@ class AuthenticatedSessionController extends Controller
         $role = $user->getRoleNames()->first(); // This now works with Intelephense
 
         return match ($role) {
-        'super-admin' => redirect()->route('admin.sadmins.index'),
-        'admin' => redirect()->route('admin.admins.index'),
-        'carer' => redirect()->route('admin.carers.index'),
+        'super-admin' => redirect()->route('backend.super-admin.index'),
+        'admin' => redirect()->route('backend.admin.index'),
+        'carer' => redirect()->route('frontend.carer.index'),
         default => redirect('/dashboard'),
     };
     }
