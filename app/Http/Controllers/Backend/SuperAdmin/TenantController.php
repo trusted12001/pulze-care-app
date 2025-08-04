@@ -87,4 +87,10 @@ class TenantController extends Controller
 
         return redirect()->route('backend.super-admin.tenants.trashed')->with('success', 'Tenant permanently deleted.');
     }
+
+    public function show($id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        return view('backend.super-admin.tenants.show', compact('tenant'));
+    }
 }
