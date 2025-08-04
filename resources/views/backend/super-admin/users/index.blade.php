@@ -101,18 +101,12 @@
                     <th class="px-4 py-2">Email</th>
                     <th class="px-4 py-2">Role</th>
                     <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2 text-right">
-                        <a href="{{ route('backend.super-admin.users.trashed') }}"
-                            class="inline-flex items-center px-4 py-2 hover:bg-red-50 hover:text-red-600 border border-gray-300 rounded shadow-sm transition duration-150 ease-in-out">
-                            <i class="ph ph-trash-simple mr-2 text-red-500"></i>
-                            View Trash
-                        </a>
-                    | Actions</th>
+                    <th class="px-4 py-2 text-right">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
                 @forelse($users as $user)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-gray-50 border-t">
                     <td class="px-4 py-2">{{ $user->name }}</td>
                     <td class="px-4 py-2">{{ $user->email }}</td>
                     <td class="px-4 py-2">{{ $user->getRoleNames()->first() ?? 'None' }}</td>
@@ -151,9 +145,20 @@
         <div class="mt-4">
             {{ $users->links('vendor.pagination.tailwind') }}
         </div>
-
     </div>
   </div>
+        <div class="mt-4">
+            <a href="{{ route('backend.super-admin.users.trashed') }}"
+                class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 hover:underline">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z"></path>
+                </svg>
+                View Trash
+            </a>
+        </div>
+
+
 </div>
 
 {{-- Simple Live Search Script --}}

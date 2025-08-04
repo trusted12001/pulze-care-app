@@ -20,38 +20,42 @@
 
     @if($users->count())
         <div class="overflow-x-auto bg-white shadow rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50">
+            <table class="w-full table-auto border border-gray-300">
+                <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2 text-left font-medium text-gray-600">#</th>
-                        <th class="px-4 py-2 text-left font-medium text-gray-600">Name</th>
-                        <th class="px-4 py-2 text-left font-medium text-gray-600">Email</th>
-                        <th class="px-4 py-2 text-left font-medium text-gray-600">Deleted At</th>
-                        <th class="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
+                        <th class="px-4 py-2">#</th>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Email</th>
+                        <th class="px-4 py-2">Deleted At</th>
+                        <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($users as $user)
-                        <tr>
+                        <tr class="border-t">
                             <td class="px-4 py-2">{{ $loop->iteration }}</td>
                             <td class="px-4 py-2">{{ $user->name }}</td>
                             <td class="px-4 py-2">{{ $user->email }}</td>
                             <td class="px-4 py-2">{{ $user->deleted_at->diffForHumans() }}</td>
                             <td class="px-4 py-2 space-x-2">
                                 <form action="{{ route('backend.super-admin.users.restore', $user->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <button type="submit"
-                                        class="text-green-600 hover:underline"
-                                        onclick="return confirm('Restore this user?')">Restore</button>
-                                </form>
+    @csrf
+    <button type="submit"
+        class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+        onclick="return confirm('Restore this user?')">
+        Restore
+    </button>
+</form>
 
-                                <form action="{{ route('backend.super-admin.users.forceDelete', $user->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="text-red-600 hover:underline"
-                                        onclick="return confirm('Permanently delete this user?')">Delete</button>
-                                </form>
+<form action="{{ route('backend.super-admin.users.forceDelete', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Permanently delete this user?');">
+    @csrf
+    @method('DELETE')
+    <button type="submit"
+        class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+        Delete
+    </button>
+</form>
+
                             </td>
                         </tr>
                     @endforeach

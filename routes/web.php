@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\TenantController;
 use App\Http\Controllers\Backend\SuperAdmin\UserController;
+use App\Http\Controllers\Backend\SuperAdmin\TenantController;
 
 // 🔐 Default route
 Route::get('/', function () {
@@ -49,6 +49,23 @@ Route::prefix('backend/super-admin')
                 Route::put('{user}', [UserController::class, 'update'])->name('update');
                 Route::delete('{user}', [UserController::class, 'destroy'])->name('destroy');
             });
+
+
+        // ✅ Tenants CRUD & soft delete routes
+        Route::get('tenants/trashed', [TenantController::class, 'trashed'])->name('tenants.trashed');
+        Route::post('tenants/{id}/restore', [TenantController::class, 'restore'])->name('tenants.restore');
+        Route::delete('tenants/{id}/force-delete', [TenantController::class, 'forceDelete'])->name('tenants.forceDelete');
+
+        Route::resource('tenants', TenantController::class)->names([
+            'index'   => 'tenants.index',
+            'create'  => 'tenants.create',
+            'store'   => 'tenants.store',
+            'edit'    => 'tenants.edit',
+            'update'  => 'tenants.update',
+            'destroy' => 'tenants.destroy',
+            'show'    => 'tenants.show', // Optional: not used yet, but reserved
+        ]);
+
     });
 
 // 🛠️ Admin routes

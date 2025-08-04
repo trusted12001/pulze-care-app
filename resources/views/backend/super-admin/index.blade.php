@@ -14,10 +14,12 @@
     </div>
   </a>
 
-  <div class="card">
-    <i class="ph ph-buildings"></i>
-    <span>Manage Tenants</span>
-  </div>
+  <a href="{{ route('backend.super-admin.tenants.index') }}">
+    <div class="card">
+        <i class="ph ph-buildings"></i>
+        <span>Manage Tenants</span>
+    </div>
+  </a>
 
   <div class="card">
     <i class="ph ph-identification-badge"></i>

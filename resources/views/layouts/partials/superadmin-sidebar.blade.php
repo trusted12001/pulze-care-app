@@ -14,7 +14,7 @@
     </a>
 
     {{-- Add other links here (no change) --}}
-    <a href="{{ url('/manage-tenants') }}" class="{{ request()->is('manage-tenants*') ? 'active' : '' }}">
+    <a href="{{ route('backend.super-admin.tenants.index') }}" class="{{ request()->is('manage-tenants*') ? 'active' : '' }}">
         <i class="ph ph-buildings"></i> <span class="menu-label">Manage Tenants</span>
     </a>
 
