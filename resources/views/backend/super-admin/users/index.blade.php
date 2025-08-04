@@ -97,6 +97,7 @@
         <table id="usersTable" class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-800">
             <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
                 <tr>
+                    <th class="px-4 py-2">#</th>
                     <th class="px-4 py-2">Name</th>
                     <th class="px-4 py-2">Email</th>
                     <th class="px-4 py-2">Role</th>
@@ -107,6 +108,7 @@
             <tbody class="text-sm text-gray-700">
                 @forelse($users as $user)
                 <tr class="hover:bg-gray-50 border-t">
+                    <td class="px-4 py-2">{{ $loop->iteration }}</td>
                     <td class="px-4 py-2">{{ $user->name }}</td>
                     <td class="px-4 py-2">{{ $user->email }}</td>
                     <td class="px-4 py-2">{{ $user->getRoleNames()->first() ?? 'None' }}</td>
