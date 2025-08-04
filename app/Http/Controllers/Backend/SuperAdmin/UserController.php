@@ -8,7 +8,8 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+
 
 
 class UserController extends Controller
@@ -86,5 +87,27 @@ class UserController extends Controller
         $user->delete(); // Soft delete
 
         return redirect()->route('backend.super-admin.users.index')->with('success', 'User moved to trash.');
+    }
+
+    public function trashed()
+    {
+        $users = User::onlyTrashed()->latest()->paginate(10);
+        return view('backend.super-admin.users.trashed', compact('users'));
+    }
+
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return redirect()->route('backend.super-admin.users.trashed')->with('success', 'User restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->forceDelete();
+
+        return redirect()->route('backend.super-admin.users.trashed')->with('success', 'User permanently deleted.');
     }
 }

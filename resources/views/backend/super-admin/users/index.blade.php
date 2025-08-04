@@ -94,52 +94,58 @@
     </div>
 
     <div class="overflow-x-auto">
-<table id="usersTable" class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-800">
-    <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-        <tr>
-            <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">Email</th>
-            <th class="px-4 py-2">Role</th>
-            <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2 text-right">Actions</th>
-        </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-100">
-        @forelse($users as $user)
-        <tr class="hover:bg-gray-50">
-            <td class="px-4 py-2">{{ $user->name }}</td>
-            <td class="px-4 py-2">{{ $user->email }}</td>
-            <td class="px-4 py-2">{{ $user->getRoleNames()->first() ?? 'None' }}</td>
-            <td class="px-4 py-2">
-                <span class="inline-block px-2 py-1 rounded text-white text-xs
-                {{ $user->status === 'active' ? 'bg-green-500' : 'bg-red-500' }}">
-                    {{ ucfirst($user->status) }}
-                </span>
-            </td>
-            <td class="px-4 py-2 text-right space-x-2">
-                {{-- View --}}
-                <a href="{{ route('backend.super-admin.users.show', $user->id) }}"
-                    class="text-sm text-gray-600 hover:underline">View</a>
-                {{-- Edit --}}
-                <a href="{{ route('backend.super-admin.users.edit', $user->id) }}"
-                    class="text-sm text-blue-600 hover:underline">Edit</a>
-                {{-- Delete --}}
-                <form action="{{ route('backend.super-admin.users.destroy', $user->id) }}"
-                    method="POST" class="inline-block"
-                    onsubmit="return confirm('Are you sure you want to delete this user?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-sm text-red-600 hover:underline">Delete</button>
-                </form>
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="5" class="text-center px-4 py-6 text-gray-500">No users found.</td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+        <table id="usersTable" class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-800">
+            <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
+                <tr>
+                    <th class="px-4 py-2">Name</th>
+                    <th class="px-4 py-2">Email</th>
+                    <th class="px-4 py-2">Role</th>
+                    <th class="px-4 py-2">Status</th>
+                    <th class="px-4 py-2 text-right">
+                        <a href="{{ route('backend.super-admin.users.trashed') }}"
+                            class="inline-flex items-center px-4 py-2 hover:bg-red-50 hover:text-red-600 border border-gray-300 rounded shadow-sm transition duration-150 ease-in-out">
+                            <i class="ph ph-trash-simple mr-2 text-red-500"></i>
+                            View Trash
+                        </a>
+                    | Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+                @forelse($users as $user)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ $user->name }}</td>
+                    <td class="px-4 py-2">{{ $user->email }}</td>
+                    <td class="px-4 py-2">{{ $user->getRoleNames()->first() ?? 'None' }}</td>
+                    <td class="px-4 py-2">
+                        <span class="inline-block px-2 py-1 rounded text-white text-xs
+                        {{ $user->status === 'active' ? 'bg-green-500' : 'bg-red-500' }}">
+                            {{ ucfirst($user->status) }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2 text-right space-x-2">
+                        {{-- View --}}
+                        <a href="{{ route('backend.super-admin.users.show', $user->id) }}"
+                            class="text-sm text-gray-600 hover:underline">View</a>
+                        {{-- Edit --}}
+                        <a href="{{ route('backend.super-admin.users.edit', $user->id) }}"
+                            class="text-sm text-blue-600 hover:underline">Edit</a>
+                        {{-- Delete --}}
+                        <form action="{{ route('backend.super-admin.users.destroy', $user->id) }}"
+                            method="POST" class="inline-block"
+                            onsubmit="return confirm('Are you sure you want to delete this user?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-sm text-red-600 hover:underline">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center px-4 py-6 text-gray-500">No users found.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
 
       {{-- Pagination --}}
         <div class="mt-4">

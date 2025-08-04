@@ -1,21 +1,21 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\TenantController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\SuperAdmin\UserController;
 
-// Default route
+// 🔐 Default route
 Route::get('/', function () {
     return view('auth.login');
 });
 
-// Dashboard (for all authenticated users)
+// 🔐 Dashboard (for all authenticated users)
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Authenticated user routes
+// 🔐 Authenticated user profile routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/operations', fn () => view('operations.index'))->name('operations');
 
@@ -24,27 +24,34 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Super Admin routes
+// 👑 Super Admin routes
 Route::prefix('backend/super-admin')
     ->middleware(['auth', 'role:super-admin'])
     ->name('backend.super-admin.')
     ->group(function () {
         Route::view('/', 'backend.super-admin.index')->name('index');
 
-        // ✅ RESTful UserController routes
-        Route::resource('users', UserController::class)->names([
-            'index' => 'users.index',
-            'store' => 'users.store',
-            'create' => 'users.create',
-            'edit' => 'users.edit',
-            'update' => 'users.update',
-            'destroy' => 'users.destroy',
-            'show' => 'users.show',
-        ]);
+        // 🧑‍💼 Users management routes
+        Route::prefix('users')
+            ->name('users.')
+            ->group(function () {
+                // Custom trash, restore, force-delete
+                Route::get('trashed', [UserController::class, 'trashed'])->name('trashed');
+                Route::post('{id}/restore', [UserController::class, 'restore'])->name('restore');
+                Route::delete('{id}/force-delete', [UserController::class, 'forceDelete'])->name('forceDelete');
+
+                // Standard RESTful routes
+                Route::get('/', [UserController::class, 'index'])->name('index');
+                Route::get('create', [UserController::class, 'create'])->name('create');
+                Route::post('/', [UserController::class, 'store'])->name('store');
+                Route::get('{user}', [UserController::class, 'show'])->name('show');
+                Route::get('{user}/edit', [UserController::class, 'edit'])->name('edit');
+                Route::put('{user}', [UserController::class, 'update'])->name('update');
+                Route::delete('{user}', [UserController::class, 'destroy'])->name('destroy');
+            });
     });
 
-
-// Admin routes
+// 🛠️ Admin routes
 Route::middleware(['auth', 'role:admin'])
     ->prefix('backend')
     ->name('backend.')
@@ -52,7 +59,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::view('/admin', 'backend.admin.index')->name('admin.index');
     });
 
-// Carer routes
+// 🧑‍⚕️ Carer routes
 Route::middleware(['auth', 'role:carer'])
     ->prefix('frontend')
     ->name('frontend.')
@@ -60,7 +67,7 @@ Route::middleware(['auth', 'role:carer'])
         Route::view('/carer', 'frontend.carer.index')->name('carer.index');
     });
 
-// Shared admin views (temporary until migrated properly)
+// 📁 Shared admin views
 Route::middleware(['auth'])->group(function () {
     Route::view('/manage-staff', 'admin.manage-staff.index')->name('manage.staff');
     Route::view('/staff-profile', 'admin.staff-profile.index')->name('staff.profile');
