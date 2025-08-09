@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Backend\SuperAdmin\UserController;
+use App\Http\Controllers\Backend\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Backend\SuperAdmin\TenantController;
 
 // 🔐 Default route
@@ -70,10 +71,22 @@ Route::prefix('backend/super-admin')
 
 // 🛠️ Admin routes
 Route::middleware(['auth', 'role:admin'])
-    ->prefix('backend')
-    ->name('backend.')
+    ->prefix('backend/admin')
+    ->name('backend.admin.')
     ->group(function () {
-        Route::view('/admin', 'backend.admin.index')->name('admin.index');
+        Route::view('/', 'backend.admin.index')->name('index');
+        Route::get('users/trashed', [AdminUserController::class, 'trashed'])->name('users.trashed');
+        Route::post('{id}/restore', [AdminUserController::class, 'restore'])->name('users.restore');
+        Route::delete('{id}/force-delete', [AdminUserController::class, 'forceDelete'])->name('users.forceDelete');
+
+        Route::resource('users', AdminUserController::class)->except(['create'])->names([
+            'index'   => 'users.index',
+            'store'   => 'users.store',
+            'show'    => 'users.show',
+            'edit'    => 'users.edit',
+            'update'  => 'users.update',
+            'destroy' => 'users.destroy',
+        ]);
     });
 
 // 🧑‍⚕️ Carer routes

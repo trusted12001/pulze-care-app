@@ -11,10 +11,12 @@
 
 <div class="dashboard-cards">
   <!-- 1. Core Staff & Service User Management -->
-  <div class="card">
-    <i class="ph ph-users"></i>
-    <span>Manage Staff</span>
-  </div>
+  <a href="{{route('backend.admin.users.index')}}">
+    <div class="card">
+      <i class="ph ph-users"></i>
+      <span>Manage Staff</span>
+    </div>
+  </a>
   <div class="card">
     <i class="ph ph-user-circle"></i>
     <span>Staff Profile</span>
@@ -22,10 +24,6 @@
   <div class="card">
     <i class="ph ph-users-three"></i>
     <span>Service Users</span>
-  </div>
-  <div class="card">
-    <i class="ph ph-identification-card"></i>
-    <span>Service User Profile</span>
   </div>
 
   <!-- 2. Scheduling and Assignments -->

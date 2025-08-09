@@ -5,7 +5,11 @@
     </button>
   </div>
   <nav>
-    <a href="{{ url('/manage-staff') }}" class="{{ request()->is('manage-staff*') ? 'active' : '' }}">
+    <a href="{{ route('backend.admin.index') }}" class="{{ request()->is('admin*') ? 'active' : '' }}">
+        <i class="ph ph-gauge"></i> <span class="menu-label">Dashboard</span>
+    </a>
+
+    <a href="{{route('backend.admin.users.index')}}" class="{{ request()->is('manage-staff*') ? 'active' : '' }}">
         <i class="ph ph-users"></i> <span class="menu-label">Manage Staff</span>
     </a>
     <a href="{{ url('/staff-profile') }}" class="{{ request()->is('staff-profile*') ? 'active' : '' }}">
