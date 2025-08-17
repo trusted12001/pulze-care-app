@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -56,6 +57,13 @@ class User extends Authenticatable
     {
         // return $this->belongsTo(Tenant::class);
     }
+
+
+    public function staffProfile(): HasOne
+    {
+        return $this->hasOne(\App\Models\StaffProfile::class);
+    }
+
 
 
 

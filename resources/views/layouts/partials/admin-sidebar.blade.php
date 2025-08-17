@@ -12,10 +12,10 @@
     <a href="{{route('backend.admin.users.index')}}" class="{{ request()->is('manage-staff*') ? 'active' : '' }}">
         <i class="ph ph-users"></i> <span class="menu-label">Manage Staff</span>
     </a>
-    <a href="{{ url('/staff-profile') }}" class="{{ request()->is('staff-profile*') ? 'active' : '' }}">
+    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="{{ request()->is('staff-profile*') ? 'active' : '' }}">
         <i class="ph ph-user-circle"></i> <span class="menu-label">Staff Profile</span>
     </a>
-    <a href="{{ url('/service-users') }}" class="{{ request()->is('service-users*') ? 'active' : '' }}">
+    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="{{ request()->is('service-users*') ? 'active' : '' }}">
         <i class="ph ph-users-three"></i> <span class="menu-label">Service Users</span>
     </a>
     <a href="{{ url('/assignments') }}" class="{{ request()->is('assignments*') ? 'active' : '' }}">
