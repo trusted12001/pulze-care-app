@@ -10,6 +10,8 @@ use App\Http\Controllers\Backend\SuperAdmin\TenantController;
 // Admin
 use App\Http\Controllers\Backend\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Backend\Admin\StaffProfileController;
+use App\Http\Controllers\Backend\Admin\ServiceUserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -112,7 +114,24 @@ Route::prefix('backend/admin')
             'update'  => 'staff-profiles.update',
             'destroy' => 'staff-profiles.destroy',
         ]);
-    });
+
+
+
+    Route::get('service-users/trashed', [ServiceUserController::class, 'trashed'])->name('service-users.trashed');
+    Route::post('service-users/{id}/restore', [ServiceUserController::class, 'restore'])->name('service-users.restore');
+    Route::delete('service-users/{id}/force-delete', [ServiceUserController::class, 'forceDelete'])->name('service-users.forceDelete');
+
+    Route::resource('service-users', ServiceUserController::class)->names([
+        'index'   => 'service-users.index',
+        'create'  => 'service-users.create',
+        'store'   => 'service-users.store',
+        'show'    => 'service-users.show',
+        'edit'    => 'service-users.edit',
+        'update'  => 'service-users.update',
+        'destroy' => 'service-users.destroy',
+    ]);
+});
+
 
 /*
 |--------------------------------------------------------------------------

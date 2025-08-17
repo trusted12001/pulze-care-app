@@ -15,7 +15,7 @@
     <a href="{{ route('backend.admin.staff-profiles.index') }}" class="{{ request()->is('staff-profile*') ? 'active' : '' }}">
         <i class="ph ph-user-circle"></i> <span class="menu-label">Staff Profile</span>
     </a>
-    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="{{ request()->is('service-users*') ? 'active' : '' }}">
+    <a href="{{ route('backend.admin.service-users.index') }}" class="{{ request()->is('service-users*') ? 'active' : '' }}">
         <i class="ph ph-users-three"></i> <span class="menu-label">Service Users</span>
     </a>
     <a href="{{ url('/assignments') }}" class="{{ request()->is('assignments*') ? 'active' : '' }}">
