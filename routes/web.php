@@ -116,7 +116,7 @@ Route::prefix('backend/admin')
         ]);
 
 
-
+    // Service Users (Admin)
     Route::get('service-users/trashed', [ServiceUserController::class, 'trashed'])->name('service-users.trashed');
     Route::post('service-users/{id}/restore', [ServiceUserController::class, 'restore'])->name('service-users.restore');
     Route::delete('service-users/{id}/force-delete', [ServiceUserController::class, 'forceDelete'])->name('service-users.forceDelete');
@@ -129,6 +129,22 @@ Route::prefix('backend/admin')
         'edit'    => 'service-users.edit',
         'update'  => 'service-users.update',
         'destroy' => 'service-users.destroy',
+    ]);
+
+
+    // Location Setup (Admin)
+    Route::get('locations/trashed', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'trashed'])->name('locations.trashed');
+    Route::post('locations/{id}/restore', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'restore'])->name('locations.restore');
+    Route::delete('locations/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'forceDelete'])->name('locations.forceDelete');
+
+    Route::resource('locations', \App\Http\Controllers\Backend\Admin\LocationController::class)->names([
+        'index'   => 'locations.index',
+        'create'  => 'locations.create',
+        'store'   => 'locations.store',
+        'show'    => 'locations.show',
+        'edit'    => 'locations.edit',
+        'update'  => 'locations.update',
+        'destroy' => 'locations.destroy',
     ]);
 });
 

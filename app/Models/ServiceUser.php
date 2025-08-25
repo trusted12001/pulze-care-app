@@ -69,8 +69,9 @@ class ServiceUser extends Model
     // Relationships
     public function location()
     {
-        return $this->belongsTo(\App\Models\Location::class, 'location_id'); // if you have one
+        return $this->belongsTo(\App\Models\Location::class)->withDefault();
     }
+
 
     public function creator()
     {

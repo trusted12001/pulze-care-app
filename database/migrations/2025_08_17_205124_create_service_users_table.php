@@ -38,8 +38,8 @@ return new class extends Migration {
             $table->string('country')->default('UK');
 
             // Placement / Location
-            $table->string('placement_type')->nullable();   // care_home|supported_living|domiciliary|respite
-            $table->unsignedBigInteger('location_id')->nullable(); // FK optional (Configure Location)
+            $table->string('placement_type')->nullable();   // care_home|supported_living|domiciliary|day_center
+            $table->foreignId('location_id')->nullable()->constrained('locations')->nullOnDelete();
             $table->string('room_number')->nullable();
             $table->date('admission_date');
             $table->date('expected_discharge_date')->nullable();

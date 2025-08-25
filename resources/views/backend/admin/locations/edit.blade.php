@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title','Staff Profile')
+@section('title','Edit Location')
 
 @section('content')
 <div class="min-h-screen p-0 rounded-lg">
 
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-3xl font-bold text-black">Edit Staff Profile</h2>
-    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="text-blue-600 hover:underline">← Back</a>
+    <h2 class="text-3xl font-bold text-black">Edit Location</h2>
+    <a href="{{ route('backend.admin.locations.index') }}" class="text-blue-600 hover:underline">← Back</a>
   </div>
 
   @if ($errors->any())
@@ -21,21 +21,11 @@
     </div>
   @endif
 
-  <form method="POST"
-        action="{{ route('backend.admin.staff-profiles.update', $staffProfile) }}"
+  <form method="POST" action="{{ route('backend.admin.locations.update', $location) }}"
         class="bg-white p-6 rounded-lg shadow border border-gray-200">
     @csrf
     @method('PUT')
-
-    @php
-        $page = "edit";
-    @endphp
-
-    @include('backend.admin.staff-profiles._form', [
-      'users' => $users,
-      'staffProfile' => $staffProfile,      // enables prefill
-      'lockUser' => true,                   // <-- tell the partial to lock user field
-    ])
+    @include('backend.admin.locations._form', ['location' => $location])
   </form>
 </div>
 @endsection

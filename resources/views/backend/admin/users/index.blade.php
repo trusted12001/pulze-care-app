@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Manage Staff')
+@section('title', 'Staff Accounts')
 
 @section('content')
 <div class="min-h-screen p-0 rounded-lg">
 
   {{-- Header --}}
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-3xl font-bold text-black">Add New Staff</h2>
+    <h2 class="text-3xl font-bold text-black">New Account</h2>
     <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </div>
 
@@ -74,7 +74,7 @@
       <div class="mt-6 text-right">
         <button type="submit"
                 class="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition">
-          Save Staff
+          Create Account
         </button>
       </div>
     </form>
@@ -83,7 +83,7 @@
   {{-- Staff Table --}}
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-semibold text-gray-800">Current Staff</h3>
+      <h3 class="text-2xl font-semibold text-gray-800">All Accounts</h3>
       <input type="text" id="userSearch" placeholder="Search..."
              class="border border-gray-300 px-3 py-2 rounded w-1/3 bg-gray-50" />
     </div>

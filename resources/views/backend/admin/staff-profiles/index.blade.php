@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title','Registered Staff')
+@section('title','Staff Profile')
 
 @section('content')
 <div class="min-h-screen p-0 rounded-lg">

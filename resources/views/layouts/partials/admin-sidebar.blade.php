@@ -9,15 +9,23 @@
         <i class="ph ph-gauge"></i> <span class="menu-label">Dashboard</span>
     </a>
 
-    <a href="{{route('backend.admin.users.index')}}" class="{{ request()->is('manage-staff*') ? 'active' : '' }}">
-        <i class="ph ph-users"></i> <span class="menu-label">Manage Staff</span>
+    <a href="{{ route('backend.admin.users.index') }}" class="{{ request()->is('manage-staff*') ? 'active' : (request()->is('backend/admin/users*') ? 'active' : '') }}">
+        <i class="ph ph-users"></i> <span class="menu-label">Staff Accounts</span>
     </a>
-    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="{{ request()->is('staff-profile*') ? 'active' : '' }}">
+
+    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="{{ request()->is('staff-profile*') ? 'active' : (request()->is('backend/admin/staff-profile*') ? 'active' : '') }}">
         <i class="ph ph-user-circle"></i> <span class="menu-label">Staff Profile</span>
     </a>
-    <a href="{{ route('backend.admin.service-users.index') }}" class="{{ request()->is('service-users*') ? 'active' : '' }}">
+
+    {{-- NEW: Location Setup (after Staff Profile) --}}
+    <a href="{{ route('backend.admin.locations.index') }}" class="{{ request()->routeIs('backend.admin.locations.*') ? 'active' : (request()->is('backend/admin/locations*') ? 'active' : '') }}">
+        <i class="ph ph-map-pin"></i> <span class="menu-label">Location Setup</span>
+    </a>
+
+    <a href="{{ route('backend.admin.service-users.index') }}" class="{{ request()->is('service-users*') ? 'active' : (request()->is('backend/admin/service-users*') ? 'active' : '') }}">
         <i class="ph ph-users-three"></i> <span class="menu-label">Service Users</span>
     </a>
+
     <a href="{{ url('/assignments') }}" class="{{ request()->is('assignments*') ? 'active' : '' }}">
         <i class="ph ph-handshake"></i> <span class="menu-label">Assignments</span>
     </a>
@@ -48,6 +56,7 @@
     <a href="{{ url('/urgent-cases') }}" class="{{ request()->is('urgent-cases*') ? 'active' : '' }}">
         <i class="ph ph-warning"></i> <span class="menu-label">Urgent Cases</span>
     </a>
+
     <a href="{{ route('logout') }}"
        onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
        class="{{ request()->is('logout') ? 'active' : '' }}">

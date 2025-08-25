@@ -162,6 +162,7 @@ class StaffProfileController extends Controller
             'profiles' => $profiles,
             'search'   => $search,
         ]);
+
     }
 
     /**

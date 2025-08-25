@@ -25,7 +25,7 @@ class UpdateStaffProfileRequest extends FormRequest
     {
         $id = $this->route('staff_profile'); // or param name you choose
         return [
-            'user_id' => ['required','exists:users,id',"unique:staff_profiles,user_id,{$id}"],
+            'user_id' => ['prohibited'],
             'job_title' => ['nullable','string','max:120'],
             'employment_status' => ['required','in:active,on_leave,terminated'],
             'dbs_number' => ['nullable','string','max:50'],

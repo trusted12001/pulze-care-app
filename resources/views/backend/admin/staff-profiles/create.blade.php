@@ -22,6 +22,11 @@
 
 <form method="POST" action="{{ route('backend.admin.staff-profiles.store') }}" class="bg-white p-6 rounded-lg shadow border border-gray-200">
   @csrf
+
+    @php
+        $page = "create";
+    @endphp
+
   @include('backend.admin.staff-profiles._form', [
     'users' => $users,
     // no $staffProfile here (create mode)

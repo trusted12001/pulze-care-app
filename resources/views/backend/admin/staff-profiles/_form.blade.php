@@ -1,17 +1,36 @@
+@php
+  $isEdit = isset($staffProfile) && $staffProfile->exists;
+@endphp
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
   {{-- User --}}
-  <div>
-    <label for="user_id" class="block mb-1 font-medium text-gray-800">User</label>
-    <select id="user_id" name="user_id"
-            class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2"
-            required>
-      @foreach($users as $u)
-        <option value="{{ $u->id }}" @selected(old('user_id', $staffProfile->user_id ?? '') == $u->id)>
-          {{ $u->name }} — {{ $u->email }}
-        </option>
-      @endforeach
-    </select>
-    @error('user_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+  <div class="{{ $isEdit ? 'md:col-span-1' : '' }}">
+    <label for="user_id" class="block mb-1 font-medium text-gray-800">User Account</label>
+
+    @if(!$isEdit)
+      {{-- CREATE: selectable --}}
+      <select id="user_id" name="user_id"
+              class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2"
+              required>
+        <option value="">-- Select user --</option>
+        @foreach($users as $u)
+          <option value="{{ $u->id }}"
+            {{ (string)old('user_id', $staffProfile->user_id ?? '') === (string)$u->id ? 'selected' : '' }}>
+            {{ $u->name }} — {{ $u->email }}
+          </option>
+        @endforeach
+      </select>
+      @error('user_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+
+    @else
+      {{-- EDIT: lock field (disabled display + hidden id for submission) --}}
+      <input type="text"
+             value="{{ ($staffProfile->user->name ?? '—') . ' — ' . ($staffProfile->user->email ?? '—') }}"
+             class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-2 cursor-not-allowed"
+             disabled>
+      {{-- <input type="hidden" name="user_id" value="{{ old('user_id', $staffProfile->user_id) }}"> --}}
+      <p class="text-xs text-gray-500 mt-1">Linked user cannot be changed.</p>
+    @endif
   </div>
 
   {{-- Employment Status --}}
@@ -67,7 +86,7 @@
     @error('dbs_number') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
   </div>
 
-  {{-- DBS Issued At (date) --}}
+  {{-- DBS Issued At --}}
   <div>
     <label for="dbs_issued_at" class="block mb-1 font-medium text-gray-800">DBS Issued At</label>
     <input id="dbs_issued_at" type="date" name="dbs_issued_at"
@@ -76,7 +95,7 @@
     @error('dbs_issued_at') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
   </div>
 
-  {{-- Mandatory Training Completed At (datetime-local) --}}
+  {{-- Mandatory Training Completed At --}}
   <div>
     <label for="mandatory_training_completed_at" class="block mb-1 font-medium text-gray-800">
       Mandatory Training Completed At
@@ -105,7 +124,7 @@
     @error('gphc_pin') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
   </div>
 
-  {{-- Right to Work Verified At (datetime-local) --}}
+  {{-- Right to Work Verified At --}}
   <div class="md:col-span-2">
     <label for="rtw_verified" class="block mb-1 font-medium text-gray-800">Right to Work Verified At</label>
     <input id="rtw_verified" type="datetime-local" name="right_to_work_verified_at"
@@ -125,10 +144,8 @@
 
 <div class="mt-6 text-right">
   <button class="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition">
-    {{ isset($staffProfile) ? 'Update' : 'Save' }}
+    {{ $isEdit ? 'Update' : 'Save' }}
   </button>
   <a href="{{ route('backend.admin.staff-profiles.index') }}"
-     class="ml-2 px-6 py-2 border border-gray-300 rounded hover:bg-gray-50">
-    Cancel
-  </a>
+     class="ml-2 px-6 py-2 border border-gray-300 rounded hover:bg-gray-50">Cancel</a>
 </div>

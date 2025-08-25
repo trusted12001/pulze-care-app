@@ -2,12 +2,10 @@
 
 @section('title', 'Admin Dashboard')
 
-
 @section('content')
 
 <!-- Responsive Title -->
 <p>Logged in as: <strong>{{ Auth::user()->name }}!</strong> </p>
-
 
 <div class="dashboard-cards">
   <!-- 1. Core Staff & Service User Management -->
@@ -17,14 +15,28 @@
       <span>Manage Staff</span>
     </div>
   </a>
-  <div class="card">
-    <i class="ph ph-user-circle"></i>
-    <span>Staff Profile</span>
-  </div>
-  <div class="card">
-    <i class="ph ph-users-three"></i>
-    <span>Service Users</span>
-  </div>
+
+  <a href="{{route('backend.admin.staff-profiles.index')}}">
+    <div class="card">
+        <i class="ph ph-user-circle"></i>
+        <span>Staff Profile</span>
+    </div>
+  </a>
+
+  {{-- NEW: Location Setup (after Staff Profile) --}}
+  <a href="{{ route('backend.admin.locations.index') }}">
+    <div class="card">
+      <i class="ph ph-map-pin"></i>
+      <span>Location Setup</span>
+    </div>
+  </a>
+
+  <a href="{{route('backend.admin.service-users.index')}}">
+    <div class="card">
+        <i class="ph ph-users-three"></i>
+        <span>Service Users</span>
+    </div>
+  </a>
 
   <!-- 2. Scheduling and Assignments -->
   <div class="card">
