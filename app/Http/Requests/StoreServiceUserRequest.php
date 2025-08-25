@@ -3,69 +3,123 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreServiceUserRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
     public function rules(): array
     {
+        $tenantId = (int) auth()->user()->tenant_id;
+
         return [
-            // Required MVP fields
-            'first_name'        => ['required','string','max:100'],
-            'last_name'         => ['required','string','max:100'],
-            'date_of_birth'     => ['required','date'],
-            'address_line1'     => ['required','string','max:255'],
-            'city'              => ['required','string','max:120'],
-            'postcode'          => ['required','string','max:20'],
-            'admission_date'    => ['required','date'],
+            'first_name' => ['required','string','max:255'],
+            'middle_name' => ['nullable','string','max:255'],
+            'last_name'  => ['required','string','max:255'],
+            'preferred_name' => ['nullable','string','max:255'],
 
-            // Optional fields
-            'preferred_name'    => ['nullable','string','max:120'],
-            'sex_at_birth'      => ['nullable','string','max:30'],
-            'gender_identity'   => ['nullable','string','max:60'],
-            'pronouns'          => ['nullable','string','max:40'],
-            'nhs_number'        => ['nullable','string','max:20'],
-            'primary_phone'     => ['nullable','string','max:40'],
-            'secondary_phone'   => ['nullable','string','max:40'],
-            'email'             => ['nullable','email','max:150'],
-            'county'            => ['nullable','string','max:120'],
-            'country'           => ['nullable','string','max:80'],
+            'date_of_birth' => ['required','date'],
+            'sex_at_birth' => ['nullable','string','max:255'],
+            'gender_identity' => ['nullable','string','max:255'],
+            'pronouns' => ['nullable','string','max:255'],
 
-            'placement_type'    => ['nullable','string','max:40'],
-            'location_id'       => ['nullable','integer'],
-            'room_number'       => ['nullable','string','max:50'],
-            'expected_discharge_date' => ['nullable','date','after_or_equal:admission_date'],
-            'discharge_date'    => ['nullable','date'],
+            'nhs_number' => ['nullable','string','max:255',
+                Rule::unique('service_users','nhs_number')
+                    ->where(fn($q) => $q->where('tenant_id',$tenantId)->whereNull('deleted_at'))
+            ],
+            'national_insurance_no' => ['nullable','string','max:255'],
 
-            'status'            => ['nullable','in:active,on_leave,discharged,deceased'],
+            'photo_path' => ['nullable','string','max:255'],
 
-            'weekly_rate'       => ['nullable','numeric','min:0'],
+            'primary_phone' => ['nullable','string','max:255'],
+            'secondary_phone' => ['nullable','string','max:255'],
+            'email' => ['nullable','email','max:255'],
 
-            'gp_practice_name'  => ['nullable','string','max:200'],
-            'gp_contact_name'   => ['nullable','string','max:120'],
-            'gp_phone'          => ['nullable','string','max:40'],
-            'gp_email'          => ['nullable','email','max:150'],
-            'pharmacy_name'     => ['nullable','string','max:200'],
-            'pharmacy_phone'    => ['nullable','string','max:40'],
+            'address_line1' => ['required','string','max:255'],
+            'address_line2' => ['nullable','string','max:255'],
+            'city' => ['required','string','max:255'],
+            'county' => ['nullable','string','max:255'],
+            'postcode' => ['required','string','max:255'],
+            'country' => ['required','string','max:255'],
 
-            // Booleans
-            'behaviour_support_plan' => ['nullable','boolean'],
-            'seizure_care_plan'      => ['nullable','boolean'],
-            'diabetes_care_plan'     => ['nullable','boolean'],
-            'oxygen_therapy'         => ['nullable','boolean'],
-            'wander_elopement_risk'  => ['nullable','boolean'],
-            'safeguarding_flag'      => ['nullable','boolean'],
-            'infection_control_flag' => ['nullable','boolean'],
-            'interpreter_required'   => ['nullable','boolean'],
-            'dols_in_place'          => ['nullable','boolean'],
-            'lpa_health_welfare'     => ['nullable','boolean'],
-            'lpa_finance_property'   => ['nullable','boolean'],
+            'placement_type' => ['nullable','string','max:255'],
+            'location_id' => ['nullable',
+                Rule::exists('locations','id')->where(fn($q) => $q->where('tenant_id',$tenantId))
+            ],
+            'room_number' => ['nullable','string','max:255'],
 
-            // Dates/DateTimes (optional)
-            'consent_obtained_at'    => ['nullable','date'],
-            'dnacpr_review_date'     => ['nullable','date'],
-            'dols_approval_date'     => ['nullable','date'],
+            'admission_date' => ['required','date'],
+            'expected_discharge_date' => ['nullable','date'],
+            'discharge_date' => ['nullable','date'],
+
+            'status' => ['required','in:active,inactive,discharged'],
+
+            'funding_type' => ['nullable','string','max:255'],
+            'funding_authority' => ['nullable','string','max:255'],
+            'purchase_order_ref' => ['nullable','string','max:255'],
+            'weekly_rate' => ['nullable','numeric','between:0,999999.99'],
+
+            'primary_diagnosis' => ['nullable','string','max:255'],
+            'other_diagnoses' => ['nullable','string'],
+            'allergies_summary' => ['nullable','string'],
+            'diet_type' => ['nullable','string','max:255'],
+            'intolerances' => ['nullable','string'],
+
+            'mobility_status' => ['nullable','string','max:255'],
+            'communication_needs' => ['nullable','string'],
+
+            'behaviour_support_plan' => ['boolean'],
+            'seizure_care_plan' => ['boolean'],
+            'diabetes_care_plan' => ['boolean'],
+            'oxygen_therapy' => ['boolean'],
+
+            'baseline_bp' => ['nullable','string','max:255'],
+            'baseline_hr' => ['nullable','string','max:255'],
+            'baseline_spo2' => ['nullable','string','max:255'],
+            'baseline_temp' => ['nullable','string','max:255'],
+
+            'fall_risk' => ['nullable','string','max:255'],
+            'choking_risk' => ['nullable','string','max:255'],
+            'pressure_ulcer_risk' => ['nullable','string','max:255'],
+            'wander_elopement_risk' => ['boolean'],
+
+            'safeguarding_flag' => ['boolean'],
+            'infection_control_flag' => ['boolean'],
+            'smoking_status' => ['nullable','string','max:255'],
+            'capacity_status' => ['nullable','string','max:255'],
+
+            'consent_obtained_at' => ['nullable','date'],
+            'dnacpr_status' => ['nullable','string','max:255'],
+            'dnacpr_review_date' => ['nullable','date'],
+            'dols_in_place' => ['boolean'],
+            'dols_approval_date' => ['nullable','date'],
+
+            'lpa_health_welfare' => ['boolean'],
+            'lpa_finance_property' => ['boolean'],
+            'advanced_decision_note' => ['nullable','string'],
+
+            'ethnicity' => ['nullable','string','max:255'],
+            'religion' => ['nullable','string','max:255'],
+            'primary_language' => ['nullable','string','max:255'],
+            'interpreter_required' => ['boolean'],
+
+            'personal_preferences' => ['nullable','string'],
+            'food_preferences' => ['nullable','string'],
+
+            'gp_practice_name' => ['nullable','string','max:255'],
+            'gp_contact_name' => ['nullable','string','max:255'],
+            'gp_phone' => ['nullable','string','max:255'],
+            'gp_email' => ['nullable','email','max:255'],
+            'gp_address' => ['nullable','string'],
+
+            'pharmacy_name' => ['nullable','string','max:255'],
+            'pharmacy_phone' => ['nullable','string','max:255'],
+
+            'tags' => ['nullable','string'],
         ];
     }
 }

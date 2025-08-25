@@ -117,11 +117,16 @@ Route::prefix('backend/admin')
 
 
     // Service Users (Admin)
-    Route::get('service-users/trashed', [ServiceUserController::class, 'trashed'])->name('service-users.trashed');
-    Route::post('service-users/{id}/restore', [ServiceUserController::class, 'restore'])->name('service-users.restore');
-    Route::delete('service-users/{id}/force-delete', [ServiceUserController::class, 'forceDelete'])->name('service-users.forceDelete');
+    // Trashed / restore / force-delete
+    Route::get('service-users/trashed', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'trashed'])
+        ->name('service-users.trashed');
+    Route::post('service-users/{id}/restore', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'restore'])
+        ->name('service-users.restore');
+    Route::delete('service-users/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'forceDelete'])
+        ->name('service-users.forceDelete');
 
-    Route::resource('service-users', ServiceUserController::class)->names([
+    // Resource
+    Route::resource('service-users', \App\Http\Controllers\Backend\Admin\ServiceUserController::class)->names([
         'index'   => 'service-users.index',
         'create'  => 'service-users.create',
         'store'   => 'service-users.store',

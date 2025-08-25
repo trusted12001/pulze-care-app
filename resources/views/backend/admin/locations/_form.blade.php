@@ -1,3 +1,7 @@
+@php
+  $isEdit = isset($location) && $location->exists;
+@endphp
+
 @csrf
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -6,7 +10,10 @@
     <input id="name" type="text" name="name"
            value="{{ old('name', $location->name ?? '') }}"
            class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2"
-           required>
+           @if ($isEdit)
+               {{ 'readonly' }}
+           @endif
+            required>
     @error('name') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
   </div>
 

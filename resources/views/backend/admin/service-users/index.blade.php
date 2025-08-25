@@ -5,31 +5,24 @@
 @section('content')
 <div class="min-h-screen p-0 rounded-lg">
 
-  {{-- Header --}}
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-3xl font-bold text-black">Service Users</h2>
     <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </div>
 
-  {{-- Flash / errors --}}
   @if(session('success'))
     <div class="mb-4 bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-md shadow-sm">
       {{ session('success') }}
     </div>
   @endif
 
-  {{-- Create button --}}
-  <div class="mb-4">
-    <a href="{{ route('backend.admin.service-users.create') }}"
-       class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
-       Create Service User
-    </a>
-  </div>
-
-  {{-- Table card --}}
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-semibold text-gray-800">Current Service Users</h3>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      <a href="{{ route('backend.admin.service-users.create') }}"
+         class="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition">
+        Add Service User
+      </a>
+
       <input type="text" id="suSearch" placeholder="Search..."
              class="border border-gray-300 px-3 py-2 rounded w-full sm:w-1/3 bg-gray-50" />
     </div>
@@ -38,51 +31,40 @@
       <table id="suTable" class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-800">
         <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
           <tr>
+            <th class="px-4 py-2">#</th>
             <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">DOB (Age)</th>
-            <th class="px-4 py-2">Location / Room</th>
+            <th class="px-4 py-2">DOB</th>
+            <th class="px-4 py-2">Location</th>
             <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">GP Practice</th>
+            <th class="px-4 py-2">Admission</th>
             <th class="px-4 py-2 text-right">Actions</th>
           </tr>
         </thead>
         <tbody class="text-sm text-gray-700">
           @forelse($serviceUsers as $su)
             @php
-              $status = $su->status ?? 'unknown';
-              $badge  = match($status) {
-                'active'     => 'bg-green-500',
-                'on_leave'   => 'bg-amber-500',
+              $badge = match($su->status) {
+                'active' => 'bg-green-500',
                 'discharged' => 'bg-gray-500',
-                'deceased'   => 'bg-red-600',
-                default      => 'bg-gray-400',
+                default => 'bg-amber-500',
               };
             @endphp
             <tr class="hover:bg-gray-50 border-t">
-              <td class="px-4 py-2">{{ $su->full_name }}</td>
-              <td class="px-4 py-2">
-                @if($su->date_of_birth)
-                  {{ $su->date_of_birth->format('d M Y') }} ({{ $su->age }}y)
-                @else — @endif
-              </td>
-              <td class="px-4 py-2">
-                {{ $su->location->name ?? '—' }}
-                @if($su->room_number) / Room {{ $su->room_number }} @endif
-              </td>
+              <td class="px-4 py-2">{{ $loop->iteration + ($serviceUsers->firstItem() - 1) }}</td>
+              <td class="px-4 py-2 font-medium">{{ $su->full_name }}</td>
+              <td class="px-4 py-2">{{ optional($su->date_of_birth)->format('d M Y') ?: '—' }}</td>
+              <td class="px-4 py-2">{{ $su->location->name ?: '—' }}</td>
               <td class="px-4 py-2">
                 <span class="inline-block px-2 py-1 rounded text-white text-xs {{ $badge }}">
-                  {{ ucfirst(str_replace('_',' ',$status)) }}
+                  {{ ucfirst($su->status) }}
                 </span>
               </td>
-              <td class="px-4 py-2">{{ $su->gp_practice_name ?? '—' }}</td>
+              <td class="px-4 py-2">{{ optional($su->admission_date)->format('d M Y') ?: '—' }}</td>
               <td class="px-4 py-2 text-right space-x-2">
-                <a href="{{ route('backend.admin.service-users.show', $su) }}"
-                   class="text-sm text-gray-600 hover:underline">View</a>
-                <a href="{{ route('backend.admin.service-users.edit', $su) }}"
-                   class="text-sm text-blue-600 hover:underline">Edit</a>
-                <form action="{{ route('backend.admin.service-users.destroy', $su) }}"
-                      method="POST" class="inline-block"
-                      onsubmit="return confirm('Move this service user to recycle bin?')">
+                <a href="{{ route('backend.admin.service-users.show', $su) }}" class="text-sm text-gray-600 hover:underline">View</a>
+                <a href="{{ route('backend.admin.service-users.edit', $su) }}" class="text-sm text-blue-600 hover:underline">Edit</a>
+                <form action="{{ route('backend.admin.service-users.destroy', $su) }}" method="POST" class="inline-block"
+                      onsubmit="return confirm('Move this service user to recycle bin?');">
                   @csrf @method('DELETE')
                   <button type="submit" class="text-sm text-red-600 hover:underline">Delete</button>
                 </form>
@@ -90,36 +72,33 @@
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="text-center px-4 py-6 text-gray-500">No service users found.</td>
+              <td colspan="7" class="text-center px-4 py-6 text-gray-500">No service users found.</td>
             </tr>
           @endforelse
         </tbody>
       </table>
 
-      {{-- Pagination --}}
-      @if(method_exists($serviceUsers, 'hasPages') && $serviceUsers->hasPages())
+      @if($serviceUsers->hasPages())
         <div class="mt-4">
           {{ $serviceUsers->links('vendor.pagination.tailwind') }}
         </div>
       @endif
     </div>
-  </div>
 
-  {{-- View Trash --}}
-  <div class="mt-4">
-    <a href="{{ route('backend.admin.service-users.trashed') }}"
-       class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 hover:underline">
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z"/>
-      </svg>
-      View Trash
-    </a>
+    <div class="mt-4">
+      <a href="{{ route('backend.admin.service-users.trashed') }}"
+         class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 hover:underline">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z"></path>
+        </svg>
+        View Trash
+      </a>
+    </div>
   </div>
 
 </div>
 
-{{-- Client-side filter --}}
 <script>
   (function () {
     const input = document.getElementById('suSearch');

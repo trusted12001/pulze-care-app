@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServiceUserRequest;
 use App\Http\Requests\UpdateServiceUserRequest;
 use App\Models\ServiceUser;
+use App\Models\Location;
 use Illuminate\Http\Request;
 
 class ServiceUserController extends Controller
@@ -15,34 +16,32 @@ class ServiceUserController extends Controller
         return (int) auth()->user()->tenant_id;
     }
 
+    protected function authorizeTenant(ServiceUser $su): void
+    {
+        abort_unless($su->tenant_id === $this->tenantId(), 404);
+    }
+
     public function index(Request $request)
     {
         $tenantId = $this->tenantId();
-        $search = trim((string) $request->get('q', ''));
 
-        $serviceUsers = ServiceUser::query()
-            ->where('tenant_id', $tenantId)
-            ->when($search !== '', function ($q) use ($search) {
-                $q->where(function ($w) use ($search) {
-                    $w->where('first_name', 'like', "%{$search}%")
-                      ->orWhere('last_name', 'like', "%{$search}%")
-                      ->orWhere('preferred_name', 'like', "%{$search}%")
-                      ->orWhere('nhs_number', 'like', "%{$search}%")
-                      ->orWhere('gp_practice_name', 'like', "%{$search}%");
-                });
-            })
-            ->latest('id')
+        $serviceUsers = ServiceUser::where('tenant_id', $tenantId)
+            ->with('location')
+            ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
 
-        return view('backend.admin.service-users.index', [
-            'serviceUsers' => $serviceUsers,
-        ]);
+        return view('backend.admin.service-users.index', compact('serviceUsers'));
     }
 
     public function create()
     {
-        return view('backend.admin.service-users.create');
+        $locations = Location::where('tenant_id', $this->tenantId())
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id','name','city','postcode']);
+
+        return view('backend.admin.service-users.create', compact('locations'));
     }
 
     public function store(StoreServiceUserRequest $request)
@@ -50,6 +49,7 @@ class ServiceUserController extends Controller
         $data = $request->validated();
         $data['tenant_id'] = $this->tenantId();
         $data['created_by'] = auth()->id();
+        $data['updated_by'] = auth()->id();
 
         ServiceUser::create($data);
 
@@ -58,47 +58,57 @@ class ServiceUserController extends Controller
             ->with('success', 'Service user created.');
     }
 
-    public function show(ServiceUser $serviceUser)
+    public function show(ServiceUser $service_user)
     {
-        $this->authorizeTenant($serviceUser);
-        return view('backend.admin.service-users.show', compact('serviceUser'));
+        $this->authorizeTenant($service_user);
+        $service_user->load('location');
+        return view('backend.admin.service-users.show', ['su' => $service_user]);
     }
 
-    public function edit(ServiceUser $serviceUser)
+    public function edit(ServiceUser $service_user)
     {
-        $this->authorizeTenant($serviceUser);
-        return view('backend.admin.service-users.edit', compact('serviceUser'));
+        $this->authorizeTenant($service_user);
+
+        $locations = Location::where('tenant_id', $this->tenantId())
+            ->where('status','active')
+            ->orderBy('name')
+            ->get(['id','name','city','postcode']);
+
+        return view('backend.admin.service-users.edit', [
+            'su' => $service_user,
+            'locations' => $locations,
+        ]);
     }
 
-    public function update(UpdateServiceUserRequest $request, ServiceUser $serviceUser)
+    public function update(UpdateServiceUserRequest $request, ServiceUser $service_user)
     {
-        $this->authorizeTenant($serviceUser);
+        $this->authorizeTenant($service_user);
 
         $data = $request->validated();
         $data['updated_by'] = auth()->id();
 
-        $serviceUser->update($data);
+        $service_user->update($data);
 
         return redirect()
             ->route('backend.admin.service-users.index')
             ->with('success', 'Service user updated.');
     }
 
-    public function destroy(ServiceUser $serviceUser)
+    public function destroy(ServiceUser $service_user)
     {
-        $this->authorizeTenant($serviceUser);
-        $serviceUser->delete();
+        $this->authorizeTenant($service_user);
+        $service_user->delete();
 
         return back()->with('success', 'Service user moved to recycle bin.');
     }
 
-    public function trashed(Request $request)
+    public function trashed()
     {
         $tenantId = $this->tenantId();
 
         $serviceUsers = ServiceUser::onlyTrashed()
             ->where('tenant_id', $tenantId)
-            ->latest('id')
+            ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
 
@@ -121,10 +131,5 @@ class ServiceUserController extends Controller
         $su->forceDelete();
 
         return back()->with('success', 'Service user permanently deleted.');
-    }
-
-    protected function authorizeTenant(ServiceUser $su): void
-    {
-        abort_unless($su->tenant_id === $this->tenantId(), 404);
     }
 }
