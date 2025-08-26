@@ -16,13 +16,17 @@
     </div>
   @endif
 
+  {{-- Create button --}}
+    <div class="mb-4">
+        <a href="{{ route('backend.admin.service-users.create') }}"
+        class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
+        Add Service User
+        </a>
+    </div>
+
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-      <a href="{{ route('backend.admin.service-users.create') }}"
-         class="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition">
-        Add Service User
-      </a>
-
+      <h3 class="text-2xl font-semibold text-gray-800">Service Users</h3>
       <input type="text" id="suSearch" placeholder="Search..."
              class="border border-gray-300 px-3 py-2 rounded w-full sm:w-1/3 bg-gray-50" />
     </div>
