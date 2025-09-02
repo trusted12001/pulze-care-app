@@ -6,7 +6,11 @@
 <div class="min-h-screen p-0 rounded-lg">
 
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-3xl font-bold text-black">Service Users</h2>
+        <a href="{{ route('backend.admin.service-users.create') }}"
+            class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
+            Add Service User
+        </a>
+
     <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </div>
 
@@ -16,17 +20,10 @@
     </div>
   @endif
 
-  {{-- Create button --}}
-    <div class="mb-4">
-        <a href="{{ route('backend.admin.service-users.create') }}"
-        class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
-        Add Service User
-        </a>
-    </div>
 
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-      <h3 class="text-2xl font-semibold text-gray-800">Service Users</h3>
+      <h3 class="text-2xl font-semibold text-gray-800">Service-Users</h3>
       <input type="text" id="suSearch" placeholder="Search..."
              class="border border-gray-300 px-3 py-2 rounded w-full sm:w-1/3 bg-gray-50" />
     </div>
@@ -65,6 +62,7 @@
               </td>
               <td class="px-4 py-2">{{ optional($su->admission_date)->format('d M Y') ?: '—' }}</td>
               <td class="px-4 py-2 text-right space-x-2">
+                <a href="{{ route('backend.admin.service-users.profile', $su) }}" class="text-sm font-bold text-amber-700 hover:underline">Profile</a>
                 <a href="{{ route('backend.admin.service-users.show', $su) }}" class="text-sm text-gray-600 hover:underline">View</a>
                 <a href="{{ route('backend.admin.service-users.edit', $su) }}" class="text-sm text-blue-600 hover:underline">Edit</a>
                 <form action="{{ route('backend.admin.service-users.destroy', $su) }}" method="POST" class="inline-block"
@@ -88,6 +86,8 @@
         </div>
       @endif
     </div>
+</div>
+
 
     <div class="mt-4">
       <a href="{{ route('backend.admin.service-users.trashed') }}"
@@ -99,7 +99,6 @@
         View Trash
       </a>
     </div>
-  </div>
 
 </div>
 

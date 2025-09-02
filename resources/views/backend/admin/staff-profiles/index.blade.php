@@ -7,7 +7,10 @@
 
   {{-- Header --}}
   <div class="flex justify-between items-center mb-7">
-    <h2 class="text-3xl font-bold text-black">Registered Staff</h2>
+    <a href="{{ route('backend.admin.staff-profiles.create') }}"
+       class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
+       Create Staff Profile
+    </a>
     <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </div>
 
@@ -28,18 +31,11 @@
     </div>
   @endif
 
-  {{-- Create button --}}
-  <div class="mb-4">
-    <a href="{{ route('backend.admin.staff-profiles.create') }}"
-       class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
-       Create Staff Profile
-    </a>
-  </div>
 
   {{-- Table card (match Manage Staff look/feel) --}}
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-semibold text-gray-800">Current Staff Profiles</h3>
+      <h3 class="text-2xl font-semibold text-gray-800">Profiles</h3>
       <input type="text" id="profileSearch" placeholder="Search..."
              class="border border-gray-300 px-3 py-2 rounded w-full sm:w-1/3 bg-gray-50" />
     </div>

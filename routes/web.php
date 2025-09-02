@@ -126,6 +126,9 @@ Route::prefix('backend/admin')
         ->name('service-users.forceDelete');
 
     // Resource
+    Route::get('service-users/{service_user}/profile', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'profile'])
+    ->name('service-users.profile');
+
     Route::resource('service-users', \App\Http\Controllers\Backend\Admin\ServiceUserController::class)->names([
         'index'   => 'service-users.index',
         'create'  => 'service-users.create',
@@ -151,6 +154,12 @@ Route::prefix('backend/admin')
         'update'  => 'locations.update',
         'destroy' => 'locations.destroy',
     ]);
+
+
+    // NEW: section-specific update endpoint
+    Route::patch('service-users/{service_user:id}/section/{section}',
+        [ServiceUserController::class, 'updateSection']
+    )->name('service-users.update-section');
 });
 
 

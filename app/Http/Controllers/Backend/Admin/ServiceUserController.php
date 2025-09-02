@@ -18,7 +18,13 @@ class ServiceUserController extends Controller
 
     protected function authorizeTenant(ServiceUser $su): void
     {
-        abort_unless($su->tenant_id === $this->tenantId(), 404);
+        \Log::info('Tenant check', [
+            'user_id' => auth()->id(),
+            'user_tenant' => auth()->user()->tenant_id ?? null,
+            'su_id' => $su->id,
+            'su_tenant' => $su->tenant_id,
+        ]);
+        abort_unless($su->tenant_id == $this->tenantId(), 404);
     }
 
     public function index(Request $request)
@@ -63,6 +69,13 @@ class ServiceUserController extends Controller
         $this->authorizeTenant($service_user);
         $service_user->load('location');
         return view('backend.admin.service-users.show', ['su' => $service_user]);
+    }
+
+    public function profile(ServiceUser $service_user)
+    {
+        $this->authorizeTenant($service_user);
+        $service_user->load('location');
+        return view('backend.admin.service-users.profile', ['su' => $service_user]);
     }
 
     public function edit(ServiceUser $service_user)
@@ -132,4 +145,77 @@ class ServiceUserController extends Controller
 
         return back()->with('success', 'Service user permanently deleted.');
     }
+
+
+    // public function updateSection(UpdateServiceUserRequest $request, ServiceUser $service_user, string $section)
+    // {
+    //     $this->authorizeTenant($service_user);
+
+    //     $data = $request->validated();
+
+    //     // Optional: normalize NHS number (strip spaces)
+    //     if (array_key_exists('nhs_number', $data) && $data['nhs_number'] !== null) {
+    //         $data['nhs_number'] = preg_replace('/\s+/', '', $data['nhs_number']);
+    //     }
+
+    //     // Coerce booleans for checkbox fields if your form posts "on"/null
+    //     foreach ([
+    //         'behaviour_support_plan','seizure_care_plan','diabetes_care_plan','oxygen_therapy',
+    //         'wander_elopement_risk','safeguarding_flag','infection_control_flag',
+    //         'dols_in_place','lpa_health_welfare','lpa_finance_property',
+    //         'interpreter_required',
+    //     ] as $boolField) {
+    //         if ($request->has($boolField)) {
+    //             $data[$boolField] = (bool) $request->boolean($boolField);
+    //         }
+    //     }
+
+    //     $data['updated_by'] = auth()->id();
+
+    //     $service_user->fill($data)->save();
+
+    //     return back()->with('success', ucfirst(str_replace('_', ' ', $section)).' updated.');
+    // }
+
+    public function updateSection(UpdateServiceUserRequest $request, ServiceUser $service_user, string $section)
+    {
+        $this->authorizeTenant($service_user);
+
+        $data = $request->validated();
+
+        // Normalize NHS number
+        if (array_key_exists('nhs_number', $data) && $data['nhs_number'] !== null) {
+            $data['nhs_number'] = preg_replace('/\s+/', '', $data['nhs_number']);
+        }
+
+        // Coerce booleans
+        foreach ([
+            'behaviour_support_plan','seizure_care_plan','diabetes_care_plan','oxygen_therapy',
+            'wander_elopement_risk','safeguarding_flag','infection_control_flag',
+            'dols_in_place','lpa_health_welfare','lpa_finance_property',
+            'interpreter_required',
+        ] as $boolField) {
+            if ($request->has($boolField)) {
+                $data[$boolField] = (bool) $request->boolean($boolField);
+            }
+        }
+
+        // NEW: tags — accept comma string, store valid JSON array
+        if ($section === 'tags' && $request->filled('tags')) {
+            $raw = $request->string('tags')->toString();
+
+            // split on commas/semicolons, trim, remove empties & dups
+            $arr = array_values(array_unique(array_filter(array_map('trim', preg_split('/[,;]+/', $raw)))));
+
+            // store as JSON (valid for CHECK json_valid(tags))
+            $data['tags'] = json_encode($arr, JSON_UNESCAPED_UNICODE);
+        }
+
+        $data['updated_by'] = auth()->id();
+
+        $service_user->fill($data)->save();
+
+        return back()->with('success', ucfirst(str_replace('_', ' ', $section)).' updated.');
+    }
+
 }

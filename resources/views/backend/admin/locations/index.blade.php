@@ -6,8 +6,12 @@
 <div class="min-h-screen p-0 rounded-lg">
 
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-3xl font-bold text-black">Locations</h2>
-    <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+        <a href="{{ route('backend.admin.locations.create') }}"
+        class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
+        Add New Location
+        </a>
+
+        <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </div>
 
   @if(session('success'))
@@ -16,13 +20,6 @@
     </div>
   @endif
 
-    {{-- Create button --}}
-    <div class="mb-4">
-        <a href="{{ route('backend.admin.locations.create') }}"
-        class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
-        Add New Location
-        </a>
-    </div>
 
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
