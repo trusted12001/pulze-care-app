@@ -23,11 +23,20 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'other_names',
         'email',
         'password',
+        'tenant_id',
         'status',
     ];
+
+
+      protected $appends = [
+        'full_name',
+    ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -62,6 +71,16 @@ class User extends Authenticatable
     public function staffProfile(): HasOne
     {
         return $this->hasOne(\App\Models\StaffProfile::class);
+    }
+
+
+     public function getFullNameAttribute(): string
+    {
+        return trim(implode(' ', array_filter([
+            $this->first_name,
+            $this->other_names,
+            $this->last_name,
+        ])));
     }
 
 

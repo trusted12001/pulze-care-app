@@ -22,10 +22,30 @@
           @csrf
 
           <div class="input-field-item">
-            <p>Full Name</p>
+            <p>First Name</p>
             <div class="input-field">
-              <input type="text" name="name" value="{{ old('name') }}" required placeholder="Your full name" />
-              @error('name')
+              <input type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="Your full first name" />
+              @error('first_name')
+                <span class="text-danger text-sm">{{ $message }}</span>
+              @enderror
+            </div>
+          </div>
+
+          <div class="input-field-item">
+            <p>Last Name</p>
+            <div class="input-field">
+              <input type="text" name="last_name" value="{{ old('last_name') }}" required placeholder="Your full last name" />
+              @error('last_name')
+                <span class="text-danger text-sm">{{ $message }}</span>
+              @enderror
+            </div>
+          </div>
+
+          <div class="input-field-item">
+            <p>Other Names</p>
+            <div class="input-field">
+              <input type="text" name="other_names" value="{{ old('other_names') }}" required placeholder="Your full other names" />
+              @error('other_names')
                 <span class="text-danger text-sm">{{ $message }}</span>
               @enderror
             </div>

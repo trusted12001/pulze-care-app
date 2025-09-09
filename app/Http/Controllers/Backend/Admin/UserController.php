@@ -24,7 +24,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
+            'first_name'     => 'required|string|max:255',
+            'last_name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'status'   => 'required|in:active,inactive',
@@ -32,7 +33,9 @@ class UserController extends Controller
         ]);
 
         $user = new User();
-        $user->name      = $request->name;
+        $user->first_name      = $request->first_name;
+        $user->last_name      = $request->last_name;
+        $user->other_names      = $request->other_names;
         $user->email     = $request->email;
         $user->password  = bcrypt($request->password);
         $user->status    = $request->status;
@@ -64,14 +67,17 @@ class UserController extends Controller
         $this->authorizeAccess($user);
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name'     => 'required|string|max:255',
+            'last_name'     => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'status' => 'required|in:active,inactive',
             'role' => 'required|in:admin,carer',
         ]);
 
         $user->update([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'other_names' => $request->other_names,
             'email' => $request->email,
             'status' => $request->status,
         ]);
@@ -92,7 +98,7 @@ class UserController extends Controller
         return back()->with('success', 'User deleted successfully.');
     }
 
-    
+
    public function trashed()
     {
         $users = User::onlyTrashed()
@@ -102,7 +108,7 @@ class UserController extends Controller
 
         return view('backend.admin.users.trashed', compact('users'));
     }
-    
+
     public function restore($id)
     {
         $user = User::onlyTrashed()->findOrFail($id);

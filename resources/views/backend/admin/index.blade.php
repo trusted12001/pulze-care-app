@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- Responsive Title -->
-<p>Logged in as: <strong>{{ Auth::user()->name }}!</strong> </p>
+<p>Logged in as: <strong>{{ Auth::user()->full_name }}!</strong> </p>
 
 <div class="dashboard-cards">
   <!-- 1. Core Staff & Service User Management -->

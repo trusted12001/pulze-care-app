@@ -18,7 +18,7 @@
       <div>
         <h4 class="text-sm text-gray-500">Name</h4>
         <p class="text-lg font-semibold text-gray-800">
-          {{ $staffProfile->user->name ?? '—' }}
+          {{ $staffProfile->user->full_name ?? '—' }}
         </p>
       </div>
 

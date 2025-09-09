@@ -34,8 +34,18 @@
       @csrf
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block mb-1 font-medium text-gray-800">Name</label>
-          <input name="name" value="{{ old('name') }}" required
+          <label class="block mb-1 font-medium text-gray-800">First Name</label>
+          <input name="first_name" value="{{ old('first_name') }}" required
+                 class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2" />
+        </div>
+        <div>
+          <label class="block mb-1 font-medium text-gray-800">Last Name</label>
+          <input name="last_name" value="{{ old('last_name') }}" required
+                 class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2" />
+        </div>
+        <div>
+          <label class="block mb-1 font-medium text-gray-800">Other Names</label>
+          <input name="other_names" value="{{ old('other_names') }}"
                  class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2" />
         </div>
         <div>
@@ -104,7 +114,7 @@
           @forelse($users as $user)
           <tr class="hover:bg-gray-50 border-t">
             <td class="px-4 py-2">{{ $loop->iteration }}</td>
-            <td class="px-4 py-2">{{ $user->name }}</td>
+            <td class="px-4 py-2">{{ $user->full_name }}</td>
             <td class="px-4 py-2">{{ $user->email }}</td>
             <td class="px-4 py-2">{{ $user->getRoleNames()->first() ?? 'None' }}</td>
             <td class="px-4 py-2">

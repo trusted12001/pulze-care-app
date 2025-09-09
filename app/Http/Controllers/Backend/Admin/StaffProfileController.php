@@ -102,8 +102,8 @@ class StaffProfileController extends Controller
                 $q->whereDoesntHave('staffProfile')
                   ->orWhere('id', $staffProfile->user_id);
             })
-            ->orderBy('name')
-            ->get(['id', 'name', 'email']);
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
         return view('backend.admin.staff-profiles.edit', compact('staffProfile', 'users'));
     }

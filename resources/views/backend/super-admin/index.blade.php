@@ -3,7 +3,7 @@
 @section('title', 'Super Admin Dashboard')
 
 @section('content')
-<p>Logged in as: <strong>{{ Auth::user()->name }}!</strong></p>
+<p>Logged in as: <strong>{{ Auth::user()->full_name }}!</strong></p>
 
 <div class="dashboard-cards">
 

@@ -16,7 +16,7 @@
         @foreach($users as $u)
           <option value="{{ $u->id }}"
             {{ (string)old('user_id', $staffProfile->user_id ?? '') === (string)$u->id ? 'selected' : '' }}>
-            {{ $u->name }} — {{ $u->email }}
+            {{ $u->full_name }} — {{ $u->email }}
           </option>
         @endforeach
       </select>
@@ -25,7 +25,7 @@
     @else
       {{-- EDIT: lock field (disabled display + hidden id for submission) --}}
       <input type="text"
-             value="{{ ($staffProfile->user->name ?? '—') . ' — ' . ($staffProfile->user->email ?? '—') }}"
+             value="{{ ($staffProfile->user->full_name ?? '—') . ' — ' . ($staffProfile->user->email ?? '—') }}"
              class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-2 cursor-not-allowed"
              disabled>
       {{-- <input type="hidden" name="user_id" value="{{ old('user_id', $staffProfile->user_id) }}"> --}}

@@ -62,7 +62,7 @@
               </td>
               <td class="px-4 py-2">{{ optional($su->admission_date)->format('d M Y') ?: '—' }}</td>
               <td class="px-4 py-2 text-right space-x-2">
-                <a href="{{ route('backend.admin.service-users.profile', $su) }}" class="text-sm font-bold text-amber-700 hover:underline">Profile</a>
+                <a href="{{ route('backend.admin.service-users.profile', $su) }}" class="text-sm font-bold text-amber-700 hover:underline">Complete-Profile</a>
                 <a href="{{ route('backend.admin.service-users.show', $su) }}" class="text-sm text-gray-600 hover:underline">View</a>
                 <a href="{{ route('backend.admin.service-users.edit', $su) }}" class="text-sm text-blue-600 hover:underline">Edit</a>
                 <form action="{{ route('backend.admin.service-users.destroy', $su) }}" method="POST" class="inline-block"

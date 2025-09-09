@@ -25,7 +25,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
+            'first_name'     => 'required|string|max:255',
+            'last_name'     => 'required|string|max:255',
+            'other_names'     => 'nullable|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'status'   => 'required|in:active,inactive',
@@ -33,7 +35,9 @@ class UserController extends Controller
         ]);
 
         $user = User::create([
-            'name'      => $data['name'],
+            'first_name'      => $data['first_name'],
+            'last_name'      => $data['last_name'],
+            'other_names'      => $data['other_names'],
             'email'     => $data['email'],
             'password'  => Hash::make($data['password']),
             'status'    => $data['status'],
@@ -64,14 +68,18 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name'     => 'required|string|max:255',
+            'last_name'     => 'required|string|max:255',
+            'other_names'     => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'status' => 'required|in:active,inactive',
             'role' => 'required|exists:roles,name',
         ]);
 
         $user->update([
-            'name' => $data['name'],
+            'first_name'      => $data['first_name'],
+            'last_name'      => $data['last_name'],
+            'other_names'      => $data['other_names'],
             'email' => $data['email'],
             'status' => $data['status'],
         ]);
