@@ -8,36 +8,50 @@ use Illuminate\Support\Facades\Auth;
 
 class UpdateStaffProfileRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return Auth::check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        $id = $this->route('staff_profile'); // or param name you choose
         return [
-            'user_id' => ['prohibited'],
-            'job_title' => ['nullable','string','max:120'],
-            'employment_status' => ['required','in:active,on_leave,terminated'],
-            'dbs_number' => ['nullable','string','max:50'],
-            'dbs_issued_at' => ['nullable','date'],
-            'mandatory_training_completed_at' => ['nullable','date'],
-            'nmc_pin' => ['nullable','string','max:50'],
-            'gphc_pin' => ['nullable','string','max:50'],
-            'right_to_work_verified_at' => ['nullable','date'],
-            'phone' => ['nullable','string','max:40'],
-            'work_email' => ['nullable','email','max:190'],
-            'notes' => ['nullable','string'],
+            // Keep user locked after creation
+            'user_id'            => ['prohibited'],
 
+            // Core HR
+            'employment_status'  => ['required','in:active,on_leave,inactive'],
+            'employment_type'    => ['required','in:employee,worker,contractor,bank,agency'],
+            'engagement_basis'   => ['required','in:full_time,part_time,casual,zero_hours'],
+            'job_title'          => ['nullable','string','max:120'],
+            'date_of_birth'      => ['required','date','before:today'],
+
+            // Dates
+            'hire_date'          => ['nullable','date'],
+            'start_in_post'      => ['nullable','date'],
+            'end_in_post'        => ['nullable','date','after_or_equal:start_in_post'],
+
+            // Structure
+            'work_location_id'    => ['nullable','integer'],
+            'line_manager_user_id'=> ['nullable','integer','exists:users,id'],
+
+            // Compliance
+            'dbs_number'         => ['nullable','string','max:100'],
+            'dbs_issued_at'      => ['nullable','date'],
+            'dbs_update_service' => ['nullable','boolean'],
+            'mandatory_training_completed_at' => ['nullable','date'],
+            'right_to_work_verified_at'       => ['nullable','date'],
+
+            // Registrations
+            'nmc_pin'            => ['nullable','string','max:100'],
+            'gphc_pin'           => ['nullable','string','max:100'],
+
+            // Contact
+            'phone'              => ['nullable','string','max:40'],
+            'work_email'         => ['nullable','email','max:190'],
+
+            // Notes
+            'notes'              => ['nullable','string'],
         ];
     }
 }

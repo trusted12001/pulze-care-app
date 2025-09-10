@@ -11,17 +11,11 @@ use Illuminate\Http\Request;
 
 class StaffProfileController extends Controller
 {
-    /**
-     * Convenience helper for current user's tenant id.
-     */
     private function tenantId(): int
     {
         return (int) auth()->user()->tenant_id;
     }
 
-    /**
-     * List staff profiles (with search + pagination) for current tenant.
-     */
     public function index(Request $request)
     {
         $tenantId = $this->tenantId();
@@ -29,13 +23,17 @@ class StaffProfileController extends Controller
 
         $profiles = StaffProfile::query()
             ->where('tenant_id', $tenantId)
-            ->with('user')
+            ->with(['user'])
             ->when($search !== '', function ($q) use ($search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('job_title', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($uq) use ($search) {
-                            $uq->where('name', 'like', "%{$search}%")
-                               ->orWhere('email', 'like', "%{$search}%");
+                $like = "%{$search}%";
+                $q->where(function ($sub) use ($like) {
+                    $sub->where('job_title', 'like', $like)
+                        ->orWhereHas('user', function ($uq) use ($like) {
+                            $uq->where('email', 'like', $like)
+                               ->orWhere('first_name', 'like', $like)
+                               ->orWhere('last_name', 'like', $like)
+                               ->orWhere('other_names', 'like', $like)
+                               ->orWhereRaw("CONCAT_WS(' ', first_name, other_names, last_name) LIKE ?", [$like]);
                         });
                 });
             })
@@ -49,23 +47,29 @@ class StaffProfileController extends Controller
         ]);
     }
 
-    /**
-     * Show create form. Lists tenant users who don't yet have a staff profile.
-     */
     public function create()
     {
-        $users = User::query()
-            ->where('tenant_id', $this->tenantId())
-            ->whereDoesntHave('staffProfile')
-            ->orderBy('name')
-            ->get(['id', 'name', 'email']);
+        $tenantId = $this->tenantId();
 
-        return view('backend.admin.staff-profiles.create', compact('users'));
+        $users = User::query()
+            ->where('tenant_id', $tenantId)
+            ->whereDoesntHave('staffProfile')
+            ->orderBy('first_name')
+            ->get(['id','first_name','last_name','other_names','email']);
+
+        // Optional: Locations & Managers (for new fields)
+        $locations = class_exists(\App\Models\Location::class)
+            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id','name'])
+            : collect();
+
+        $managers = User::query()
+            ->where('tenant_id', $tenantId)
+            ->orderBy('first_name')
+            ->get(['id','first_name','last_name','other_names','email']);
+
+        return view('backend.admin.staff-profiles.create', compact('users','locations','managers'));
     }
 
-    /**
-     * Persist a new staff profile.
-     */
     public function store(StoreStaffProfileRequest $request)
     {
         StaffProfile::create([
@@ -78,9 +82,6 @@ class StaffProfileController extends Controller
             ->with('success', 'Staff profile created.');
     }
 
-    /**
-     * Show a single staff profile (tenant-guarded).
-     */
     public function show(StaffProfile $staffProfile)
     {
         $this->authorizeTenant($staffProfile);
@@ -88,29 +89,33 @@ class StaffProfileController extends Controller
         return view('backend.admin.staff-profiles.show', compact('staffProfile'));
     }
 
-    /**
-     * Edit form with user selection limited to current tenant.
-     */
     public function edit(StaffProfile $staffProfile)
     {
         $this->authorizeTenant($staffProfile);
 
+        $tenantId = $this->tenantId();
+
         $users = User::query()
-            ->where('tenant_id', $this->tenantId())
+            ->where('tenant_id', $tenantId)
             ->where(function ($q) use ($staffProfile) {
-                // Allow current linked user OR anyone without a profile
                 $q->whereDoesntHave('staffProfile')
                   ->orWhere('id', $staffProfile->user_id);
             })
             ->orderBy('first_name')
-            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
+            ->get(['id','first_name','last_name','other_names','email']);
 
-        return view('backend.admin.staff-profiles.edit', compact('staffProfile', 'users'));
+        $locations = class_exists(\App\Models\Location::class)
+            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id','name'])
+            : collect();
+
+        $managers = User::query()
+            ->where('tenant_id', $tenantId)
+            ->orderBy('first_name')
+            ->get(['id','first_name','last_name','other_names','email']);
+
+        return view('backend.admin.staff-profiles.edit', compact('staffProfile','users','locations','managers'));
     }
 
-    /**
-     * Update a staff profile.
-     */
     public function update(UpdateStaffProfileRequest $request, StaffProfile $staffProfile)
     {
         $this->authorizeTenant($staffProfile);
@@ -122,9 +127,6 @@ class StaffProfileController extends Controller
             ->with('success', 'Staff profile updated.');
     }
 
-    /**
-     * Soft delete to trash.
-     */
     public function destroy(StaffProfile $staffProfile)
     {
         $this->authorizeTenant($staffProfile);
@@ -134,9 +136,6 @@ class StaffProfileController extends Controller
         return back()->with('success', 'Staff profile moved to recycle bin.');
     }
 
-    /**
-     * List trashed profiles (optional UI).
-     */
     public function trashed(Request $request)
     {
         $tenantId = $this->tenantId();
@@ -146,11 +145,15 @@ class StaffProfileController extends Controller
             ->where('tenant_id', $tenantId)
             ->with('user')
             ->when($search !== '', function ($q) use ($search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('job_title', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($uq) use ($search) {
-                            $uq->where('name', 'like', "%{$search}%")
-                               ->orWhere('email', 'like', "%{$search}%");
+                $like = "%{$search}%";
+                $q->where(function ($sub) use ($like) {
+                    $sub->where('job_title', 'like', $like)
+                        ->orWhereHas('user', function ($uq) use ($like) {
+                            $uq->where('email', 'like', $like)
+                               ->orWhere('first_name', 'like', $like)
+                               ->orWhere('last_name', 'like', $like)
+                               ->orWhere('other_names', 'like', $like)
+                               ->orWhereRaw("CONCAT_WS(' ', first_name, other_names, last_name) LIKE ?", [$like]);
                         });
                 });
             })
@@ -162,12 +165,8 @@ class StaffProfileController extends Controller
             'profiles' => $profiles,
             'search'   => $search,
         ]);
-
     }
 
-    /**
-     * Restore a soft-deleted profile.
-     */
     public function restore(int $id)
     {
         $profile = StaffProfile::onlyTrashed()->findOrFail($id);
@@ -178,9 +177,6 @@ class StaffProfileController extends Controller
         return back()->with('success', 'Staff profile restored.');
     }
 
-    /**
-     * Permanently delete a soft-deleted profile.
-     */
     public function forceDelete(int $id)
     {
         $profile = StaffProfile::onlyTrashed()->findOrFail($id);
@@ -191,9 +187,6 @@ class StaffProfileController extends Controller
         return back()->with('success', 'Staff profile permanently deleted.');
     }
 
-    /**
-     * Guard every model operation by tenant.
-     */
     protected function authorizeTenant(StaffProfile $p): void
     {
         abort_unless($p->tenant_id === $this->tenantId(), 404);

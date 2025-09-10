@@ -7,7 +7,6 @@
   <h2 class="text-3xl font-bold text-black">Create Staff Profile</h2>
 </div>
 
-{{-- Optional top-level error summary --}}
 @if ($errors->any())
   <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
     <strong>Please fix the following:</strong>
@@ -19,17 +18,12 @@
   </div>
 @endif
 
-
 <form method="POST" action="{{ route('backend.admin.staff-profiles.store') }}" class="bg-white p-6 rounded-lg shadow border border-gray-200">
   @csrf
-
-    @php
-        $page = "create";
-    @endphp
-
   @include('backend.admin.staff-profiles._form', [
     'users' => $users,
-    // no $staffProfile here (create mode)
+    'locations' => $locations ?? collect(),
+    'managers' => $managers ?? collect(),
   ])
 </form>
 @endsection

@@ -21,20 +21,14 @@
     </div>
   @endif
 
-  <form method="POST"
-        action="{{ route('backend.admin.staff-profiles.update', $staffProfile) }}"
-        class="bg-white p-6 rounded-lg shadow border border-gray-200">
+  <form method="POST" action="{{ route('backend.admin.staff-profiles.update', $staffProfile) }}" class="bg-white p-6 rounded-lg shadow border border-gray-200">
     @csrf
     @method('PUT')
-
-    @php
-        $page = "edit";
-    @endphp
-
     @include('backend.admin.staff-profiles._form', [
       'users' => $users,
-      'staffProfile' => $staffProfile,      // enables prefill
-      'lockUser' => true,                   // <-- tell the partial to lock user field
+      'staffProfile' => $staffProfile,
+      'locations' => $locations ?? collect(),
+      'managers' => $managers ?? collect(),
     ])
   </form>
 </div>

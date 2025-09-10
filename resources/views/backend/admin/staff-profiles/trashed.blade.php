@@ -5,13 +5,11 @@
 @section('content')
 <div class="min-h-screen p-0 rounded-lg">
 
-  {{-- Header --}}
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-3xl font-bold text-black">Staff Profiles — Trash</h2>
     <a href="{{ route('backend.admin.staff-profiles.index') }}" class="text-blue-600 hover:underline">← Back to List</a>
   </div>
 
-  {{-- Table card --}}
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-2xl font-semibold text-gray-800">Deleted Staff Profiles</h3>
@@ -35,22 +33,21 @@
           @forelse($profiles as $p)
             <tr class="hover:bg-gray-50 border-t">
               <td class="px-4 py-2">{{ $loop->iteration + ($profiles->firstItem() - 1) }}</td>
-              <td class="px-4 py-2">{{ $p->user->name ?? '—' }}</td>
+              <td class="px-4 py-2">{{ $p->user->full_name ?? '—' }}</td>
               <td class="px-4 py-2">{{ $p->user->email ?? '—' }}</td>
               <td class="px-4 py-2">{{ $p->job_title ?? '—' }}</td>
               <td class="px-4 py-2">{{ optional($p->deleted_at)->format('d M Y H:i') }}</td>
               <td class="px-4 py-2 text-right space-x-2">
-                <form action="{{ route('backend.admin.staff-profiles.restore', $p->id) }}"
-                      method="POST" class="inline-block">
+                <form action="{{ route('backend.admin.staff-profiles.restore', $p->id) }}" method="POST" class="inline-block">
                   @csrf
-                  <button class="text-sm text-green-700 hover:underline">Restore</button>
+                  <button class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700">Restore</button>
                 </form>
 
                 <form action="{{ route('backend.admin.staff-profiles.forceDelete', $p->id) }}"
                       method="POST" class="inline-block"
                       onsubmit="return confirm('Permanently delete this staff profile? This cannot be undone.');">
                   @csrf @method('DELETE')
-                  <button class="text-sm text-red-700 hover:underline">Delete Permanently</button>
+                  <button class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">Delete Permanently</button>
                 </form>
               </td>
             </tr>
@@ -62,7 +59,6 @@
         </tbody>
       </table>
 
-      {{-- Pagination --}}
       @if(method_exists($profiles, 'hasPages') && $profiles->hasPages())
         <div class="mt-4">
           {{ $profiles->links('vendor.pagination.tailwind') }}
@@ -72,7 +68,6 @@
   </div>
 </div>
 
-{{-- Client-side search --}}
 <script>
   (function () {
     const input = document.getElementById('trashSearch');

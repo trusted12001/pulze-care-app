@@ -5,7 +5,6 @@
 @section('content')
 <div class="min-h-screen p-0 rounded-lg">
 
-  {{-- Header --}}
   <div class="flex justify-between items-center mb-7">
     <a href="{{ route('backend.admin.staff-profiles.create') }}"
        class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
@@ -14,7 +13,7 @@
     <a href="{{ route('backend.admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </div>
 
-  {{-- Feedback Messages (same pattern as Manage Staff) --}}
+
   @if(session('success'))
     <div class="mb-4 bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-md shadow-sm">
       {{ session('success') }}
@@ -31,8 +30,6 @@
     </div>
   @endif
 
-
-  {{-- Table card (match Manage Staff look/feel) --}}
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-2xl font-semibold text-gray-800">Profiles</h3>
@@ -73,9 +70,10 @@
                 </span>
               </td>
               <td class="px-4 py-2">{{ $p->dbs_number ? 'Yes' : 'No' }}</td>
+
               <td class="px-4 py-2 text-right space-x-2">
                 <a href="{{ route('backend.admin.staff-profiles.show', $p) }}"
-                   class="text-sm text-gray-600 hover:underline">View</a>
+                   class="text-sm text-green-600 font-bold hover:underline">Open</a>
                 <a href="{{ route('backend.admin.staff-profiles.edit', $p) }}"
                    class="text-sm text-blue-600 hover:underline">Edit</a>
                 <form action="{{ route('backend.admin.staff-profiles.destroy', $p) }}"
@@ -95,7 +93,6 @@
         </tbody>
       </table>
 
-      {{-- Pagination (same renderer as Manage Staff) --}}
       @if(method_exists($profiles, 'hasPages') && $profiles->hasPages())
         <div class="mt-4">
           {{ $profiles->links('vendor.pagination.tailwind') }}
@@ -104,7 +101,6 @@
     </div>
   </div>
 
-  {{-- View Trash link --}}
   <div class="mt-4">
     <a href="{{ route('backend.admin.staff-profiles.trashed') }}"
        class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 hover:underline">
@@ -118,7 +114,6 @@
 
 </div>
 
-{{-- Client-side filter (like Manage Staff) --}}
 <script>
   (function () {
     const input = document.getElementById('profileSearch');
@@ -127,7 +122,6 @@
     input.addEventListener('keyup', function () {
       const term = this.value.toLowerCase();
       const rows = document.querySelectorAll('#profilesTable tbody tr');
-
       rows.forEach(row => {
         const text = row.innerText.toLowerCase();
         row.style.display = text.includes(term) ? '' : 'none';

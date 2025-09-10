@@ -12,6 +12,11 @@ use App\Http\Controllers\Backend\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Backend\Admin\StaffProfileController;
 use App\Http\Controllers\Backend\Admin\ServiceUserController;
 
+use App\Http\Controllers\Backend\Admin\StaffContractController;
+use App\Http\Controllers\Backend\Admin\StaffRegistrationController;
+use App\Http\Controllers\Backend\Admin\StaffEmploymentCheckController;
+use App\Http\Controllers\Backend\Admin\StaffVisaController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +165,31 @@ Route::prefix('backend/admin')
     Route::patch('service-users/{service_user:id}/section/{section}',
         [ServiceUserController::class, 'updateSection']
     )->name('service-users.update-section');
+
+
+
+    // Nested resources under staff-profiles
+    Route::resource('staff-profiles.contracts', StaffContractController::class)
+        ->parameters(['staff-profiles' => 'staffProfile'])
+        ->except(['show']);
+
+    Route::resource('staff-profiles.registrations', StaffRegistrationController::class)
+        ->parameters(['staff-profiles' => 'staffProfile'])
+        ->except(['show']);
+
+    Route::resource('staff-profiles.employment-checks', StaffEmploymentCheckController::class)
+        ->parameters(['staff-profiles' => 'staffProfile'])
+        ->except(['show']);
+
+    Route::resource('staff-profiles.visas', StaffVisaController::class)
+        ->parameters(['staff-profiles' => 'staffProfile'])
+        ->except(['show']);
+
+
+
+
+
+
 });
 
 
@@ -174,5 +204,8 @@ Route::middleware(['auth', 'role:carer'])
     ->group(function () {
         Route::view('/carer', 'frontend.carer.index')->name('carer.index');
     });
+
+
+
 
 require __DIR__.'/auth.php';
