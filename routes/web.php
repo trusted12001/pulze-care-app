@@ -12,10 +12,27 @@ use App\Http\Controllers\Backend\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Backend\Admin\StaffProfileController;
 use App\Http\Controllers\Backend\Admin\ServiceUserController;
 
+use App\Http\Controllers\Backend\Admin\StaffAdjustmentController;
+use App\Http\Controllers\Backend\Admin\StaffDrivingLicenceController;
+
 use App\Http\Controllers\Backend\Admin\StaffContractController;
 use App\Http\Controllers\Backend\Admin\StaffRegistrationController;
 use App\Http\Controllers\Backend\Admin\StaffEmploymentCheckController;
 use App\Http\Controllers\Backend\Admin\StaffVisaController;
+use App\Http\Controllers\Backend\Admin\StaffTrainingRecordController;
+use App\Http\Controllers\Backend\Admin\StaffSupervisionAppraisalController;
+use App\Http\Controllers\Backend\Admin\StaffQualificationController;
+use App\Http\Controllers\Backend\Admin\StaffOccHealthClearanceController;
+use App\Http\Controllers\Backend\Admin\StaffImmunisationController;
+use App\Http\Controllers\Backend\Admin\StaffPayrollController;
+use App\Http\Controllers\Backend\Admin\StaffBankAccountController;
+use App\Http\Controllers\Backend\Admin\StaffLeaveRecordController;
+use App\Http\Controllers\Backend\Admin\StaffLeaveEntitlementController;
+use App\Http\Controllers\Backend\Admin\StaffAvailabilityPreferenceController;
+use App\Http\Controllers\Backend\Admin\StaffEmergencyContactController;
+use App\Http\Controllers\Backend\Admin\StaffEqualityDataController;
+use App\Http\Controllers\Backend\Admin\StaffDisciplinaryRecordController;
+use App\Http\Controllers\Backend\Admin\StaffDocumentController;
 
 
 /*
@@ -121,73 +138,152 @@ Route::prefix('backend/admin')
         ]);
 
 
-    // Service Users (Admin)
-    // Trashed / restore / force-delete
-    Route::get('service-users/trashed', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'trashed'])
-        ->name('service-users.trashed');
-    Route::post('service-users/{id}/restore', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'restore'])
-        ->name('service-users.restore');
-    Route::delete('service-users/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'forceDelete'])
-        ->name('service-users.forceDelete');
+        // Service Users (Admin)
+        // Trashed / restore / force-delete
+        Route::get('service-users/trashed', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'trashed'])
+            ->name('service-users.trashed');
+        Route::post('service-users/{id}/restore', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'restore'])
+            ->name('service-users.restore');
+        Route::delete('service-users/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'forceDelete'])
+            ->name('service-users.forceDelete');
 
-    // Resource
-    Route::get('service-users/{service_user}/profile', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'profile'])
-    ->name('service-users.profile');
+        // Resource
+        Route::get('service-users/{service_user}/profile', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'profile'])
+        ->name('service-users.profile');
 
-    Route::resource('service-users', \App\Http\Controllers\Backend\Admin\ServiceUserController::class)->names([
-        'index'   => 'service-users.index',
-        'create'  => 'service-users.create',
-        'store'   => 'service-users.store',
-        'show'    => 'service-users.show',
-        'edit'    => 'service-users.edit',
-        'update'  => 'service-users.update',
-        'destroy' => 'service-users.destroy',
-    ]);
-
-
-    // Location Setup (Admin)
-    Route::get('locations/trashed', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'trashed'])->name('locations.trashed');
-    Route::post('locations/{id}/restore', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'restore'])->name('locations.restore');
-    Route::delete('locations/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'forceDelete'])->name('locations.forceDelete');
-
-    Route::resource('locations', \App\Http\Controllers\Backend\Admin\LocationController::class)->names([
-        'index'   => 'locations.index',
-        'create'  => 'locations.create',
-        'store'   => 'locations.store',
-        'show'    => 'locations.show',
-        'edit'    => 'locations.edit',
-        'update'  => 'locations.update',
-        'destroy' => 'locations.destroy',
-    ]);
+        Route::resource('service-users', \App\Http\Controllers\Backend\Admin\ServiceUserController::class)->names([
+            'index'   => 'service-users.index',
+            'create'  => 'service-users.create',
+            'store'   => 'service-users.store',
+            'show'    => 'service-users.show',
+            'edit'    => 'service-users.edit',
+            'update'  => 'service-users.update',
+            'destroy' => 'service-users.destroy',
+        ]);
 
 
-    // NEW: section-specific update endpoint
-    Route::patch('service-users/{service_user:id}/section/{section}',
-        [ServiceUserController::class, 'updateSection']
-    )->name('service-users.update-section');
+        // Location Setup (Admin)
+        Route::get('locations/trashed', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'trashed'])->name('locations.trashed');
+        Route::post('locations/{id}/restore', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'restore'])->name('locations.restore');
+        Route::delete('locations/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'forceDelete'])->name('locations.forceDelete');
+
+        Route::resource('locations', \App\Http\Controllers\Backend\Admin\LocationController::class)->names([
+            'index'   => 'locations.index',
+            'create'  => 'locations.create',
+            'store'   => 'locations.store',
+            'show'    => 'locations.show',
+            'edit'    => 'locations.edit',
+            'update'  => 'locations.update',
+            'destroy' => 'locations.destroy',
+        ]);
 
 
-
-    // Nested resources under staff-profiles
-    Route::resource('staff-profiles.contracts', StaffContractController::class)
-        ->parameters(['staff-profiles' => 'staffProfile'])
-        ->except(['show']);
-
-    Route::resource('staff-profiles.registrations', StaffRegistrationController::class)
-        ->parameters(['staff-profiles' => 'staffProfile'])
-        ->except(['show']);
-
-    Route::resource('staff-profiles.employment-checks', StaffEmploymentCheckController::class)
-        ->parameters(['staff-profiles' => 'staffProfile'])
-        ->except(['show']);
-
-    Route::resource('staff-profiles.visas', StaffVisaController::class)
-        ->parameters(['staff-profiles' => 'staffProfile'])
-        ->except(['show']);
+        // NEW: section-specific update endpoint
+        Route::patch('service-users/{service_user:id}/section/{section}',
+            [ServiceUserController::class, 'updateSection']
+        )->name('service-users.update-section');
 
 
 
+        // Nested resources under staff-profiles
+        Route::resource('staff-profiles.contracts', StaffContractController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
 
+        Route::resource('staff-profiles.registrations', StaffRegistrationController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.employment-checks', StaffEmploymentCheckController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.visas', StaffVisaController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.training-records', StaffTrainingRecordController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.supervisions', StaffSupervisionAppraisalController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.qualifications', StaffQualificationController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.occ-health', StaffOccHealthClearanceController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+
+        Route::resource('staff-profiles.immunisations', StaffImmunisationController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.payroll', StaffPayrollController::class)
+            ->parameters(['staff-profiles' => 'staffProfile', 'payroll' => 'payroll'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.bank-accounts', StaffBankAccountController::class)
+            ->parameters(['staff-profiles' => 'staffProfile', 'bank-accounts' => 'bank_account'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.leave-records', StaffLeaveRecordController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.leave-entitlements', StaffLeaveEntitlementController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.availability', StaffAvailabilityPreferenceController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.adjustments', StaffAdjustmentController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.driving-licences', StaffDrivingLicenceController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.disciplinary', StaffDisciplinaryRecordController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.documents', StaffDocumentController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+
+    // backend.admin.staff-profiles.emergency-contacts.index, etc.)
+        Route::resource('staff-profiles.emergency-contacts', StaffEmergencyContactController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.equality', StaffEqualityDataController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.adjustments', StaffAdjustmentController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.driving-licences', StaffDrivingLicenceController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.disciplinary', StaffDisciplinaryRecordController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
+
+        Route::resource('staff-profiles.documents', StaffDocumentController::class)
+            ->parameters(['staff-profiles' => 'staffProfile'])
+            ->except(['show']);
 
 
 });

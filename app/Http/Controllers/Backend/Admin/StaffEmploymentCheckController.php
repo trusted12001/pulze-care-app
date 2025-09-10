@@ -34,7 +34,15 @@ class StaffEmploymentCheckController extends Controller
             ->paginate(15);
 
 
-$staffProfile->loadCount(['contracts','registrations','employmentChecks','visas']);
+        $staffProfile->loadCount([
+            'disciplinaryRecords','documents',
+            'contracts','registrations','employmentChecks','visas',
+            'trainingRecords','supervisionsAppraisals','qualifications',
+            'occHealthClearances','immunisations',
+            'leaveEntitlements','leaveRecords','availabilityPreferences',
+            'emergencyContacts','equalityData','adjustments','drivingLicences',
+        ]);
+
 
         return view('backend.admin.staff-employment-checks.index', compact('staffProfile', 'checks'));
     }
@@ -42,7 +50,15 @@ $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas'
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
-        $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas']);
+        $staffProfile->loadCount([
+            'disciplinaryRecords','documents',
+            'contracts','registrations','employmentChecks','visas',
+            'trainingRecords','supervisionsAppraisals','qualifications',
+            'occHealthClearances','immunisations',
+            'leaveEntitlements','leaveRecords','availabilityPreferences',
+            'emergencyContacts','equalityData','adjustments','drivingLicences',
+        ]);
+
 
 
         $verifiers = \App\Models\User::where('tenant_id', $this->tenantId())
@@ -72,7 +88,16 @@ $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas'
         $this->authorizeCheck($employment_check);
         abort_unless($employment_check->staff_profile_id === $staffProfile->id, 404);
 
-        $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas']);
+        $staffProfile->loadCount([
+            'disciplinaryRecords','documents',
+            'contracts','registrations','employmentChecks','visas',
+            'trainingRecords','supervisionsAppraisals','qualifications',
+            'occHealthClearances','immunisations',
+            'leaveEntitlements','leaveRecords','availabilityPreferences',
+            'emergencyContacts','equalityData','adjustments','drivingLicences',
+        ]);
+
+
 
 
         $verifiers = \App\Models\User::where('tenant_id', $this->tenantId())

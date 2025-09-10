@@ -60,7 +60,6 @@ class StaffProfile extends Model
         return $query->where('employment_status', 'active');
     }
 
-    // ...
     public function contracts()
     {
         return $this->hasMany(\App\Models\StaffContract::class);
@@ -79,6 +78,41 @@ class StaffProfile extends Model
     public function visas()
     {
         return $this->hasMany(\App\Models\StaffVisa::class);
+    }
+
+    // Payroll / Bank
+    public function payroll() { return $this->hasOne(\App\Models\StaffPayroll::class); }
+    public function bankAccounts() { return $this->hasMany(\App\Models\StaffBankAccount::class); }
+
+    // Training & Supervisions
+    public function trainingRecords() { return $this->hasMany(\App\Models\StaffTrainingRecord::class); }
+    public function supervisionsAppraisals() { return $this->hasMany(\App\Models\StaffSupervisionAppraisal::class); }
+
+    // Qualifications
+    public function qualifications() { return $this->hasMany(\App\Models\StaffQualification::class); }
+
+    // Occ Health & Immunisations
+    public function occHealthClearances() { return $this->hasMany(\App\Models\StaffOccHealthClearance::class); }
+    public function immunisations() { return $this->hasMany(\App\Models\StaffImmunisation::class); }
+
+    // Leave & Availability
+    public function leaveEntitlements() { return $this->hasMany(\App\Models\StaffLeaveEntitlement::class); }
+    public function leaveRecords() { return $this->hasMany(\App\Models\StaffLeaveRecord::class); }
+    public function availabilityPreferences() { return $this->hasMany(\App\Models\StaffAvailabilityPreference::class); }
+
+    // Emergency / EDI / Adjustments / Driving
+    public function emergencyContacts() { return $this->hasMany(\App\Models\StaffEmergencyContact::class); }
+    public function equalityData() { return $this->hasOne(\App\Models\StaffEqualityData::class); }
+    public function adjustments() { return $this->hasMany(\App\Models\StaffAdjustment::class); }
+    public function drivingLicences() { return $this->hasMany(\App\Models\StaffDrivingLicence::class); }
+
+    // Disciplinary
+    public function disciplinaryRecords() { return $this->hasMany(\App\Models\StaffDisciplinaryRecord::class); }
+
+    // Documents (polymorphic)
+    public function documents()
+    {
+        return $this->morphMany(\App\Models\Document::class, 'owner', 'owner_type', 'owner_id');
     }
 
 

@@ -33,7 +33,14 @@ class StaffVisaController extends Controller
             ->orderByRaw('expires_at IS NULL, expires_at ASC')
             ->paginate(15);
 
-        $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas']);
+        $staffProfile->loadCount([
+            'disciplinaryRecords','documents',
+            'contracts','registrations','employmentChecks','visas',
+            'trainingRecords','supervisionsAppraisals','qualifications',
+            'occHealthClearances','immunisations',
+            'leaveEntitlements','leaveRecords','availabilityPreferences',
+            'emergencyContacts','equalityData','adjustments','drivingLicences',
+        ]);
 
         return view('backend.admin.staff-visas.index', compact('staffProfile','visas'));
     }
@@ -41,7 +48,14 @@ class StaffVisaController extends Controller
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
-        $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas']);
+        $staffProfile->loadCount([
+            'disciplinaryRecords','documents',
+            'contracts','registrations','employmentChecks','visas',
+            'trainingRecords','supervisionsAppraisals','qualifications',
+            'occHealthClearances','immunisations',
+            'leaveEntitlements','leaveRecords','availabilityPreferences',
+            'emergencyContacts','equalityData','adjustments','drivingLicences',
+        ]);
 
         $verifiers = \App\Models\User::where('tenant_id', $this->tenantId())
             ->orderBy('first_name')
@@ -70,7 +84,14 @@ class StaffVisaController extends Controller
         $this->authorizeVisa($visa);
         abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
 
-        $staffProfile->loadCount(['contracts','registrations','employmentChecks','visas']);
+        $staffProfile->loadCount([
+            'disciplinaryRecords','documents',
+            'contracts','registrations','employmentChecks','visas',
+            'trainingRecords','supervisionsAppraisals','qualifications',
+            'occHealthClearances','immunisations',
+            'leaveEntitlements','leaveRecords','availabilityPreferences',
+            'emergencyContacts','equalityData','adjustments','drivingLicences',
+        ]);
 
         $verifiers = \App\Models\User::where('tenant_id', $this->tenantId())
             ->orderBy('first_name')
