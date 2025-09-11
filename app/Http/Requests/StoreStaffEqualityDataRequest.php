@@ -3,26 +3,21 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreStaffEqualityDataRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
+    public function authorize(): bool { return Auth::check(); }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'ethnicity'         => ['nullable','string','max:100'],
+            'religion'          => ['nullable','string','max:100'],
+            'disability'        => ['required','boolean'],
+            'gender_identity'   => ['nullable','string','max:100'],
+            'sexual_orientation'=> ['nullable','string','max:100'],
+            'data_source'       => ['required','in:self_declared,not_provided'],
         ];
     }
 }
