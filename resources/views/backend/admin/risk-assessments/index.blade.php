@@ -71,7 +71,18 @@
             {{ ucfirst($a->status) }}
           </span>
         </td>
-        <td class="p-3">{{ $a->next_review_date? \Illuminate\Support\Carbon::parse($a->next_review_date)->format('d M Y') : '—' }}</td>
+
+<td class="p-3">
+  @if($a->next_review_date)
+    {{ \Illuminate\Support\Carbon::parse($a->next_review_date)->format('d M Y') }}
+    @if($a->is_overdue)
+      <span class="ml-1 px-2 py-0.5 rounded text-xs bg-red-100 text-red-700">Overdue {{ $a->overdue_days }}d</span>
+    @endif
+  @else
+    —
+  @endif
+</td>
+
         <td class="p-3 text-right space-x-2">
           <a href="{{ route('backend.admin.risk-assessments.show',$a) }}" class="px-2 py-1 text-blue-700 hover:underline">View</a>
           <a href="{{ route('backend.admin.risk-assessments.edit',$a) }}" class="px-2 py-1 text-amber-700 hover:underline">Edit</a>

@@ -69,6 +69,7 @@ class RiskAssessmentController extends Controller
 
     public function show(RiskAssessment $risk_assessment)
     {
+        $risk_assessment->load(['serviceUser','riskType','creator','approver','controls.assignee','reviews.reviewer']);
         $risk_assessment->load(['serviceUser','riskType','creator','approver']);
         return view('backend.admin.risk-assessments.show', compact('risk_assessment'));
     }

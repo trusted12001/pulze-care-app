@@ -32,4 +32,13 @@
 
 {{-- Sections + Goals + Interventions --}}
 @include('backend.admin.care-plans.partials._sections', ['plan' => $care_plan])
+
+<div class="flex items-center gap-2 mt-4">
+  <a href="{{ route('backend.admin.care-plans.print',$care_plan) }}" target="_blank"
+     class="px-3 py-2 bg-gray-800 text-white rounded hover:bg-gray-900">Print / PDF</a>
+</div>
+
+@include('backend.admin.care-plans.partials._reviews', ['care_plan' => $care_plan])
+@include('backend.admin.care-plans.partials._versions', ['care_plan' => $care_plan])
+@include('backend.admin.care-plans.partials._signoffs', ['care_plan' => $care_plan])
 @endsection

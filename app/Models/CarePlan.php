@@ -43,4 +43,35 @@ class CarePlan extends Model
             ]);
         }
     }
+
+
+
+
+    public function reviews()   { return $this->hasMany(\App\Models\CarePlanReview::class)->latest(); }
+    public function versions()  { return $this->hasMany(\App\Models\CarePlanVersion::class)->orderByDesc('version'); }
+    public function signoffs()  { return $this->hasMany(\App\Models\CarePlanSignoff::class)->latest(); }
+
+    /** Create a new version row + optional snapshot */
+    public function bumpVersion(?int $approvedBy = null, ?string $note = null, bool $withSnapshot = false): \App\Models\CarePlanVersion
+    {
+        $this->version = ($this->version ?? 1) + 1;
+        $this->status  = 'active';
+        $this->approved_by = $approvedBy;
+        $this->approved_at = now();
+        $this->save();
+
+        $payload = [
+            'care_plan' => $this->only(['title','status','version','start_date','next_review_date','review_frequency','summary']),
+            'sections'  => $this->sections()->with(['goals.interventions'])->get()->toArray(),
+        ];
+
+        return $this->versions()->create([
+            'version'     => $this->version,
+            'approved_by' => $approvedBy,
+            'approved_at' => $this->approved_at,
+            'change_note' => $note,
+            'snapshot'    => $withSnapshot ? $payload : null,
+        ]);
+    }
+
 }

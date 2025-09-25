@@ -40,6 +40,16 @@ use App\Http\Controllers\Backend\Admin\CarePlanSectionController;
 use App\Http\Controllers\Backend\Admin\CarePlanGoalController;
 use App\Http\Controllers\Backend\Admin\CarePlanInterventionController;
 
+use App\Http\Controllers\Backend\Admin\CarePlanReviewController;
+use App\Http\Controllers\Backend\Admin\CarePlanSignoffController;
+use App\Http\Controllers\Backend\Admin\CarePlanPrintController;
+
+use App\Http\Controllers\Backend\Admin\RiskControlController;
+use App\Http\Controllers\Backend\Admin\RiskReviewController;
+use App\Http\Controllers\Backend\Admin\RiskInsightsController;
+
+use App\Http\Controllers\Frontend\Handovers\TopRisksController;
+
 
 
 /*
@@ -338,6 +348,31 @@ Route::prefix('backend/admin')
         Route::delete('interventions/{intervention}', [CarePlanInterventionController::class, 'destroy'])
             ->name('interventions.destroy');
 
+
+
+        // Reviews
+        Route::post('care-plans/{care_plan}/reviews', [CarePlanReviewController::class, 'store'])
+            ->name('care-plans.reviews.store');
+
+        // Sign-offs
+        Route::post('care-plans/{care_plan}/signoffs', [CarePlanSignoffController::class, 'store'])
+            ->name('care-plans.signoffs.store');
+
+        // Print
+        Route::get('care-plans/{care_plan}/print', CarePlanPrintController::class)
+            ->name('care-plans.print');
+
+
+        // Controls + Reviews (nested/shallow)
+        Route::resource('risk-assessments.controls', RiskControlController::class)
+            ->shallow()->only(['store','update','destroy']);
+
+        Route::resource('risk-assessments.reviews', RiskReviewController::class)
+            ->shallow()->only(['store']);
+
+        // Insights (summary page)
+        Route::get('insights/risks', [RiskInsightsController::class, 'index'])->name('insights.risks.index');
+
 });
 
 
@@ -351,6 +386,10 @@ Route::middleware(['auth', 'role:carer'])
     ->name('frontend.')
     ->group(function () {
         Route::view('/carer', 'frontend.carer.index')->name('carer.index');
+
+
+        Route::get('handovers/{service_user}/top-risks', TopRisksController::class)->name('handovers.top-risks');
+
     });
 
 
