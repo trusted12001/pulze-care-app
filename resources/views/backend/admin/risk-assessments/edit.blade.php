@@ -1,4 +1,4 @@
-@extends('layouts.superadmin')
+@extends('layouts.admin')
 @section('title','Edit Risk Assessment')
 @section('content')
   <h1 class="text-2xl font-semibold mb-6">Edit: {{ $assessment->title }}</h1>

@@ -1,4 +1,4 @@
-@extends('layouts.superadmin')
+@extends('layouts.admin')
 @section('title','Risk Assessment')
 @section('content')
 <div class="flex items-center justify-between mb-4">
