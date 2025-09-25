@@ -40,7 +40,7 @@ class RiskAssessmentController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'service_user_id' => ['required','exists:service_user,id'],
+            'service_user_id' => ['required','exists:service_users,id'],
             'risk_type_id'    => ['required','exists:risk_types,id'],
             'title'           => ['required','string','max:255'],
             'context'         => ['nullable','string'],
@@ -85,7 +85,7 @@ class RiskAssessmentController extends Controller
     public function update(Request $request, RiskAssessment $risk_assessment)
     {
         $data = $request->validate([
-            'service_user_id' => ['required','exists:service_user,id'],
+            'service_user_id' => ['required','exists:service_users,id'],
             'risk_type_id'    => ['required','exists:risk_types,id'],
             'title'           => ['required','string','max:255'],
             'context'         => ['nullable','string'],

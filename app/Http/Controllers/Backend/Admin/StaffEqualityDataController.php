@@ -41,7 +41,6 @@ class StaffEqualityDataController extends Controller
     public function store(StoreStaffEqualityDataRequest $request, StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
-
         abort_if($staffProfile->equalityData()->exists(), 404);
 
         $staffProfile->equalityData()->create([
