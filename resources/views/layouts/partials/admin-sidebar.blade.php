@@ -32,7 +32,7 @@
     <a href="{{ url('/care-plans') }}" class="{{ request()->is('care-plans*') ? 'active' : '' }}">
         <i class="ph ph-notebook"></i> <span class="menu-label">Care Plans</span>
     </a>
-    <a href="{{ url('/risk-assessments') }}" class="{{ request()->is('risk-assessments*') ? 'active' : '' }}">
+    <a href="{{ route('backend.admin.risk-assessments.index') }}" class="{{ request()->is('risk-assessments*') ? 'active' : (request()->is('backend/admin/risk-assessments*') ? 'active' : '') }}">
         <i class="ph ph-shield-warning"></i> <span class="menu-label">Risk Assessments</span>
     </a>
     <a href="{{ url('/timesheets') }}" class="{{ request()->is('timesheets*') ? 'active' : '' }}">

@@ -9,6 +9,9 @@ class ServiceUser extends Model
 {
     use SoftDeletes;
 
+    // ✅ Important: match your actual table name
+    protected $table = 'service_users';
+
     protected $fillable = [
         'tenant_id',
         'first_name','middle_name','last_name','preferred_name',
@@ -55,27 +58,30 @@ class ServiceUser extends Model
         'lpa_health_welfare' => 'boolean',
         'lpa_finance_property' => 'boolean',
         'interpreter_required' => 'boolean',
+        // 👉 If `tags` is JSON in DB, uncomment:
+        // 'tags' => 'array',
     ];
 
-    // --- Relationships
-    public function location()
+    // Relationships
+    public function location()     { return $this->belongsTo(\App\Models\Location::class)->withDefault(); }
+    public function creator()      { return $this->belongsTo(\App\Models\User::class, 'created_by')->withDefault(); }
+    public function updater()      { return $this->belongsTo(\App\Models\User::class, 'updated_by')->withDefault(); }
+
+    // 🔗 Add this so Risk Assessments can be fetched from a Service User
+    public function riskAssessments()
     {
-        return $this->belongsTo(\App\Models\Location::class)->withDefault();
+        return $this->hasMany(\App\Models\RiskAssessment::class);
     }
 
-    public function creator()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'created_by')->withDefault();
-    }
-
-    public function updater()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'updated_by')->withDefault();
-    }
-
-    // --- Helpers
+    // Helpers
     public function getFullNameAttribute(): string
     {
         return trim($this->first_name.' '.($this->middle_name ? $this->middle_name.' ' : '').$this->last_name);
     }
+
+    // Optional handy helper (useful in views)
+    // public function getAgeAttribute(): ?int
+    // {
+    //     return $this->date_of_birth ? $this->date_of_birth->age : null;
+    // }
 }

@@ -33,6 +33,8 @@ use App\Http\Controllers\Backend\Admin\StaffEmergencyContactController;
 use App\Http\Controllers\Backend\Admin\StaffEqualityDataController;
 use App\Http\Controllers\Backend\Admin\StaffDisciplinaryRecordController;
 use App\Http\Controllers\Backend\Admin\StaffDocumentController;
+use App\Http\Controllers\Backend\Admin\RiskAssessmentController;
+
 
 
 /*
@@ -285,6 +287,17 @@ Route::prefix('backend/admin')
             ->parameters(['staff-profiles' => 'staffProfile'])
             ->except(['show']);
 
+
+        // Risk Assessments (Admin)
+        Route::resource('risk-assessments', RiskAssessmentController::class)->names([
+            'index'   => 'risk-assessments.index',
+            'create'  => 'risk-assessments.create',
+            'store'   => 'risk-assessments.store',
+            'show'    => 'risk-assessments.show',
+            'edit'    => 'risk-assessments.edit',
+            'update'  => 'risk-assessments.update',
+            'destroy' => 'risk-assessments.destroy',
+        ]);
 
 });
 
