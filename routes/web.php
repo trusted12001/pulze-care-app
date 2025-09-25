@@ -35,6 +35,11 @@ use App\Http\Controllers\Backend\Admin\StaffDisciplinaryRecordController;
 use App\Http\Controllers\Backend\Admin\StaffDocumentController;
 use App\Http\Controllers\Backend\Admin\RiskAssessmentController;
 
+use App\Http\Controllers\Backend\Admin\CarePlanController;
+use App\Http\Controllers\Backend\Admin\CarePlanSectionController;
+use App\Http\Controllers\Backend\Admin\CarePlanGoalController;
+use App\Http\Controllers\Backend\Admin\CarePlanInterventionController;
+
 
 
 /*
@@ -298,6 +303,40 @@ Route::prefix('backend/admin')
             'update'  => 'risk-assessments.update',
             'destroy' => 'risk-assessments.destroy',
         ]);
+
+
+        // Care Plans
+        Route::resource('care-plans', CarePlanController::class)->names([
+            'index'   => 'care-plans.index',
+            'create'  => 'care-plans.create',
+            'store'   => 'care-plans.store',
+            'show'    => 'care-plans.show',
+            'edit'    => 'care-plans.edit',
+            'update'  => 'care-plans.update',
+            'destroy' => 'care-plans.destroy',
+        ]);
+
+        // Nested ops
+        Route::post('care-plans/{care_plan}/sections', [CarePlanSectionController::class, 'store'])
+            ->name('care-plans.sections.store');
+        Route::put('sections/{section}', [CarePlanSectionController::class, 'update'])
+            ->name('sections.update');
+        Route::delete('sections/{section}', [CarePlanSectionController::class, 'destroy'])
+            ->name('sections.destroy');
+
+        Route::post('sections/{section}/goals', [CarePlanGoalController::class, 'store'])
+            ->name('sections.goals.store');
+        Route::put('goals/{goal}', [CarePlanGoalController::class, 'update'])
+            ->name('goals.update');
+        Route::delete('goals/{goal}', [CarePlanGoalController::class, 'destroy'])
+            ->name('goals.destroy');
+
+        Route::post('goals/{goal}/interventions', [CarePlanInterventionController::class, 'store'])
+            ->name('goals.interventions.store');
+        Route::put('interventions/{intervention}', [CarePlanInterventionController::class, 'update'])
+            ->name('interventions.update');
+        Route::delete('interventions/{intervention}', [CarePlanInterventionController::class, 'destroy'])
+            ->name('interventions.destroy');
 
 });
 

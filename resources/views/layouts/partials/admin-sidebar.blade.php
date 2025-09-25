@@ -29,7 +29,7 @@
     <a href="{{ url('/assignments') }}" class="{{ request()->is('assignments*') ? 'active' : '' }}">
         <i class="ph ph-handshake"></i> <span class="menu-label">Assignments</span>
     </a>
-    <a href="{{ url('/care-plans') }}" class="{{ request()->is('care-plans*') ? 'active' : '' }}">
+    <a href="{{ route('backend.admin.care-plans.index') }}" class="{{ request()->is('care-plans*') ? 'active' : (request()->is('backend/admin/care-plans*') ? 'active' : '') }}">
         <i class="ph ph-notebook"></i> <span class="menu-label">Care Plans</span>
     </a>
     <a href="{{ route('backend.admin.risk-assessments.index') }}" class="{{ request()->is('risk-assessments*') ? 'active' : (request()->is('backend/admin/risk-assessments*') ? 'active' : '') }}">
