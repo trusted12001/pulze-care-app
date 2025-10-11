@@ -51,6 +51,16 @@ use App\Http\Controllers\Backend\Admin\RiskInsightsController;
 use App\Http\Controllers\Frontend\Handovers\TopRisksController;
 
 
+use App\Http\Controllers\Backend\Admin\ShiftTemplateController;
+use App\Http\Controllers\Backend\Admin\RotaPeriodController;
+use App\Http\Controllers\Backend\Admin\ShiftController;
+
+
+use App\Http\Controllers\Frontend\AttendanceController;
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -373,6 +383,37 @@ Route::prefix('backend/admin')
         // Insights (summary page)
         Route::get('insights/risks', [RiskInsightsController::class, 'index'])->name('insights.risks.index');
 
+
+
+
+        // Shift Templates
+        Route::get('shift-templates', [ShiftTemplateController::class, 'index'])->name('shift-templates.index');
+        Route::post('shift-templates', [ShiftTemplateController::class, 'store'])->name('shift-templates.store');
+        Route::put('shift-templates/{shift_template}', [ShiftTemplateController::class, 'update'])->name('shift-templates.update');
+        Route::delete('shift-templates/{shift_template}', [ShiftTemplateController::class, 'destroy'])->name('shift-templates.destroy');
+
+        // Rota Periods
+        Route::get('rota-periods', [RotaPeriodController::class, 'index'])->name('rota-periods.index');
+        Route::post('rota-periods', [RotaPeriodController::class, 'store'])->name('rota-periods.store');
+        Route::get('rota-periods/{rota_period}', [RotaPeriodController::class, 'show'])->name('rota-periods.show');
+        Route::post('rota-periods/{rota_period}/generate', [RotaPeriodController::class, 'generate'])->name('rota-periods.generate');
+        Route::post('rota-periods/{rota_period}/publish', [RotaPeriodController::class, 'publish'])->name('rota-periods.publish');
+
+        // Shift assignments
+        Route::post('shifts/{shift}/assign', [ShiftController::class, 'assign'])->name('shifts.assign');
+        Route::delete('shifts/{shift}/unassign/{user}', [ShiftController::class, 'unassign'])->name('shifts.unassign');
+
+
+        // Shift Templates
+        Route::get('shift-templates', [ShiftTemplateController::class, 'index'])->name('shift-templates.index');
+        Route::post('shift-templates', [ShiftTemplateController::class, 'store'])->name('shift-templates.store');
+        Route::get('shift-templates/{shift_template}/edit', [ShiftTemplateController::class, 'edit'])->name('shift-templates.edit'); // ✅ add this
+        Route::put('shift-templates/{shift_template}', [ShiftTemplateController::class, 'update'])->name('shift-templates.update');
+        Route::delete('shift-templates/{shift_template}', [ShiftTemplateController::class, 'destroy'])->name('shift-templates.destroy');
+        Route::post('shift-templates/{shift_template}/toggle', [ShiftTemplateController::class, 'toggle'])->name('shift-templates.toggle');
+        Route::post('shift-templates/{shift_template}/duplicate', [ShiftTemplateController::class, 'duplicate'])->name('shift-templates.duplicate');
+
+
 });
 
 
@@ -389,6 +430,12 @@ Route::middleware(['auth', 'role:carer'])
 
 
         Route::get('handovers/{service_user}/top-risks', TopRisksController::class)->name('handovers.top-risks');
+
+
+// Check-in/out endpoints (mobile)
+Route::post('assignments/{assignment}/check-in', [AttendanceController::class, 'checkIn'])->name('assignments.check-in');
+Route::post('assignments/{assignment}/check-out', [AttendanceController::class, 'checkOut'])->name('assignments.check-out');
+
 
     });
 

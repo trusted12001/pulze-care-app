@@ -38,12 +38,22 @@
     <a href="{{ url('/timesheets') }}" class="{{ request()->is('timesheets*') ? 'active' : '' }}">
         <i class="ph ph-clock"></i> <span class="menu-label">Timesheets</span>
     </a>
-    <a href="{{ url('/shift-rota') }}" class="{{ request()->is('shift-rota*') ? 'active' : '' }}">
-        <i class="ph ph-calendar-check"></i> <span class="menu-label">Shift Rota</span>
+    <a href="{{ route('backend.admin.shift-templates.index') }}"
+        class="{{ request()->is('shift-templates*') ? 'active' : (request()->is('backend/admin/shift-templates*') ? 'active' : '') }}">
+        <i class="ph ph-list-checks"></i><span class="menu-label">Shift Templates</span>
     </a>
-    <a href="{{ url('/health-info') }}" class="{{ request()->is('health-info*') ? 'active' : '' }}">
-        <i class="ph ph-heartbeat"></i> <span class="menu-label">Health Info</span>
+
+    <a href="{{ route('backend.admin.rota-periods.index') }}"
+        class="{{ (
+                request()->is('rota-periods*') ||
+                request()->is('backend/admin/rota-periods*') ||
+                request()->is('shifts*') ||
+                request()->is('backend/admin/shifts*')
+        ) ? 'active' : '' }}">
+        <i class="ph ph-calendar-check"></i>
+        <span class="menu-label">Shift Rota</span>
     </a>
+
     <a href="{{ url('/subscriptions') }}" class="{{ request()->is('subscriptions*') ? 'active' : '' }}">
         <i class="ph ph-credit-card"></i> <span class="menu-label">Subscriptions</span>
     </a>
@@ -53,10 +63,6 @@
     <a href="{{ url('/reports') }}" class="{{ request()->is('reports*') ? 'active' : '' }}">
         <i class="ph ph-chart-bar"></i> <span class="menu-label">Reports</span>
     </a>
-    <a href="{{ url('/urgent-cases') }}" class="{{ request()->is('urgent-cases*') ? 'active' : '' }}">
-        <i class="ph ph-warning"></i> <span class="menu-label">Urgent Cases</span>
-    </a>
-
     <a href="{{ route('logout') }}"
        onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
        class="{{ request()->is('logout') ? 'active' : '' }}">

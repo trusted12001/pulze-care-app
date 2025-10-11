@@ -61,14 +61,6 @@
     <i class="ph ph-shield-warning"></i>
     <span>Risk Assessment</span>
   </div>
-  <div class="card">
-    <i class="ph ph-thermometer"></i>
-    <span>Health Info</span>
-  </div>
-  <div class="card">
-    <i class="ph ph-warning"></i>
-    <span>Urgent Cases</span>
-  </div>
 
   <!-- 4. Insights & Statistics -->
   <div class="card">

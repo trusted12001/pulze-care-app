@@ -14,20 +14,60 @@ class RiskAssessment extends Model
     protected $fillable = [
         'service_user_id','risk_type_id','title','context',
         'likelihood','severity','risk_score','risk_band','status',
-        'next_review_date','review_frequency','created_by','approved_by','approved_at'
+        'next_review_date','review_frequency','created_by','approved_by','approved_at',
     ];
 
     protected $casts = [
-        'approved_at' => 'datetime',
+        'approved_at'       => 'datetime',
+        'next_review_date'  => 'date',
+        'likelihood'        => 'integer',
+        'severity'          => 'integer',
+        'risk_score'        => 'integer',
     ];
 
-    // Relationships
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
     public function serviceUser() { return $this->belongsTo(ServiceUser::class); }
     public function riskType()    { return $this->belongsTo(RiskType::class); }
     public function creator()     { return $this->belongsTo(User::class, 'created_by'); }
     public function approver()    { return $this->belongsTo(User::class, 'approved_by'); }
 
-    // Helpers
+    // ✅ Added: fix RelationNotFoundException
+    public function controls()    { return $this->hasMany(RiskControl::class, 'risk_assessment_id'); }
+    public function reviews()     { return $this->hasMany(RiskReview::class, 'risk_assessment_id')->latest(); }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes & Computed flags
+    |--------------------------------------------------------------------------
+    */
+    public function scopeOverdue($q)
+    {
+        return $q->whereNotNull('next_review_date')
+                 ->whereDate('next_review_date', '<', now()->toDateString());
+    }
+
+    public function getIsOverdueAttribute(): bool
+    {
+        return !is_null($this->next_review_date)
+            && now()->startOfDay()->gt($this->next_review_date);
+    }
+
+    public function getOverdueDaysAttribute(): ?int
+    {
+        return $this->is_overdue
+            ? $this->next_review_date->diffInDays(now()->startOfDay())
+            : null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers (unchanged + a couple extras)
+    |--------------------------------------------------------------------------
+    */
     public function computeScore(): int
     {
         $l = max(1, min(5, (int) $this->likelihood));
@@ -57,5 +97,26 @@ class RiskAssessment extends Model
         $this->status = RiskStatus::Active->value;
         $this->approved_by = $userId;
         $this->approved_at = now();
+    }
+
+    // Convenience: rescore with new L/S
+    public function rescore(int $likelihood, int $severity): void
+    {
+        $this->likelihood = $likelihood;
+        $this->severity   = $severity;
+        $this->setScoreAndBand();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Events
+    |--------------------------------------------------------------------------
+    | Keep risk_score / risk_band always consistent with likelihood & severity.
+    */
+    protected static function booted(): void
+    {
+        static::saving(function (self $model) {
+            $model->setScoreAndBand();
+        });
     }
 }
