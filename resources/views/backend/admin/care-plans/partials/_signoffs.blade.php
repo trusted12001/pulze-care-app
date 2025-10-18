@@ -25,7 +25,7 @@
       <tbody>
         @forelse($care_plan->signoffs as $s)
         <tr class="border-t">
-          <td class="p-2">{{ $s->user?->name ?? '—' }}</td>
+          <td class="p-2">{{ $s->user?->first_name ?? '—' }}</td>
           <td class="p-2">{{ $s->role_label ?? '—' }}</td>
           <td class="p-2">v{{ $s->version_at_sign }}</td>
           <td class="p-2">{{ $s->signed_at? $s->signed_at->format('d M Y H:i') : '—' }}</td>

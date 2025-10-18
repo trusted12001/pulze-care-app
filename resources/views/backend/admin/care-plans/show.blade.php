@@ -19,7 +19,7 @@
   @if($care_plan->summary)
   <div>
     <div class="font-medium mb-1">Summary</div>
-    <div class="prose max-w-none">{{ nl2br(e($care_plan->summary)) }}</div>
+    <div class="prose max-w-none">{!! nl2br(e($care_plan->summary)) !!}</div>
   </div>
   @endif
   <div class="text-xs text-gray-500">

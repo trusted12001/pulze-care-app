@@ -19,7 +19,7 @@ class StaffBankAccountController extends Controller
     {
         $this->guardProfile($staffProfile);
 
-        $items = $staffProfile->bankAccounts()->latest('id')->paginate(15);
+        $bankAccounts = $staffProfile->bankAccounts()->latest('id')->paginate(15);
         $staffProfile->loadCount([
             'disciplinaryRecords','documents',
             'contracts','registrations','employmentChecks','visas',
@@ -29,7 +29,7 @@ class StaffBankAccountController extends Controller
             'emergencyContacts','equalityData','adjustments','drivingLicences',
         ]);
 
-        return view('backend.admin.staff-bank-accounts.index', compact('staffProfile','items'));
+        return view('backend.admin.staff-bank-accounts.index', compact('staffProfile','bankAccounts'));
     }
 
     public function create(StaffProfile $staffProfile)

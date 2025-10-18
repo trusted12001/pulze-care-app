@@ -41,7 +41,7 @@
             {{ $r->next_review_date_suggested? $r->next_review_date_suggested->format('d M Y') : '—' }}
             @if($r->review_frequency_suggested) ({{ $r->review_frequency_suggested }}) @endif
           </td>
-          <td class="p-2">{{ $r->reviewer?->name ?? '—' }}</td>
+          <td class="p-2">{{ $r->reviewer?->first_name ?? '—' }}</td>
         </tr>
         @empty
         <tr><td colspan="5" class="p-3 text-center text-gray-500">No reviews yet.</td></tr>
