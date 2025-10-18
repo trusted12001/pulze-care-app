@@ -40,7 +40,7 @@
         </td>
         <td class="p-3">
           @forelse($s->assignments as $a)
-            <span class="inline-block px-2 py-1 bg-gray-100 rounded mr-1">{{ $a->staff->name }}</span>
+            <span class="inline-block px-2 py-1 bg-gray-100 rounded mr-1">{{ $a->staff->first_name.' '.$a->staff->last_name.' '.$a->staff->other_names }}</span>
           @empty
             <span class="text-gray-400">—</span>
           @endforelse
