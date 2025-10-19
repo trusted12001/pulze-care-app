@@ -19,7 +19,8 @@ class UserSeeder extends Seeder
 
         // Step 2: Create the Super Admin
         $superAdmin = User::create([
-            'name' => 'Super Admin',
+            'first_name' => 'Super',
+            'last_name'  => 'Admin',
             'email' => 'abdussalam.abdul@gmail.com',
             'password' => Hash::make('12345678'),
             'tenant_id' => null,
@@ -36,7 +37,8 @@ class UserSeeder extends Seeder
 
         // Step 4: Create Admin
         $admin = User::create([
-            'name' => 'RMBJ Admin',
+            'first_name' => 'RMBJ',
+            'last_name'  => 'Admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('12345678'),
             'tenant_id' => $tenant->id,
@@ -45,7 +47,8 @@ class UserSeeder extends Seeder
 
         // Step 5: Create Carer
         $carer = User::create([
-            'name' => 'Carer One',
+            'first_name' => 'Carer',
+            'last_name'  => 'One',
             'email' => 'carer@example.com',
             'password' => Hash::make('12345678'),
             'tenant_id' => $tenant->id,
