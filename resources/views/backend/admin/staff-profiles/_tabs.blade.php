@@ -23,6 +23,29 @@
     @endisset
   </a>
 
+
+  {{-- Payroll --}}
+  <a href="{{ route('backend.admin.staff-profiles.payroll.index', $staffProfile) }}"
+     class="{{ request()->routeIs('backend.admin.staff-profiles.payroll.*') ? $on : $off }} {{ $baseClasses }}">
+    Payroll
+    @isset($staffProfile->payroll_count)
+      <span class="inline-flex items-center justify-center text-xs rounded-full bg-white/20 px-2 py-0.5">
+        {{ $staffProfile->payroll_count }}
+      </span>
+    @endisset
+  </a>
+
+  {{-- Bank Accounts --}}
+  <a href="{{ route('backend.admin.staff-profiles.bank-accounts.index', $staffProfile) }}"
+     class="{{ request()->routeIs('backend.admin.staff-profiles.bank-accounts.*') ? $on : $off }} {{ $baseClasses }}">
+    Bank Accounts
+    @isset($staffProfile->bank_accounts_count)
+      <span class="inline-flex items-center justify-center text-xs rounded-full bg-white/20 px-2 py-0.5">
+        {{ $staffProfile->bank_accounts_count }}
+      </span>
+    @endisset
+  </a>
+
   {{-- Registrations --}}
   <a href="{{ route('backend.admin.staff-profiles.registrations.index', $staffProfile) }}"
      class="{{ request()->routeIs('backend.admin.staff-profiles.registrations.*') ? $on : $off }} {{ $baseClasses }}">
