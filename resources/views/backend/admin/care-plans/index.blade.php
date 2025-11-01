@@ -56,7 +56,7 @@
         </td>
         <td class="p-3">{{ $p->next_review_date? \Illuminate\Support\Carbon::parse($p->next_review_date)->format('d M Y') : '—' }}</td>
         <td class="p-3 text-right space-x-2">
-          <a href="{{ route('backend.admin.care-plans.show',$p) }}" class="px-2 py-1 text-blue-700 hover:underline">View</a>
+          <a href="{{ route('backend.admin.care-plans.show',$p) }}" class="px-2 py-1 text-green-600 font-bold hover:underline text-sm">Open</a>
           <a href="{{ route('backend.admin.care-plans.edit',$p) }}" class="px-2 py-1 text-amber-700 hover:underline">Edit</a>
           <form action="{{ route('backend.admin.care-plans.destroy',$p) }}" method="POST" class="inline-block" onsubmit="return confirm('Move to trash?')">
             @csrf @method('DELETE')

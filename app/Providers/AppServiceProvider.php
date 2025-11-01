@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Keep empty (or put app-level bootstrapping here)
+        // Do NOT call parent::boot() — it does not exist.
     }
 }

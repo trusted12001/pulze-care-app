@@ -11,10 +11,25 @@ class RiskAssessment extends Model
 {
     use SoftDeletes;
 
+    public const STATUS_DRAFT    = 'draft';
+    public const STATUS_ACTIVE   = 'active';
+    public const STATUS_ARCHIVED = 'archived';
+
     protected $fillable = [
-        'service_user_id','risk_type_id','title','context',
-        'likelihood','severity','risk_score','risk_band','status',
-        'next_review_date','review_frequency','created_by','approved_by','approved_at',
+        'service_user_id',
+        'risk_type_id',
+        'title',
+        'context',
+        'likelihood',
+        'severity',
+        'risk_score',
+        'risk_band',
+        'status',
+        'next_review_date',
+        'review_frequency',
+        'created_by',
+        'approved_by',
+        'approved_at',
     ];
 
     protected $casts = [

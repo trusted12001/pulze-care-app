@@ -47,20 +47,15 @@ use App\Http\Controllers\Backend\Admin\CarePlanPrintController;
 use App\Http\Controllers\Backend\Admin\RiskControlController;
 use App\Http\Controllers\Backend\Admin\RiskReviewController;
 use App\Http\Controllers\Backend\Admin\RiskInsightsController;
+use App\Http\Controllers\Backend\Admin\RiskTypeController; // ✅ MISSING BEFORE
 
 use App\Http\Controllers\Frontend\Handovers\TopRisksController;
-
 
 use App\Http\Controllers\Backend\Admin\ShiftTemplateController;
 use App\Http\Controllers\Backend\Admin\RotaPeriodController;
 use App\Http\Controllers\Backend\Admin\ShiftController;
 
-
 use App\Http\Controllers\Frontend\AttendanceController;
-
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -164,9 +159,7 @@ Route::prefix('backend/admin')
             'destroy' => 'staff-profiles.destroy',
         ]);
 
-
         // Service Users (Admin)
-        // Trashed / restore / force-delete
         Route::get('service-users/trashed', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'trashed'])
             ->name('service-users.trashed');
         Route::post('service-users/{id}/restore', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'restore'])
@@ -174,9 +167,8 @@ Route::prefix('backend/admin')
         Route::delete('service-users/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'forceDelete'])
             ->name('service-users.forceDelete');
 
-        // Resource
         Route::get('service-users/{service_user}/profile', [\App\Http\Controllers\Backend\Admin\ServiceUserController::class, 'profile'])
-        ->name('service-users.profile');
+            ->name('service-users.profile');
 
         Route::resource('service-users', \App\Http\Controllers\Backend\Admin\ServiceUserController::class)->names([
             'index'   => 'service-users.index',
@@ -188,8 +180,7 @@ Route::prefix('backend/admin')
             'destroy' => 'service-users.destroy',
         ]);
 
-
-        // Location Setup (Admin)
+        // Locations
         Route::get('locations/trashed', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'trashed'])->name('locations.trashed');
         Route::post('locations/{id}/restore', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'restore'])->name('locations.restore');
         Route::delete('locations/{id}/force-delete', [\App\Http\Controllers\Backend\Admin\LocationController::class, 'forceDelete'])->name('locations.forceDelete');
@@ -204,13 +195,9 @@ Route::prefix('backend/admin')
             'destroy' => 'locations.destroy',
         ]);
 
-
         // NEW: section-specific update endpoint
-        Route::patch('service-users/{service_user:id}/section/{section}',
-            [ServiceUserController::class, 'updateSection']
-        )->name('service-users.update-section');
-
-
+        Route::patch('service-users/{service_user:id}/section/{section}', [ServiceUserController::class, 'updateSection'])
+            ->name('service-users.update-section');
 
         // Nested resources under staff-profiles
         Route::resource('staff-profiles.contracts', StaffContractController::class)
@@ -244,7 +231,6 @@ Route::prefix('backend/admin')
         Route::resource('staff-profiles.occ-health', StaffOccHealthClearanceController::class)
             ->parameters(['staff-profiles' => 'staffProfile'])
             ->except(['show']);
-
 
         Route::resource('staff-profiles.immunisations', StaffImmunisationController::class)
             ->parameters(['staff-profiles' => 'staffProfile'])
@@ -286,8 +272,6 @@ Route::prefix('backend/admin')
             ->parameters(['staff-profiles' => 'staffProfile'])
             ->except(['show']);
 
-
-    // backend.admin.staff-profiles.emergency-contacts.index, etc.)
         Route::resource('staff-profiles.emergency-contacts', StaffEmergencyContactController::class)
             ->parameters(['staff-profiles' => 'staffProfile'])
             ->except(['show']);
@@ -295,23 +279,6 @@ Route::prefix('backend/admin')
         Route::resource('staff-profiles.equality', StaffEqualityDataController::class)
             ->parameters(['staff-profiles' => 'staffProfile'])
             ->except(['show']);
-
-        Route::resource('staff-profiles.adjustments', StaffAdjustmentController::class)
-            ->parameters(['staff-profiles' => 'staffProfile'])
-            ->except(['show']);
-
-        Route::resource('staff-profiles.driving-licences', StaffDrivingLicenceController::class)
-            ->parameters(['staff-profiles' => 'staffProfile'])
-            ->except(['show']);
-
-        Route::resource('staff-profiles.disciplinary', StaffDisciplinaryRecordController::class)
-            ->parameters(['staff-profiles' => 'staffProfile'])
-            ->except(['show']);
-
-        Route::resource('staff-profiles.documents', StaffDocumentController::class)
-            ->parameters(['staff-profiles' => 'staffProfile'])
-            ->except(['show']);
-
 
         // Risk Assessments (Admin)
         Route::resource('risk-assessments', RiskAssessmentController::class)->names([
@@ -322,7 +289,32 @@ Route::prefix('backend/admin')
             'edit'    => 'risk-assessments.edit',
             'update'  => 'risk-assessments.update',
             'destroy' => 'risk-assessments.destroy',
-        ]);
+        ])
+        ->parameters([
+        // IMPORTANT: route parameter becomes {riskAssessment}
+        'risk-assessments' => 'riskAssessment',
+    ]);
+
+        // Controls + Reviews (nested/shallow)
+        Route::resource('risk-assessments.controls', RiskControlController::class)
+            ->shallow()->only(['store','update','destroy']);
+
+        Route::resource('risk-assessments.reviews', RiskReviewController::class)
+            ->shallow()->only(['store']);
+
+
+        // Print/PDF
+        Route::get('risk-assessments/{riskAssessment}/print', [RiskAssessmentController::class, 'print'])
+            ->name('risk-assessments.print');
+
+        // Risk Types: minimal resource (index optional)
+        Route::resource('risk-types', RiskTypeController::class)
+            ->only(['index','create','store'])
+            ->names('risk-types');
+
+        // 🔧 Temporary alias to avoid crashes where Blade still links to risk-items.create
+        Route::get('risk-items/create', fn () => redirect()->route('backend.admin.risk-types.create'))
+            ->name('risk-items.create');
 
 
         // Care Plans
@@ -336,7 +328,7 @@ Route::prefix('backend/admin')
             'destroy' => 'care-plans.destroy',
         ]);
 
-        // Nested ops
+        // Care Plan nested ops
         Route::post('care-plans/{care_plan}/sections', [CarePlanSectionController::class, 'store'])
             ->name('care-plans.sections.store');
         Route::put('sections/{section}', [CarePlanSectionController::class, 'update'])
@@ -358,13 +350,9 @@ Route::prefix('backend/admin')
         Route::delete('interventions/{intervention}', [CarePlanInterventionController::class, 'destroy'])
             ->name('interventions.destroy');
 
-
-
-        // Reviews
+        // Reviews & Sign-offs
         Route::post('care-plans/{care_plan}/reviews', [CarePlanReviewController::class, 'store'])
             ->name('care-plans.reviews.store');
-
-        // Sign-offs
         Route::post('care-plans/{care_plan}/signoffs', [CarePlanSignoffController::class, 'store'])
             ->name('care-plans.signoffs.store');
 
@@ -372,25 +360,14 @@ Route::prefix('backend/admin')
         Route::get('care-plans/{care_plan}/print', CarePlanPrintController::class)
             ->name('care-plans.print');
 
-
-        // Controls + Reviews (nested/shallow)
-        Route::resource('risk-assessments.controls', RiskControlController::class)
-            ->shallow()->only(['store','update','destroy']);
-
-        Route::resource('risk-assessments.reviews', RiskReviewController::class)
-            ->shallow()->only(['store']);
-
-        // Insights (summary page)
-        Route::get('insights/risks', [RiskInsightsController::class, 'index'])->name('insights.risks.index');
-
-
-
-
         // Shift Templates
         Route::get('shift-templates', [ShiftTemplateController::class, 'index'])->name('shift-templates.index');
         Route::post('shift-templates', [ShiftTemplateController::class, 'store'])->name('shift-templates.store');
+        Route::get('shift-templates/{shift_template}/edit', [ShiftTemplateController::class, 'edit'])->name('shift-templates.edit');
         Route::put('shift-templates/{shift_template}', [ShiftTemplateController::class, 'update'])->name('shift-templates.update');
         Route::delete('shift-templates/{shift_template}', [ShiftTemplateController::class, 'destroy'])->name('shift-templates.destroy');
+        Route::post('shift-templates/{shift_template}/toggle', [ShiftTemplateController::class, 'toggle'])->name('shift-templates.toggle');
+        Route::post('shift-templates/{shift_template}/duplicate', [ShiftTemplateController::class, 'duplicate'])->name('shift-templates.duplicate');
 
         // Rota Periods
         Route::get('rota-periods', [RotaPeriodController::class, 'index'])->name('rota-periods.index');
@@ -402,20 +379,7 @@ Route::prefix('backend/admin')
         // Shift assignments
         Route::post('shifts/{shift}/assign', [ShiftController::class, 'assign'])->name('shifts.assign');
         Route::delete('shifts/{shift}/unassign/{user}', [ShiftController::class, 'unassign'])->name('shifts.unassign');
-
-
-        // Shift Templates
-        Route::get('shift-templates', [ShiftTemplateController::class, 'index'])->name('shift-templates.index');
-        Route::post('shift-templates', [ShiftTemplateController::class, 'store'])->name('shift-templates.store');
-        Route::get('shift-templates/{shift_template}/edit', [ShiftTemplateController::class, 'edit'])->name('shift-templates.edit'); // ✅ add this
-        Route::put('shift-templates/{shift_template}', [ShiftTemplateController::class, 'update'])->name('shift-templates.update');
-        Route::delete('shift-templates/{shift_template}', [ShiftTemplateController::class, 'destroy'])->name('shift-templates.destroy');
-        Route::post('shift-templates/{shift_template}/toggle', [ShiftTemplateController::class, 'toggle'])->name('shift-templates.toggle');
-        Route::post('shift-templates/{shift_template}/duplicate', [ShiftTemplateController::class, 'duplicate'])->name('shift-templates.duplicate');
-
-
-});
-
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -428,18 +392,11 @@ Route::middleware(['auth', 'role:carer'])
     ->group(function () {
         Route::view('/carer', 'frontend.carer.index')->name('carer.index');
 
-
         Route::get('handovers/{service_user}/top-risks', TopRisksController::class)->name('handovers.top-risks');
 
-
-// Check-in/out endpoints (mobile)
-Route::post('assignments/{assignment}/check-in', [AttendanceController::class, 'checkIn'])->name('assignments.check-in');
-Route::post('assignments/{assignment}/check-out', [AttendanceController::class, 'checkOut'])->name('assignments.check-out');
-
-
+        // Check-in/out endpoints (mobile)
+        Route::post('assignments/{assignment}/check-in', [AttendanceController::class, 'checkIn'])->name('assignments.check-in');
+        Route::post('assignments/{assignment}/check-out', [AttendanceController::class, 'checkOut'])->name('assignments.check-out');
     });
-
-
-
 
 require __DIR__.'/auth.php';
