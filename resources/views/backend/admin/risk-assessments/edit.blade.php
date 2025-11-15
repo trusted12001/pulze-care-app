@@ -162,9 +162,9 @@
     <div class="bg-white rounded shadow p-4">
       <div class="text-sm text-gray-600 mb-2">Tips</div>
       <ul class="list-disc pl-5 text-sm text-gray-600">
-        <li>Use a concise title; details live in items/controls.</li>
+        <li>Use a concise title not the details; details should be in individual risk items under section.</li>
         <li>Set realistic review frequency (e.g., 8–12 weeks).</li>
-        <li>“Save & Publish” will activate the profile for staff (if handled in controller).</li>
+        <li>“Save & Publish” will activate the profile for staff.</li>
       </ul>
     </div>
   </div>

@@ -10,10 +10,7 @@ return new class extends Migration {
         Schema::create('risk_assessment_profiles', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('service_user_id')
-                  ->constrained('service_users')
-                  ->cascadeOnUpdate()
-                  ->cascadeOnDelete();
+            $table->string('service_user_id');
 
             $table->string('title')->default('Comprehensive Risk Assessment');
             $table->enum('status', ['draft','active','archived'])->default('draft');

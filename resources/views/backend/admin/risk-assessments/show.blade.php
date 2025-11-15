@@ -128,9 +128,9 @@
 
           {{-- Add Risk Item under this type (pass query ?risk_type_id=) --}}
           <div class="mt-3">
-            <a href="{{ route('backend.admin.risk-items.create', $assessment) }}?risk_type_id={{ $type->id }}"
-               class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              Add Risk Item
+            <a href="{{ route('backend.admin.risk-items.create', ['profile' => $assessment->id, 'type' => $type->id]) }}"
+                class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                + Add Item
             </a>
           </div>
         </div>

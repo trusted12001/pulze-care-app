@@ -16,9 +16,8 @@ class RiskAssessment extends Model
     public const STATUS_ARCHIVED = 'archived';
 
     protected $fillable = [
-        'service_user_id',
+        'risk_assessment_profile_id',
         'risk_type_id',
-        'title',
         'context',
         'likelihood',
         'severity',

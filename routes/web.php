@@ -56,6 +56,8 @@ use App\Http\Controllers\Backend\Admin\RotaPeriodController;
 use App\Http\Controllers\Backend\Admin\ShiftController;
 
 use App\Http\Controllers\Frontend\AttendanceController;
+use App\Http\Controllers\Backend\Admin\RiskItemController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -312,9 +314,16 @@ Route::prefix('backend/admin')
             ->only(['index','create','store'])
             ->names('risk-types');
 
-        // 🔧 Temporary alias to avoid crashes where Blade still links to risk-items.create
-        Route::get('risk-items/create', fn () => redirect()->route('backend.admin.risk-types.create'))
-            ->name('risk-items.create');
+
+        // Risk Items (create/store)
+        Route::resource('risk-items', RiskItemController::class)
+            ->only(['create','store'])
+            ->names('risk-items');
+
+        // Optional nested: quick POST from within a profile
+        Route::post('risk-assessments/{riskAssessment}/items', [RiskItemController::class, 'store'])
+            ->name('risk-assessments.items.store');
+
 
 
         // Care Plans
