@@ -38,18 +38,34 @@
     @endif
   </div>
 
-  {{-- 1) Add Risk Type button (admin can create a new type not yet in DB) --}}
-  <div class="pt-2">
-    <a href="{{ route('backend.admin.risk-types.create') }}"
-       class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-      Add Risk Type
-    </a>
-  </div>
 </div>
 
 {{-- 2) Risk Types Accordion --}}
 <div class="mt-4 bg-white rounded-lg shadow p-4">
   <h2 class="text-lg font-semibold mb-3">Risk Types</h2>
+
+    {{-- 1) Add Risk Type button (admin can create a new type not yet in DB) --}}
+    <form method="POST" action="{{ route('backend.admin.risk-types.store', $assessment) }}"
+            class="bg-white rounded-lg shadow p-4 space-y-4">
+        @csrf
+
+        <div class="grid grid-cols-1 md:grid-cols-9 gap-4">
+            <div class="md:col-span-3">
+                <input name="name" placeholder="Risk Type" value="{{ old('name') }}" required
+                        class="border rounded w-full px-3 py-2">
+            </div>
+            <div class="md:col-span-4">
+                <input name="description" placeholder="Description (opt.)"
+                            class="border rounded w-full px-3 py-2" type="text" value="{{ old('description') }}">
+            </div>
+
+            <div class="md:col-span-2">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full">Add Risk Type</button>
+            </div>
+        </div>
+
+    </form>
+
 
   @php
     // For quick lookup of items per type
@@ -177,12 +193,14 @@
     @endif
   </div>
 
+</div>
+
   {{-- 3) Print button at lower-left of the card --}}
   <div class="flex items-center gap-2 mt-4">
     <a href="{{ route('backend.admin.risk-assessments.print', $assessment) }}" target="_blank"
        class="px-3 py-2 bg-gray-800 text-white rounded hover:bg-gray-900">Print / PDF</a>
   </div>
-</div>
+
 
 {{-- 4) Remaining sections – mirror care plan but guard with includeIf so nothing breaks yet --}}
 @includeIf('backend.admin.risk-assessments.partials._reviews', ['assessment' => $assessment])

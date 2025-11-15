@@ -30,7 +30,7 @@ class RiskTypeController extends Controller
         RiskType::create($data);
 
         return redirect()
-            ->route('backend.admin.risk-assessments.index')
+            ->route('backend.admin.risk-assessments.show')
             ->with('status', 'Risk Type added.');
     }
 }
