@@ -1,779 +1,517 @@
 @extends('layouts.admin')
 
-@section('title', 'Staff Details')
+@section('title', 'Staff Profile')
 
 @section('content')
-@php
-  use Illuminate\Support\Str;
+  @php
+    use Illuminate\Support\Str;
 
-  // Defensive: coalesce missing relationships to empty collections / nulls
-  $contracts         = $staffProfile->contracts ?? collect();
-  $payroll           = $staffProfile->payroll ?? null;
-  $bankAccounts      = $staffProfile->bankAccounts ?? collect();
-  $registrations     = $staffProfile->registrations ?? collect();
-  $employmentChecks  = $staffProfile->employmentChecks ?? collect();
-  $visas             = $staffProfile->visas ?? collect();
-  $trainingRecords   = $staffProfile->trainingRecords ?? collect();
-  $supervisions      = $staffProfile->supervisionsAppraisals ?? collect();
-  $qualifications    = $staffProfile->qualifications ?? collect();
-  $occHealth         = $staffProfile->occHealthClearances ?? collect();
-  $immunisations     = $staffProfile->immunisations ?? collect();
-  $leaveEntitlements = $staffProfile->leaveEntitlements ?? collect();
-  $leaveRecords      = $staffProfile->leaveRecords ?? collect();
-  $availability      = $staffProfile->availabilityPreferences ?? collect();
-  $emergencyContacts = $staffProfile->emergencyContacts ?? collect();
-  $equalityRaw       = $staffProfile->equalityData ?? null;
-  $equalityRows      = $equalityRaw instanceof \Illuminate\Support\Collection ? $equalityRaw : ($equalityRaw ? collect([$equalityRaw]) : collect());
-  $adjustments       = $staffProfile->adjustments ?? collect();
-  $drivingLicences   = $staffProfile->drivingLicences ?? collect();
-  $disciplinary      = $staffProfile->disciplinaryRecords ?? collect();
-  $documents         = $staffProfile->documents ?? collect();
+    // Defensive: coalesce missing relationships to empty collections / nulls
+    $contracts = $staffProfile->contracts ?? collect();
+    $payroll = $staffProfile->payroll ?? null;
+    $bankAccounts = $staffProfile->bankAccounts ?? collect();
+    $registrations = $staffProfile->registrations ?? collect();
+    $employmentChecks = $staffProfile->employmentChecks ?? collect();
+    $visas = $staffProfile->visas ?? collect();
+    $trainingRecords = $staffProfile->trainingRecords ?? collect();
+    $supervisions = $staffProfile->supervisionsAppraisals ?? collect();
+    $qualifications = $staffProfile->qualifications ?? collect();
+    $occHealth = $staffProfile->occHealthClearances ?? collect();
+    $immunisations = $staffProfile->immunisations ?? collect();
+    $leaveEntitlements = $staffProfile->leaveEntitlements ?? collect();
+    $leaveRecords = $staffProfile->leaveRecords ?? collect();
+    $availability = $staffProfile->availabilityPreferences ?? collect();
+    $emergencyContacts = $staffProfile->emergencyContacts ?? collect();
+    $equalityRaw = $staffProfile->equalityData ?? null;
+    $equalityRows = $equalityRaw instanceof \Illuminate\Support\Collection ? $equalityRaw : ($equalityRaw ? collect([$equalityRaw]) : collect());
+    $adjustments = $staffProfile->adjustments ?? collect();
+    $drivingLicences = $staffProfile->drivingLicences ?? collect();
+    $disciplinary = $staffProfile->disciplinaryRecords ?? collect();
+    $documents = $staffProfile->documents ?? collect();
 
-  $dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-@endphp
+    $dow = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-<div class="min-h-screen p-0 rounded-lg">
+    $val = fn($v) => (isset($v) && $v !== '' && $v !== null ? $v : '—');
+    $fmtDate = fn($d) => $d ? \Illuminate\Support\Carbon::parse($d)->format('d M Y') : '—';
+    $fmtDateTime = fn($d) => $d ? \Illuminate\Support\Carbon::parse($d)->format('d M Y, h:i A') : '—';
 
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Staff Details</h2>
-  </div>
+    $user = $staffProfile->user;
+    $st = $staffProfile->employment_status ?? 'unknown';
+    $badge = match ($st) {
+      'active' => 'bg-green-100 text-green-800 border border-green-200',
+      'on_leave' => 'bg-amber-100 text-amber-800 border border-amber-200',
+      'inactive' => 'bg-gray-100 text-gray-800 border border-gray-200',
+      default => 'bg-gray-100 text-gray-800 border border-gray-200',
+    };
+  @endphp
 
-  {{-- Tabs (keep) --}}
-  @include('backend.admin.staff-profiles._tabs', ['staffProfile' => $staffProfile])
+  <div class="max-w-6xl mx-auto py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 xl:px-8">
 
-  {{-- =========================
-       Core Profile (existing)
-       ========================= --}}
-  <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md space-y-5">
-    {{-- Identity --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h4 class="text-sm text-gray-500">Name</h4>
-        <p class="text-lg font-semibold text-gray-800">
-          {{ $staffProfile->user->full_name ?? '—' }}
-        </p>
+    {{-- Header Section --}}
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div class="flex-1">
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 break-words">
+            {{ $user->full_name ?? '—' }}
+          </h1>
+          <div
+            class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+            @if($user->email)
+              <span class="flex items-center gap-1.5 break-all">
+                <i class="ph ph-envelope-simple flex-shrink-0"></i>
+                <span class="break-all">{{ $user->email }}</span>
+              </span>
+              <span class="hidden sm:inline text-gray-300">•</span>
+            @endif
+            @if($staffProfile->job_title)
+              <span class="flex items-center gap-1.5">
+                <i class="ph ph-briefcase flex-shrink-0"></i>
+                {{ $staffProfile->job_title }}
+              </span>
+              <span class="hidden sm:inline text-gray-300">•</span>
+            @endif
+            <span class="flex items-center gap-1.5">
+              <i class="ph ph-calendar flex-shrink-0"></i>
+              <span class="whitespace-nowrap">Created {{ $fmtDate($staffProfile->created_at) }}</span>
+            </span>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <a href="{{ route('backend.admin.staff-profiles.edit', $staffProfile->id) }}"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base font-medium">
+            <i class="ph ph-pencil-simple"></i>
+            <span>Edit Profile</span>
+          </a>
+          <a href="{{ route('backend.admin.staff-profiles.index') }}"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-colors duration-200 text-sm sm:text-base font-medium">
+            <i class="ph ph-arrow-left"></i>
+            <span>Back to List</span>
+          </a>
+        </div>
       </div>
 
-      <div>
-        <h4 class="text-sm text-gray-500">Email</h4>
-        <p class="text-gray-700">{{ $staffProfile->user->email ?? '—' }}</p>
-      </div>
-
-      <div>
-        <h4 class="text-sm text-gray-500">Job Title</h4>
-        <p class="text-gray-700">{{ $staffProfile->job_title ?? '—' }}</p>
-      </div>
-
-      <div>
-        <h4 class="text-sm text-gray-500">Employment Status</h4>
-        @php
-          $st = $staffProfile->employment_status ?? 'unknown';
-          $badge = match($st) {
-            'active'   => 'bg-green-500',
-            'on_leave' => 'bg-amber-500',
-            'inactive' => 'bg-gray-500',
-            default    => 'bg-gray-400',
-          };
-        @endphp
-        <span class="inline-block px-3 py-1 text-sm font-semibold rounded-full text-white {{ $badge }}">
-          {{ ucfirst(str_replace('_',' ',$st)) }}
+      {{-- Status Badge --}}
+      <div class="inline-flex items-center">
+        <span
+          class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shadow-sm {{ $badge }}">
+          <span
+            class="w-2 h-2 rounded-full {{ $st === 'active' ? 'bg-green-500' : ($st === 'on_leave' ? 'bg-amber-500' : 'bg-gray-500') }}"></span>
+          {{ ucfirst(str_replace('_', ' ', $st)) }}
         </span>
       </div>
-
-      <div>
-        <h4 class="text-sm text-gray-500">Date of Birth</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->date_of_birth)->format('d M Y') ?? '—' }}</p>
-      </div>
     </div>
 
-    <hr class="border-gray-200">
-
-    {{-- HR Details --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h4 class="text-sm text-gray-500">Employment Type</h4>
-        <p class="text-gray-700">{{ ucfirst($staffProfile->employment_type ?? '—') }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Engagement Basis</h4>
-        <p class="text-gray-700">{{ ucwords(str_replace('_',' ', $staffProfile->engagement_basis ?? '—')) }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Hire Date</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->hire_date)->format('d M Y') ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Start in Post</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->start_in_post)->format('d M Y') ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">End in Post</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->end_in_post)->format('d M Y') ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Work Location</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->workLocation)->name ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Line Manager</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->lineManager)->full_name ?? '—' }}</p>
-      </div>
-    </div>
-
-    <hr class="border-gray-200">
-
-    {{-- Contact --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h4 class="text-sm text-gray-500">Work Email</h4>
-        <p class="text-gray-700">{{ $staffProfile->work_email ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Phone</h4>
-        <p class="text-gray-700">{{ $staffProfile->phone ?? '—' }}</p>
-      </div>
-    </div>
-
-    <hr class="border-gray-200">
-
-    {{-- Compliance --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h4 class="text-sm text-gray-500">DBS Number</h4>
-        <p class="text-gray-700">{{ $staffProfile->dbs_number ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">DBS Issued At</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->dbs_issued_at)->format('d M Y') ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">DBS Update Service</h4>
-        <p class="text-gray-700">{{ ($staffProfile->dbs_update_service ?? false) ? 'Yes' : 'No' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Mandatory Training Completed</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->mandatory_training_completed_at)->format('d M Y H:i') ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Right to Work Verified</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->right_to_work_verified_at)->format('d M Y H:i') ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">NMC PIN</h4>
-        <p class="text-gray-700">{{ $staffProfile->nmc_pin ?? '—' }}</p>
-      </div>
-      <div>
-        <h4 class="text-sm text-gray-500">GPhC PIN</h4>
-        <p class="text-gray-700">{{ $staffProfile->gphc_pin ?? '—' }}</p>
-      </div>
-    </div>
-
-    @if(!empty($staffProfile->notes))
-      <hr class="border-gray-200">
-      <div>
-        <h4 class="text-sm text-gray-500">Notes</h4>
-        <p class="text-gray-700 whitespace-pre-line">{{ $staffProfile->notes }}</p>
+    {{-- Flash Messages --}}
+    @if (session('success'))
+      <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-lg shadow-sm">
+        <div class="flex items-center gap-2 text-sm sm:text-base">
+          <i class="ph ph-check-circle text-green-600 flex-shrink-0"></i>
+          <span class="break-words">{{ session('success') }}</span>
+        </div>
       </div>
     @endif
 
-    <hr class="border-gray-200">
+    {{-- Tabs --}}
+    @include('backend.admin.staff-profiles._tabs', ['staffProfile' => $staffProfile])
 
-    {{-- Meta --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h4 class="text-sm text-gray-500">Created</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->created_at)->format('d M Y H:i') }}</p>
+    {{-- Main Content Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 mt-6">
+
+      {{-- Left Column - Main Info --}}
+      <div class="lg:col-span-2 space-y-4 sm:space-y-5 lg:space-y-6">
+
+        {{-- Personal Information Card --}}
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <i class="ph ph-user text-blue-600 flex-shrink-0"></i>
+              <span>Personal Information</span>
+            </h2>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Name</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium break-words">{{ $val($user->full_name) }}</p>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Email</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium break-all">{{ $val($user->email) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Job
+                  Title</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium break-words">{{ $val($staffProfile->job_title) }}
+                </p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Date of
+                  Birth</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $fmtDate($staffProfile->date_of_birth) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Work
+                  Email</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium break-all">{{ $val($staffProfile->work_email) }}
+                </p>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Phone</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $val($staffProfile->phone) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {{-- Employment Information Card --}}
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <i class="ph ph-briefcase text-purple-600 flex-shrink-0"></i>
+              <span>Employment Information</span>
+            </h2>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Employment
+                  Status</label>
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium {{ $badge }}">
+                  <span
+                    class="w-1.5 h-1.5 rounded-full {{ $st === 'active' ? 'bg-green-500' : ($st === 'on_leave' ? 'bg-amber-500' : 'bg-gray-500') }}"></span>
+                  {{ ucfirst(str_replace('_', ' ', $st)) }}
+                </span>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Employment
+                  Type</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">
+                  {{ ucfirst($val($staffProfile->employment_type)) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Engagement
+                  Basis</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">
+                  {{ ucwords(str_replace('_', ' ', $val($staffProfile->engagement_basis))) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Hire
+                  Date</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $fmtDate($staffProfile->hire_date) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Start in
+                  Post</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $fmtDate($staffProfile->start_in_post) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">End in
+                  Post</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $fmtDate($staffProfile->end_in_post) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Work
+                  Location</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">
+                  {{ $val(optional($staffProfile->workLocation)->name) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Line
+                  Manager</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">
+                  {{ $val(optional($staffProfile->lineManager)->full_name) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {{-- Compliance Information Card --}}
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <i class="ph ph-shield-check text-emerald-600 flex-shrink-0"></i>
+              <span>Compliance & Registrations</span>
+            </h2>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">DBS
+                  Number</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $val($staffProfile->dbs_number) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">DBS Issued
+                  At</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $fmtDate($staffProfile->dbs_issued_at) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">DBS Update
+                  Service</label>
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium {{ ($staffProfile->dbs_update_service ?? false) ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                  <i
+                    class="ph {{ ($staffProfile->dbs_update_service ?? false) ? 'ph-check-circle' : 'ph-x-circle' }}"></i>
+                  {{ ($staffProfile->dbs_update_service ?? false) ? 'Yes' : 'No' }}
+                </span>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Mandatory
+                  Training Completed</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">
+                  {{ $fmtDateTime($staffProfile->mandatory_training_completed_at) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Right to
+                  Work Verified</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">
+                  {{ $fmtDateTime($staffProfile->right_to_work_verified_at) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">NMC
+                  PIN</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $val($staffProfile->nmc_pin) }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">GPhC
+                  PIN</label>
+                <p class="text-sm sm:text-base text-gray-900 font-medium">{{ $val($staffProfile->gphc_pin) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        @if(!empty($staffProfile->notes))
+          {{-- Notes Card --}}
+          <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div
+              class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
+              <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <i class="ph ph-note text-gray-600 flex-shrink-0"></i>
+                <span>Notes</span>
+              </h2>
+            </div>
+            <div class="p-4 sm:p-5 lg:p-6">
+              <p class="text-sm sm:text-base text-gray-700 whitespace-pre-line">{{ $staffProfile->notes }}</p>
+            </div>
+          </div>
+        @endif
+
       </div>
-      <div>
-        <h4 class="text-sm text-gray-500">Last Updated</h4>
-        <p class="text-gray-700">{{ optional($staffProfile->updated_at)->format('d M Y H:i') }}</p>
+
+      {{-- Right Column - Quick Stats & Actions --}}
+      <div class="space-y-4 sm:space-y-5 lg:space-y-6">
+
+        {{-- Quick Stats Card --}}
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <i class="ph ph-chart-bar text-emerald-600 flex-shrink-0"></i>
+              <span>Quick Stats</span>
+            </h2>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
+              <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                <p class="text-xl sm:text-2xl font-bold text-gray-900 break-words">
+                  {{ $fmtDate($staffProfile->created_at) }}</p>
+                <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Profile Created</p>
+              </div>
+              @if($staffProfile->hire_date)
+                <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <p class="text-xl sm:text-2xl font-bold text-gray-900 break-words">
+                    {{ $fmtDate($staffProfile->hire_date) }}</p>
+                  <p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Hire Date</p>
+                </div>
+              @endif
+            </div>
+          </div>
+        </div>
+
+        {{-- Quick Actions Card --}}
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-gray-200">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <i class="ph ph-lightning text-amber-600 flex-shrink-0"></i>
+              <span>Quick Actions</span>
+            </h2>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="space-y-2 sm:space-y-3">
+              <a href="{{ route('backend.admin.staff-profiles.edit', $staffProfile->id) }}"
+                class="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-700 rounded-lg transition-colors duration-200 text-sm sm:text-base font-medium">
+                <i class="ph ph-pencil-simple text-base sm:text-lg flex-shrink-0"></i>
+                <span class="font-medium">Edit Profile</span>
+              </a>
+              @if($user->email)
+                <a href="mailto:{{ $user->email }}"
+                  class="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-green-50 hover:bg-green-100 active:bg-green-200 text-green-700 rounded-lg transition-colors duration-200 text-sm sm:text-base font-medium">
+                  <i class="ph ph-envelope text-base sm:text-lg flex-shrink-0"></i>
+                  <span class="font-medium">Send Email</span>
+                </a>
+              @endif
+              <a href="{{ route('backend.admin.staff-profiles.index') }}"
+                class="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 text-sm sm:text-base font-medium">
+                <i class="ph ph-arrow-left text-base sm:text-lg flex-shrink-0"></i>
+                <span class="font-medium">Back to List</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{-- System Information Card --}}
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <i class="ph ph-info text-slate-600 flex-shrink-0"></i>
+              <span>System Information</span>
+            </h2>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm">
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-gray-500">Profile ID:</span>
+                <span class="font-medium text-gray-900 break-all">#{{ $staffProfile->id }}</span>
+              </div>
+              @if($staffProfile->tenant_id)
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-gray-500">Tenant ID:</span>
+                  <span class="font-medium text-gray-900 break-all">#{{ $staffProfile->tenant_id }}</span>
+                </div>
+              @endif
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-gray-500">Created:</span>
+                <span class="font-medium text-gray-900 break-words">{{ $fmtDate($staffProfile->created_at) }}</span>
+              </div>
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-gray-500">Updated:</span>
+                <span class="font-medium text-gray-900 break-words">{{ $fmtDate($staffProfile->updated_at) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
+
     </div>
-  </div>
 
-  {{-- =========================
-       Extended Modules (new)
-       ========================= --}}
+    {{-- Extended Modules Section --}}
+    <div class="mt-6 sm:mt-8 space-y-4 sm:space-y-5 lg:space-y-6">
 
-  {{-- Contracts --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Contracts</h3>
-      @if (Route::has('backend.admin.staff-profiles.contracts.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.contracts.index', $staffProfile) }}">Manage</a>
+      {{-- Contracts --}}
+      @if($contracts->isNotEmpty())
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <i class="ph ph-file-text text-blue-600"></i>
+                <span>Contracts</span>
+              </h3>
+              @if (Route::has('backend.admin.staff-profiles.contracts.index'))
+                <a class="text-blue-600 hover:underline text-sm"
+                  href="{{ route('backend.admin.staff-profiles.contracts.index', $staffProfile) }}">Manage</a>
+              @endif
+            </div>
+          </div>
+          <div class="p-4 sm:p-5 lg:p-6">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
+                  <tr>
+                    <th class="px-4 py-2 text-left">Ref</th>
+                    <th class="px-4 py-2 text-left">Type</th>
+                    <th class="px-4 py-2 text-left">Hours/Wk</th>
+                    <th class="px-4 py-2 text-left">Start</th>
+                    <th class="px-4 py-2 text-left">End</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  @foreach($contracts as $c)
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-4 py-2">{{ $c->contract_ref ?? '—' }}</td>
+                      <td class="px-4 py-2">{{ ucfirst(str_replace('_', ' ', $c->contract_type ?? '—')) }}</td>
+                      <td class="px-4 py-2">{{ $c->hours_per_week ?? '—' }}</td>
+                      <td class="px-4 py-2">{{ optional($c->start_date)->format('d M Y') ?? '—' }}</td>
+                      <td class="px-4 py-2">{{ optional($c->end_date)->format('d M Y') ?? '—' }}</td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       @endif
-    </div>
-    @if($contracts->isEmpty())
-      <p class="text-gray-500">No contracts recorded.</p>
-    @else
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-            <tr>
-              <th class="px-4 py-2">Ref</th>
-              <th class="px-4 py-2">Type</th>
-              <th class="px-4 py-2">Hours/Wk</th>
-              <th class="px-4 py-2">Start</th>
-              <th class="px-4 py-2">End</th>
-              <th class="px-4 py-2">FTE Salary</th>
-              <th class="px-4 py-2">Hourly</th>
-              <th class="px-4 py-2">Cost Centre</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($contracts as $c)
-              <tr class="border-t">
-                <td class="px-4 py-2">{{ $c->contract_ref ?? '—' }}</td>
-                <td class="px-4 py-2">{{ ucfirst(str_replace('_',' ',$c->contract_type ?? '—')) }}</td>
-                <td class="px-4 py-2">{{ $c->hours_per_week ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($c->start_date)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($c->end_date)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ $c->fte_salary ? number_format($c->fte_salary,2) : '—' }}</td>
-                <td class="px-4 py-2">{{ $c->hourly_rate ? number_format($c->hourly_rate,2) : '—' }}</td>
-                <td class="px-4 py-2">{{ $c->cost_centre ?? '—' }}</td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    @endif
-  </div>
 
-  {{-- Payroll & Bank Accounts --}}
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Payroll</h3>
-        @if (Route::has('backend.admin.staff-profiles.payroll.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.payroll.index', $staffProfile) }}">Manage</a>
+      {{-- Summary Cards for other modules --}}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        @if($payroll)
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-4 py-3 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-900">Payroll</h3>
+                @if (Route::has('backend.admin.staff-profiles.payroll.index'))
+                  <a class="text-blue-600 hover:underline text-xs"
+                    href="{{ route('backend.admin.staff-profiles.payroll.index', $staffProfile) }}">Manage</a>
+                @endif
+              </div>
+            </div>
+            <div class="p-4">
+              <p class="text-xs text-gray-500 mb-2">NI Number</p>
+              <p class="text-sm font-medium text-gray-900">
+                {{ $payroll->ni_number ? '••••' . substr($payroll->ni_number, -4) : '—' }}</p>
+            </div>
+          </div>
+        @endif
+
+        @if($bankAccounts->isNotEmpty())
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-4 py-3 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-900">Bank Accounts</h3>
+                @if (Route::has('backend.admin.staff-profiles.bank-accounts.index'))
+                  <a class="text-blue-600 hover:underline text-xs"
+                    href="{{ route('backend.admin.staff-profiles.bank-accounts.index', $staffProfile) }}">Manage</a>
+                @endif
+              </div>
+            </div>
+            <div class="p-4">
+              <p class="text-xs text-gray-500 mb-1">{{ $bankAccounts->count() }} account(s)</p>
+              <p class="text-sm text-gray-700">View details to see account information</p>
+            </div>
+          </div>
+        @endif
+
+        @if($registrations->isNotEmpty())
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-4 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-900">Registrations</h3>
+                @if (Route::has('backend.admin.staff-profiles.registrations.index'))
+                  <a class="text-blue-600 hover:underline text-xs"
+                    href="{{ route('backend.admin.staff-profiles.registrations.index', $staffProfile) }}">Manage</a>
+                @endif
+              </div>
+            </div>
+            <div class="p-4">
+              <p class="text-xs text-gray-500 mb-1">{{ $registrations->count() }} registration(s)</p>
+              <p class="text-sm text-gray-700">View details to see registration information</p>
+            </div>
+          </div>
         @endif
       </div>
-      @if(!$payroll)
-        <p class="text-gray-500">No payroll details recorded.</p>
-      @else
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div><dt class="text-gray-500">NI Number</dt><dd class="text-gray-800">{{ $payroll->ni_number ? '••••'.substr($payroll->ni_number, -4) : '—' }}</dd></div>
-          <div><dt class="text-gray-500">Tax Code</dt><dd class="text-gray-800">{{ $payroll->tax_code ?? '—' }}</dd></div>
-          <div><dt class="text-gray-500">Starter Declaration</dt><dd class="text-gray-800">{{ strtoupper($payroll->starter_declaration ?? '—') }}</dd></div>
-          <div><dt class="text-gray-500">Student Loan</dt><dd class="text-gray-800">{{ ucfirst(str_replace('_',' ', $payroll->student_loan_plan ?? 'none')) }}</dd></div>
-          <div><dt class="text-gray-500">Postgrad Loan</dt><dd class="text-gray-800">{{ ($payroll->postgrad_loan ?? false) ? 'Yes' : 'No' }}</dd></div>
-          <div><dt class="text-gray-500">Payroll #</dt><dd class="text-gray-800">{{ $payroll->payroll_number ?? '—' }}</dd></div>
-        </dl>
-      @endif
+
     </div>
 
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Bank Accounts</h3>
-        @if (Route::has('backend.admin.staff-profiles.bank-accounts.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.bank-accounts.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($bankAccounts->isEmpty())
-        <p class="text-gray-500">No bank accounts saved.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($bankAccounts as $ba)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ $ba->account_holder }}</span> —
-              Sort: {{ $ba->sort_code ? '••-••-'.substr(str_replace('-','',$ba->sort_code), -2) : '—' }},
-              Acct: {{ $ba->account_number ? '••••'.substr($ba->account_number, -4) : '—' }}
-              @if($ba->building_society_roll) <span class="text-gray-500"> (Roll: {{ $ba->building_society_roll }})</span>@endif
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
   </div>
-
-  {{-- Employment Checks --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Employment Checks</h3>
-      @if (Route::has('backend.admin.staff-profiles.employment-checks.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.employment-checks.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($employmentChecks->isEmpty())
-      <p class="text-gray-500">No checks recorded.</p>
-    @else
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-            <tr>
-              <th class="px-4 py-2">Type</th>
-              <th class="px-4 py-2">Result</th>
-              <th class="px-4 py-2">Ref</th>
-              <th class="px-4 py-2">Issued</th>
-              <th class="px-4 py-2">Expires</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($employmentChecks as $ec)
-              <tr class="border-t">
-                <td class="px-4 py-2">{{ str_replace('_',' ', $ec->check_type) }}</td>
-                <td class="px-4 py-2">{{ ucfirst($ec->result ?? '—') }}</td>
-                <td class="px-4 py-2">{{ $ec->reference_no ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($ec->issued_at)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($ec->expires_at)->format('d M Y') ?? '—' }}</td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    @endif
-  </div>
-
-  {{-- Visas --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Visas</h3>
-      @if (Route::has('backend.admin.staff-profiles.visas.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.visas.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($visas->isEmpty())
-      <p class="text-gray-500">No visas on file.</p>
-    @else
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-            <tr>
-              <th class="px-4 py-2">Type</th>
-              <th class="px-4 py-2">BRP</th>
-              <th class="px-4 py-2">CoS</th>
-              <th class="px-4 py-2">Issued</th>
-              <th class="px-4 py-2">Expiry</th>
-              <th class="px-4 py-2">Restriction</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($visas as $v)
-              <tr class="border-t">
-                <td class="px-4 py-2">{{ $v->visa_type ?? '—' }}</td>
-                <td class="px-4 py-2">{{ $v->brp_number ?? '—' }}</td>
-                <td class="px-4 py-2">{{ $v->cos_number ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($v->issue_date)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($v->expiry_date)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ $v->hours_restriction ?? '—' }}</td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    @endif
-  </div>
-
-  {{-- Registrations --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Professional Registrations</h3>
-      @if (Route::has('backend.admin.staff-profiles.registrations.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.registrations.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($registrations->isEmpty())
-      <p class="text-gray-500">No registrations recorded.</p>
-    @else
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-            <tr>
-              <th class="px-4 py-2">Body</th>
-              <th class="px-4 py-2">PIN</th>
-              <th class="px-4 py-2">Status</th>
-              <th class="px-4 py-2">First Reg</th>
-              <th class="px-4 py-2">Expires</th>
-              <th class="px-4 py-2">Revalidation</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($registrations as $r)
-              <tr class="border-t">
-                <td class="px-4 py-2">{{ $r->body }}</td>
-                <td class="px-4 py-2">{{ $r->pin_number }}</td>
-                <td class="px-4 py-2">{{ ucfirst($r->status ?? 'active') }}</td>
-                <td class="px-4 py-2">{{ optional($r->first_registered_at)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($r->expires_at)->format('d M Y') ?? '—' }}</td>
-                <td class="px-4 py-2">{{ optional($r->revalidation_due_at)->format('d M Y') ?? '—' }}</td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    @endif
-  </div>
-
-  {{-- Training & Supervisions --}}
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Training Records</h3>
-        @if (Route::has('backend.admin.staff-profiles.training-records.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.training-records.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($trainingRecords->isEmpty())
-        <p class="text-gray-500">No training recorded.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($trainingRecords as $t)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ $t->module_title }}</span>
-              <span class="text-gray-500"> ({{ $t->module_code }})</span> —
-              {{ $t->provider ?? '—' }} •
-              Completed: {{ optional($t->completed_at)->format('d M Y') ?? '—' }} •
-              Valid until: {{ optional($t->valid_until)->format('d M Y') ?? '—' }}
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Supervisions & Appraisals</h3>
-        @if (Route::has('backend.admin.staff-profiles.supervisions-appraisals.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.supervisions-appraisals.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($supervisions->isEmpty())
-        <p class="text-gray-500">No supervisions/appraisals recorded.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($supervisions as $s)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ ucfirst(str_replace('_',' ', $s->type)) }}</span> —
-              Held: {{ optional($s->held_at)->format('d M Y') ?? '—' }},
-              Manager: {{ optional($s->manager?->full_name)->name ?? ($s->manager_user_id ?? '—') }},
-              Next due: {{ optional($s->next_due_at)->format('d M Y') ?? '—' }}
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-  </div>
-
-  {{-- Qualifications --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Qualifications</h3>
-      @if (Route::has('backend.admin.staff-profiles.qualifications.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.qualifications.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($qualifications->isEmpty())
-      <p class="text-gray-500">No qualifications recorded.</p>
-    @else
-      <ul class="divide-y">
-        @foreach($qualifications as $qf)
-          <li class="py-2 text-sm">
-            <span class="font-medium">{{ $qf->level }} — {{ $qf->title }}</span>
-            <span class="text-gray-500"> ({{ $qf->institution ?? '—' }})</span>
-            <span class="ml-2">Awarded: {{ optional($qf->awarded_at)->format('d M Y') ?? '—' }}</span>
-          </li>
-        @endforeach
-      </ul>
-    @endif
-  </div>
-
-  {{-- Occupational Health & Immunisations --}}
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Occupational Health</h3>
-        @if (Route::has('backend.admin.staff-profiles.occ-health.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.occ-health.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($occHealth->isEmpty())
-        <p class="text-gray-500">No OH clearance records.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($occHealth as $oh)
-            <li class="py-2 text-sm">
-              Cleared: <span class="font-medium">{{ ($oh->cleared_for_role ?? false) ? 'Yes' : 'No' }}</span> —
-              Assessed: {{ optional($oh->assessed_at)->format('d M Y') ?? '—' }},
-              Review due: {{ optional($oh->review_due_at)->format('d M Y') ?? '—' }}<br>
-              <span class="text-gray-600">{{ Str::limit($oh->restrictions ?? 'No restrictions', 120) }}</span>
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Immunisations</h3>
-        @if (Route::has('backend.admin.staff-profiles.immunisations.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.immunisations.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($immunisations->isEmpty())
-        <p class="text-gray-500">No immunisations recorded.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($immunisations as $im)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ $im->vaccine }}</span>
-              @if($im->dose) <span class="text-gray-500"> ({{ $im->dose }})</span>@endif
-              — {{ optional($im->administered_at)->format('d M Y') ?? '—' }}
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-  </div>
-
-  {{-- Leave & Availability --}}
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Leave Entitlements</h3>
-        @if (Route::has('backend.admin.staff-profiles.leave-entitlements.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.leave-entitlements.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($leaveEntitlements->isEmpty())
-        <p class="text-gray-500">No entitlements set.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($leaveEntitlements as $le)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ optional($le->period_start)->format('d M Y') ?? '—' }} → {{ optional($le->period_end)->format('d M Y') ?? '—' }}</span>
-              — Annual leave: {{ number_format((float)$le->annual_leave_days, 2) }} days
-              @if($le->sick_pay_scheme) <span class="text-gray-500"> ({{ $le->sick_pay_scheme }})</span>@endif
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Leave Records</h3>
-        @if (Route::has('backend.admin.staff-profiles.leave-records.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.leave-records.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($leaveRecords->isEmpty())
-        <p class="text-gray-500">No leave records.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($leaveRecords as $lr)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ ucfirst($lr->type) }}</span> —
-              {{ optional($lr->start_date)->format('d M Y') ?? '—' }} → {{ optional($lr->end_date)->format('d M Y') ?? '—' }}
-              @if(!is_null($lr->hours)) <span class="text-gray-500"> ({{ number_format((float)$lr->hours, 2) }} h)</span>@endif
-              @if($lr->reason) <span class="block text-gray-600">{{ Str::limit($lr->reason, 120) }}</span>@endif
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-  </div>
-
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Availability Preferences</h3>
-      @if (Route::has('backend.admin.staff-profiles.availability-preferences.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.availability-preferences.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($availability->isEmpty())
-      <p class="text-gray-500">No availability preferences.</p>
-    @else
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-            <tr>
-              <th class="px-4 py-2">Day</th>
-              <th class="px-4 py-2">From</th>
-              <th class="px-4 py-2">To</th>
-              <th class="px-4 py-2">Preference</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($availability as $av)
-              <tr class="border-t">
-                <td class="px-4 py-2">{{ $dow[$av->day_of_week] ?? $av->day_of_week }}</td>
-                <td class="px-4 py-2">{{ $av->available_from ?? '—' }}</td>
-                <td class="px-4 py-2">{{ $av->available_to ?? '—' }}</td>
-                <td class="px-4 py-2">{{ ucfirst($av->preference ?? 'okay') }}</td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    @endif
-  </div>
-
-  {{-- Emergency & Equality --}}
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Emergency Contacts</h3>
-        @if (Route::has('backend.admin.staff-profiles.emergency-contacts.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.emergency-contacts.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($emergencyContacts->isEmpty())
-        <p class="text-gray-500">No emergency contacts set.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($emergencyContacts as $ec)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ $ec->name }}</span> — {{ $ec->relationship ?? '—' }} •
-              {{ $ec->phone ?? '—' }}
-              @if($ec->email) <span class="text-gray-500"> • {{ $ec->email }}</span>@endif
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Equality, Diversity & Inclusion</h3>
-        @if (Route::has('backend.admin.staff-profiles.equality.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.equality.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($equalityRows->isEmpty())
-        <p class="text-gray-500">No EDI data recorded.</p>
-      @else
-        @foreach($equalityRows as $eq)
-          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm {{ !$loop->last ? 'mb-4 pb-4 border-b' : '' }}">
-            <div><dt class="text-gray-500">Ethnicity</dt><dd class="text-gray-800">{{ $eq->ethnicity ?? '—' }}</dd></div>
-            <div><dt class="text-gray-500">Religion</dt><dd class="text-gray-800">{{ $eq->religion ?? '—' }}</dd></div>
-            <div><dt class="text-gray-500">Disability</dt><dd class="text-gray-800">{{ ($eq->disability ?? false) ? 'Yes' : 'No' }}</dd></div>
-            <div><dt class="text-gray-500">Gender Identity</dt><dd class="text-gray-800">{{ $eq->gender_identity ?? '—' }}</dd></div>
-            <div><dt class="text-gray-500">Sexual Orientation</dt><dd class="text-gray-800">{{ $eq->sexual_orientation ?? '—' }}</dd></div>
-            <div><dt class="text-gray-500">Data Source</dt><dd class="text-gray-800">{{ Str::headline($eq->data_source ?? 'self_declared') }}</dd></div>
-          </dl>
-        @endforeach
-      @endif
-    </div>
-  </div>
-
-  {{-- Adjustments & Driving --}}
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Adjustments</h3>
-        @if (Route::has('backend.admin.staff-profiles.adjustments.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.adjustments.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($adjustments->isEmpty())
-        <p class="text-gray-500">No adjustments recorded.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($adjustments as $ad)
-            <li class="py-2 text-sm">
-              <span class="font-medium">{{ $ad->type }}</span> —
-              From: {{ optional($ad->in_place_from)->format('d M Y') ?? '—' }}<br>
-              <span class="text-gray-600">{{ Str::limit($ad->notes ?? '—', 140) }}</span>
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold text-gray-800">Driving Licences</h3>
-        @if (Route::has('backend.admin.staff-profiles.driving-licences.index'))
-          <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.driving-licences.index', $staffProfile) }}">Manage</a>
-        @endif
-      </div>
-      @if($drivingLicences->isEmpty())
-        <p class="text-gray-500">No driving licence details.</p>
-      @else
-        <ul class="divide-y">
-          @foreach($drivingLicences as $dl)
-            @php
-              $masked = $dl->licence_number ? (strlen($dl->licence_number) > 4 ? str_repeat('•', strlen($dl->licence_number)-4).substr($dl->licence_number, -4) : $dl->licence_number) : '—';
-            @endphp
-            <li class="py-2 text-sm">
-              <span class="font-medium"># {{ $masked }}</span> — {{ $dl->categories ?? '—' }},
-              Expires: {{ optional($dl->expires_at)->format('d M Y') ?? '—' }},
-              Business insurance: {{ ($dl->business_insurance_confirmed ?? false) ? 'Yes' : 'No' }}
-            </li>
-          @endforeach
-        </ul>
-      @endif
-    </div>
-  </div>
-
-  {{-- Disciplinary --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Disciplinary</h3>
-      @if (Route::has('backend.admin.staff-profiles.disciplinary.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.disciplinary.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($disciplinary->isEmpty())
-      <p class="text-gray-500">No disciplinary records.</p>
-    @else
-      <ul class="divide-y">
-        @foreach($disciplinary as $dr)
-          <li class="py-2 text-sm">
-            <span class="font-medium">{{ ucfirst($dr->type) }}</span> —
-            Opened: {{ optional($dr->opened_at)->format('d M Y') ?? '—' }},
-            Closed: {{ optional($dr->closed_at)->format('d M Y') ?? '—' }}<br>
-            <span class="text-gray-600">{{ Str::limit($dr->summary, 140) }}</span>
-          </li>
-        @endforeach
-      </ul>
-    @endif
-  </div>
-
-  {{-- Documents --}}
-  <div class="mt-8 bg-white border border-gray-200 rounded-lg p-6 shadow-md">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-xl font-semibold text-gray-800">Documents</h3>
-      @if (Route::has('backend.admin.staff-profiles.documents.index'))
-        <a class="text-blue-600 hover:underline" href="{{ route('backend.admin.staff-profiles.documents.index', $staffProfile) }}">Manage</a>
-      @endif
-    </div>
-    @if($documents->isEmpty())
-      <p class="text-gray-500">No documents uploaded.</p>
-    @else
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-100 text-gray-700 uppercase tracking-wider text-xs">
-            <tr>
-              <th class="px-4 py-2">Category</th>
-              <th class="px-4 py-2">Filename</th>
-              <th class="px-4 py-2">Type</th>
-              <th class="px-4 py-2">Uploaded</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($documents as $d)
-              <tr class="border-t">
-                <td class="px-4 py-2">{{ $d->category }}</td>
-                <td class="px-4 py-2">
-                  <a href="{{ asset('storage/'.$d->path) }}" target="_blank" class="text-blue-600 hover:underline">{{ $d->filename }}</a>
-                </td>
-                <td class="px-4 py-2">{{ $d->mime }}</td>
-                <td class="px-4 py-2">{{ optional($d->created_at)->format('d M Y H:i') }}</td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    @endif
-  </div>
-
-  {{-- Footer actions --}}
-  <div class="mt-6 flex items-center justify-between">
-    <a href="{{ route('backend.admin.staff-profiles.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-blue-600 hover:underline">
-      ← Back to List
-    </a>
-  </div>
-
-</div>
 @endsection
