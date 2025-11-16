@@ -29,6 +29,11 @@ class RiskAssessment extends Model
         'created_by',
         'approved_by',
         'approved_at',
+        'hazard',
+        'controls',
+        'residual_likelihood',
+        'residual_severity',
+        'residual_score',
     ];
 
     protected $casts = [

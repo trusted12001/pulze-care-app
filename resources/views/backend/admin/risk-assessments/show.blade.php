@@ -114,12 +114,19 @@
                     <td class="p-3">{{ $item->risk_score }}</td>
                     <td class="p-3">{{ ucfirst($item->risk_band) }}</td>
                     <td class="p-3">{{ ucfirst($item->status) }}</td>
-                    <td class="p-3 text-right space-x-2">
-                      {{-- Wire later to item edit/delete routes --}}
-                      <a href="#" class="px-2 py-1 text-amber-700 hover:underline">Edit</a>
-                      <a href="#" class="px-2 py-1 text-red-700 hover:underline">Delete</a>
-                    </td>
-                  </tr>
+                    <td class="p-3 text-right">
+                    <a href="{{ route('backend.admin.risk-items.edit', $item) }}"
+                        class="px-2 py-1 text-blue-600 hover:underline text-sm">Edit</a>
+
+                    <form method="POST"
+                            action="{{ route('backend.admin.risk-items.destroy', $item) }}"
+                            class="inline"
+                            onsubmit="return confirm('Delete this risk item? This action cannot be undone.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-2 py-1 text-red-600 hover:underline text-sm">Delete</button>
+                    </form>
+                    </td>                  </tr>
                 @endforeach
                 </tbody>
               </table>
@@ -158,8 +165,8 @@
               <thead class="bg-gray-50">
                 <tr>
                   <th class="text-left p-3">Context</th>
-                  <th class="text-left p-3">Likelihood</th>
-                  <th class="text-left p-3">Severity</th>
+                    <th class="text-left p-3">Likelihood</th>
+                    <th class="text-left p-3">Severity</th>
                   <th class="text-left p-3">Score</th>
                   <th class="text-left p-3">Band</th>
                   <th class="text-left p-3">Status</th>

@@ -315,12 +315,13 @@ Route::prefix('backend/admin')
             ->names('risk-types');
 
 
-        // Risk Items (create/store)
+
+        // Risk Items (create, store, edit, update, destroy)
         Route::resource('risk-items', RiskItemController::class)
-            ->only(['create','store'])
+            ->only(['create','store','edit','update','destroy'])
             ->names('risk-items');
 
-        // Optional nested: quick POST from within a profile
+        // Optional nested: quick POST from within a profile (kept)
         Route::post('risk-assessments/{riskAssessment}/items', [RiskItemController::class, 'store'])
             ->name('risk-assessments.items.store');
 

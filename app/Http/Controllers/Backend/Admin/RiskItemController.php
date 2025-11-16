@@ -9,6 +9,10 @@ use App\Models\RiskType;                // catalog
 use App\Models\User;
 use Illuminate\Http\Request;
 
+use Illuminate\Validation\Rule;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+
 class RiskItemController extends Controller
 {
     /**
@@ -34,15 +38,15 @@ class RiskItemController extends Controller
         $profiles = RiskAssessmentProfile::query()
             ->with(['serviceUser:id,first_name,last_name'])
             ->latest('created_at')
-            ->get(['id','service_user_id','title','status','created_at']);
+            ->get(['id', 'service_user_id', 'title', 'status', 'created_at']);
 
         $types = RiskType::query()
             ->orderBy('name')
-            ->get(['id','name','default_guidance','default_matrix']);
+            ->get(['id', 'name', 'default_guidance', 'default_matrix']);
 
         $owners = User::query()
             ->orderBy('first_name')
-            ->get(['id','first_name']);
+            ->get(['id', 'first_name']);
 
         return view('backend.admin.risk-items.create', [
             'profiles'  => $profiles,
@@ -62,18 +66,19 @@ class RiskItemController extends Controller
         $title = $riskAssessment?->title;
 
         $data = $request->validate([
-            self::PROFILE_FK       => ['nullable','integer','exists:risk_assessment_profiles,id'],
-            'risk_type_id'         => ['required','integer','exists:risk_types,id'],
-            'hazard'               => ['required','string','max:1000'],
-            'likelihood'           => ['required','integer','min:1','max:5'],
-            'severity'             => ['required','integer','min:1','max:5'],
-            'controls'             => ['nullable','string'],
-            'residual_likelihood'  => ['nullable','integer','min:1','max:5'],
-            'residual_severity'    => ['nullable','integer','min:1','max:5'],
-            'owner_id'             => ['nullable','integer','exists:users,id'],
-            'review_date'          => ['nullable','date'],
-            'status'               => ['nullable','in:draft,active,archived'],
-            'action'               => ['nullable','in:save,publish,save_add_another'],
+            self::PROFILE_FK       => ['nullable', 'integer', 'exists:risk_assessment_profiles,id'],
+            'risk_type_id'         => ['required', 'integer', 'exists:risk_types,id'],
+            'hazard'               => ['required', 'string', 'max:1000'],
+            'context'              => ['required', 'string', 'max:1000'],
+            'likelihood'           => ['required', 'integer', 'min:1', 'max:5'],
+            'severity'             => ['required', 'integer', 'min:1', 'max:5'],
+            'controls'             => ['nullable', 'string'],
+            'residual_likelihood'  => ['nullable', 'integer', 'min:1', 'max:5'],
+            'residual_severity'    => ['nullable', 'integer', 'min:1', 'max:5'],
+            'owner_id'             => ['nullable', 'integer', 'exists:users,id'],
+            'review_date'          => ['nullable', 'date'],
+            'status'               => ['nullable', 'in:draft,active,archived'],
+            'action'               => ['nullable', 'in:save,publish,save_add_another'],
         ]);
 
         // Ensure the correct profile id is used
@@ -116,5 +121,91 @@ class RiskItemController extends Controller
             ->route('backend.admin.risk-assessments.show', $targetProfileId)
             ->with('success', 'Risk item added successfully.')
             ->withFragment('type-' . $data['risk_type_id']); // scroll to accordion
+    }
+
+
+    public function edit(\App\Models\RiskAssessment $riskItem): View
+    {
+        // FK name we used when creating items
+        $profileFk = self::PROFILE_FK;
+
+        $types = \App\Models\RiskType::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'default_guidance', 'default_matrix']);
+
+        $owners = \App\Models\User::query()
+            ->orderBy('first_name')
+            ->get(['id', 'first_name']);
+
+        // If you want to allow moving item to another profile, load profiles
+        $profiles = \App\Models\RiskAssessmentProfile::query()
+            ->with(['serviceUser:id,first_name,last_name'])
+            ->latest('created_at')
+            ->get(['id', 'service_user_id', 'title', 'status', 'created_at']);
+
+        return view('backend.admin.risk-items.edit', [
+            'riskItem'  => $riskItem,
+            'types'     => $types,
+            'owners'    => $owners,
+            'profiles'  => $profiles,
+            'profileFk' => $profileFk,
+        ]);
+    }
+
+
+    public function update(Request $request, \App\Models\RiskAssessment $riskItem): RedirectResponse
+    {
+        $profileFk = self::PROFILE_FK;
+
+        $data = $request->validate([
+            $profileFk             => ['required', 'integer', 'exists:risk_assessment_profiles,id'],
+            'risk_type_id'         => ['required', 'integer', 'exists:risk_types,id'],
+            'context'              => ['nullable', 'string', 'max:1000'],
+            'hazard'               => ['required', 'string', 'max:1000'],
+            'likelihood'           => ['required', 'integer', 'min:1', 'max:5'],
+            'severity'             => ['required', 'integer', 'min:1', 'max:5'],
+            'controls'             => ['nullable', 'string'],
+            'residual_likelihood'  => ['nullable', 'integer', 'min:1', 'max:5'],
+            'residual_severity'    => ['nullable', 'integer', 'min:1', 'max:5'],
+            'owner_id'             => ['nullable', 'integer', 'exists:users,id'],
+            'review_date'          => ['nullable', 'date'],
+            'status'               => ['nullable', Rule::in(['draft', 'active', 'archived'])],
+            'action'               => ['nullable', Rule::in(['save', 'publish'])],
+        ]);
+
+        // Recompute scores
+        $data['score'] = (int) ($data['likelihood'] * $data['severity']);
+        $data['residual_score'] =
+            (!empty($data['residual_likelihood']) && !empty($data['residual_severity']))
+            ? (int) ($data['residual_likelihood'] * $data['residual_severity'])
+            : null;
+
+        // Status based on action
+        $action = $request->input('action', 'save');
+        $data['status'] = $action === 'publish' ? 'active' : ($data['status'] ?? 'draft');
+
+        // Audit
+        $data['updated_by_id'] = auth()->id();
+
+        $riskItem->update($data);
+
+        $profileId = $data[$profileFk];
+        return redirect()
+            ->route('backend.admin.risk-assessments.show', $profileId)
+            ->with('success', 'Risk item updated.');
+    }
+
+
+
+    public function destroy(\App\Models\RiskAssessment $riskItem): RedirectResponse
+    {
+        $profileFk = self::PROFILE_FK;
+        $profileId = $riskItem->{$profileFk};
+
+        $riskItem->delete();
+
+        return redirect()
+            ->route('backend.admin.risk-assessments.show', $profileId)
+            ->with('success', 'Risk item deleted.');
     }
 }

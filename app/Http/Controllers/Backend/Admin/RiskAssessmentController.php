@@ -187,15 +187,24 @@ class RiskAssessmentController extends Controller
      * Print/PDF of the risk assessment profile + its items
      */
     // ✅ PRINT is already correct; ensure param name matches {riskAssessment}
-    public function print(RiskAssessmentProfile $riskAssessment)
+    public function print(\App\Models\RiskAssessmentProfile $riskAssessment)
     {
-        $riskAssessment->load(['serviceUser', 'assessments.riskType', 'creator', 'updater']);
-
-        $pdf = Pdf::loadView('backend.admin.risk-assessments.print', [
-            'assessment' => $riskAssessment,
+        $riskAssessment->load([
+            'serviceUser',
+            'assessments.riskType',
+            'creator', 'updater',
         ]);
 
-        $file = 'Risk_Assessment_'.$riskAssessment->id.'.pdf';
-        return $pdf->stream($file);
+        $itemsByType = $riskAssessment->assessments->groupBy('risk_type_id');
+
+        // Use the IoC wrapper – works without any facade/alias
+        $pdf = app('dompdf.wrapper');
+        $pdf->setPaper('A4', 'portrait')
+            ->loadView('backend.admin.risk-assessments.print', [
+                'assessment'  => $riskAssessment,
+                'itemsByType' => $itemsByType,
+            ]);
+
+        return $pdf->stream('Risk_Assessment_'.$riskAssessment->id.'.pdf');
     }
 }
