@@ -17,42 +17,50 @@ class UserSeeder extends Seeder
         Role::firstOrCreate(['name' => 'admin']);
         Role::firstOrCreate(['name' => 'carer']);
 
-        // Step 2: Create the Super Admin
-        $superAdmin = User::create([
-            'first_name' => 'Super',
-            'last_name'  => 'Admin',
-            'email' => 'abdussalam.abdul@gmail.com',
-            'password' => Hash::make('12345678'),
-            'tenant_id' => null,
-        ]);
+        // Step 2: Create or update the Super Admin
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'abdussalam.abdul@gmail.com'],
+            [
+                'first_name' => 'Super',
+                'last_name' => 'Admin',
+                'password' => Hash::make('12345678'),
+                'tenant_id' => null,
+            ]
+        );
         $superAdmin->assignRole('super-admin');
 
-        // Step 3: Create a tenant
-        $tenant = Tenant::create([
-            'name' => 'RMBJ Care Home',
-            'slug' => 'rmbj-care-home',
-            'subscription_status' => 'active',
-            'created_by' => $superAdmin->id,
-        ]);
+        // Step 3: Create or update a tenant
+        $tenant = Tenant::firstOrCreate(
+            ['slug' => 'rmbj-care-home'],
+            [
+                'name' => 'RMBJ Care Home',
+                'subscription_status' => 'active',
+                'created_by' => $superAdmin->id,
+            ]
+        );
 
-        // Step 4: Create Admin
-        $admin = User::create([
-            'first_name' => 'RMBJ',
-            'last_name'  => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('12345678'),
-            'tenant_id' => $tenant->id,
-        ]);
+        // Step 4: Create or update Admin
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'first_name' => 'RMBJ',
+                'last_name' => 'Admin',
+                'password' => Hash::make('12345678'),
+                'tenant_id' => $tenant->id,
+            ]
+        );
         $admin->assignRole('admin');
 
-        // Step 5: Create Carer
-        $carer = User::create([
-            'first_name' => 'Carer',
-            'last_name'  => 'One',
-            'email' => 'carer@example.com',
-            'password' => Hash::make('12345678'),
-            'tenant_id' => $tenant->id,
-        ]);
+        // Step 5: Create or update Carer
+        $carer = User::firstOrCreate(
+            ['email' => 'carer@example.com'],
+            [
+                'first_name' => 'Carer',
+                'last_name' => 'One',
+                'password' => Hash::make('12345678'),
+                'tenant_id' => $tenant->id,
+            ]
+        );
         $carer->assignRole('carer');
     }
 }

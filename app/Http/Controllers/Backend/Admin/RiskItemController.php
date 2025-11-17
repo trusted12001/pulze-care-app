@@ -24,7 +24,7 @@ class RiskItemController extends Controller
     {
         // Prefill IDs if provided as query (?profile=&type=)
         $prefillProfileId = $request->integer('profile');
-        $prefillTypeId    = $request->integer('type');
+        $prefillTypeId = $request->integer('type');
 
         $profile = $prefillProfileId
             ? RiskAssessmentProfile::query()->find($prefillProfileId)
@@ -49,11 +49,11 @@ class RiskItemController extends Controller
             ->get(['id', 'first_name']);
 
         return view('backend.admin.risk-items.create', [
-            'profiles'  => $profiles,
-            'types'     => $types,
-            'owners'    => $owners,
-            'profile'   => $profile,
-            'riskType'  => $riskType,
+            'profiles' => $profiles,
+            'types' => $types,
+            'owners' => $owners,
+            'profile' => $profile,
+            'riskType' => $riskType,
             'profileFk' => self::PROFILE_FK, // so the view knows what to post
         ]);
     }
@@ -66,28 +66,38 @@ class RiskItemController extends Controller
         $title = $riskAssessment?->title;
 
         $data = $request->validate([
-            self::PROFILE_FK       => ['nullable', 'integer', 'exists:risk_assessment_profiles,id'],
-            'risk_type_id'         => ['required', 'integer', 'exists:risk_types,id'],
-            'hazard'               => ['required', 'string', 'max:1000'],
-            'context'              => ['required', 'string', 'max:1000'],
-            'likelihood'           => ['required', 'integer', 'min:1', 'max:5'],
-            'severity'             => ['required', 'integer', 'min:1', 'max:5'],
-            'controls'             => ['nullable', 'string'],
-            'residual_likelihood'  => ['nullable', 'integer', 'min:1', 'max:5'],
-            'residual_severity'    => ['nullable', 'integer', 'min:1', 'max:5'],
-            'owner_id'             => ['nullable', 'integer', 'exists:users,id'],
-            'review_date'          => ['nullable', 'date'],
-            'status'               => ['nullable', 'in:draft,active,archived'],
-            'action'               => ['nullable', 'in:save,publish,save_add_another'],
+            self::PROFILE_FK => ['nullable', 'integer', 'exists:risk_assessment_profiles,id'],
+            'risk_type_id' => ['required', 'integer', 'exists:risk_types,id'],
+            'hazard' => ['required', 'string', 'max:1000'],
+            'context' => ['required', 'string', 'max:1000'],
+            'likelihood' => ['required', 'integer', 'min:1', 'max:5'],
+            'severity' => ['required', 'integer', 'min:1', 'max:5'],
+            'controls' => ['nullable', 'string'],
+            'residual_likelihood' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'residual_severity' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'owner_id' => ['nullable', 'integer', 'exists:users,id'],
+            'review_date' => ['nullable', 'date'],
+            'status' => ['nullable', 'in:draft,active,archived'],
+            'action' => ['nullable', 'in:save,publish,save_add_another'],
         ]);
 
         // Ensure the correct profile id is used
         $data[self::PROFILE_FK] = $profileId;
-        $data['service_user_id'] = $service_user_id;
-        $data['title'] = $title;
+        // Note: service_user_id and title were removed from risk_assessments table
+        // They are now stored in risk_assessment_profiles table
 
-        // Compute scores
-        $data['score'] = (int) ($data['likelihood'] * $data['severity']);
+        // Compute scores - use risk_score not score
+        $data['risk_score'] = (int) ($data['likelihood'] * $data['severity']);
+
+        // Calculate risk band based on score
+        $score = $data['risk_score'];
+        $data['risk_band'] = match (true) {
+            $score >= 20 => 'critical',
+            $score >= 15 => 'high',
+            $score >= 10 => 'medium',
+            default => 'low',
+        };
+
         if (!empty($data['residual_likelihood']) && !empty($data['residual_severity'])) {
             $data['residual_score'] = (int) ($data['residual_likelihood'] * $data['residual_severity']);
         }
@@ -96,9 +106,8 @@ class RiskItemController extends Controller
         $action = $request->input('action', 'save');
         $data['status'] = $action === 'publish' ? 'active' : ($data['status'] ?? 'draft');
 
-        // Audit
+        // Audit - only created_by exists in the table
         $data['created_by'] = auth()->id();
-        $data['updated_by'] = auth()->id();
 
         // Create item row
         /** @var \App\Models\RiskAssessment $item */
@@ -111,7 +120,7 @@ class RiskItemController extends Controller
             return redirect()
                 ->route('backend.admin.risk-items.create', [
                     'profile' => $targetProfileId,
-                    'type'    => $data['risk_type_id'],
+                    'type' => $data['risk_type_id'],
                 ])
                 ->with('success', 'Risk item added. You can add another.');
         }
@@ -144,10 +153,10 @@ class RiskItemController extends Controller
             ->get(['id', 'service_user_id', 'title', 'status', 'created_at']);
 
         return view('backend.admin.risk-items.edit', [
-            'riskItem'  => $riskItem,
-            'types'     => $types,
-            'owners'    => $owners,
-            'profiles'  => $profiles,
+            'riskItem' => $riskItem,
+            'types' => $types,
+            'owners' => $owners,
+            'profiles' => $profiles,
             'profileFk' => $profileFk,
         ]);
     }
@@ -158,23 +167,33 @@ class RiskItemController extends Controller
         $profileFk = self::PROFILE_FK;
 
         $data = $request->validate([
-            $profileFk             => ['required', 'integer', 'exists:risk_assessment_profiles,id'],
-            'risk_type_id'         => ['required', 'integer', 'exists:risk_types,id'],
-            'context'              => ['nullable', 'string', 'max:1000'],
-            'hazard'               => ['required', 'string', 'max:1000'],
-            'likelihood'           => ['required', 'integer', 'min:1', 'max:5'],
-            'severity'             => ['required', 'integer', 'min:1', 'max:5'],
-            'controls'             => ['nullable', 'string'],
-            'residual_likelihood'  => ['nullable', 'integer', 'min:1', 'max:5'],
-            'residual_severity'    => ['nullable', 'integer', 'min:1', 'max:5'],
-            'owner_id'             => ['nullable', 'integer', 'exists:users,id'],
-            'review_date'          => ['nullable', 'date'],
-            'status'               => ['nullable', Rule::in(['draft', 'active', 'archived'])],
-            'action'               => ['nullable', Rule::in(['save', 'publish'])],
+            $profileFk => ['required', 'integer', 'exists:risk_assessment_profiles,id'],
+            'risk_type_id' => ['required', 'integer', 'exists:risk_types,id'],
+            'context' => ['nullable', 'string', 'max:1000'],
+            'hazard' => ['required', 'string', 'max:1000'],
+            'likelihood' => ['required', 'integer', 'min:1', 'max:5'],
+            'severity' => ['required', 'integer', 'min:1', 'max:5'],
+            'controls' => ['nullable', 'string'],
+            'residual_likelihood' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'residual_severity' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'owner_id' => ['nullable', 'integer', 'exists:users,id'],
+            'review_date' => ['nullable', 'date'],
+            'status' => ['nullable', Rule::in(['draft', 'active', 'archived'])],
+            'action' => ['nullable', Rule::in(['save', 'publish'])],
         ]);
 
-        // Recompute scores
-        $data['score'] = (int) ($data['likelihood'] * $data['severity']);
+        // Recompute scores - use risk_score not score
+        $data['risk_score'] = (int) ($data['likelihood'] * $data['severity']);
+
+        // Calculate risk band based on score
+        $score = $data['risk_score'];
+        $data['risk_band'] = match (true) {
+            $score >= 20 => 'critical',
+            $score >= 15 => 'high',
+            $score >= 10 => 'medium',
+            default => 'low',
+        };
+
         $data['residual_score'] =
             (!empty($data['residual_likelihood']) && !empty($data['residual_severity']))
             ? (int) ($data['residual_likelihood'] * $data['residual_severity'])
@@ -184,8 +203,8 @@ class RiskItemController extends Controller
         $action = $request->input('action', 'save');
         $data['status'] = $action === 'publish' ? 'active' : ($data['status'] ?? 'draft');
 
-        // Audit
-        $data['updated_by_id'] = auth()->id();
+        // Audit - updated_by_id doesn't exist, only created_by
+        // The timestamps will be updated automatically
 
         $riskItem->update($data);
 

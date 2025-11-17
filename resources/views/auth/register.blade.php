@@ -44,7 +44,7 @@
           <div class="input-field-item">
             <p>Other Names</p>
             <div class="input-field">
-              <input type="text" name="other_names" value="{{ old('other_names') }}" required placeholder="Your full other names" />
+              <input type="text" name="other_names" value="{{ old('other_names') }}" placeholder="Your full other names" />
               @error('other_names')
                 <span class="text-danger text-sm">{{ $message }}</span>
               @enderror
