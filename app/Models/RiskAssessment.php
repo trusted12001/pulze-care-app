@@ -11,8 +11,8 @@ class RiskAssessment extends Model
 {
     use SoftDeletes;
 
-    public const STATUS_DRAFT    = 'draft';
-    public const STATUS_ACTIVE   = 'active';
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_ACTIVE = 'active';
     public const STATUS_ARCHIVED = 'archived';
 
     protected $fillable = [
@@ -34,14 +34,15 @@ class RiskAssessment extends Model
         'residual_likelihood',
         'residual_severity',
         'residual_score',
+        'owner_id',
     ];
 
     protected $casts = [
-        'approved_at'       => 'datetime',
-        'next_review_date'  => 'date',
-        'likelihood'        => 'integer',
-        'severity'          => 'integer',
-        'risk_score'        => 'integer',
+        'approved_at' => 'datetime',
+        'next_review_date' => 'date',
+        'likelihood' => 'integer',
+        'severity' => 'integer',
+        'risk_score' => 'integer',
     ];
 
     /*
@@ -49,14 +50,36 @@ class RiskAssessment extends Model
     | Relationships
     |--------------------------------------------------------------------------
     */
-    public function serviceUser() { return $this->belongsTo(ServiceUser::class); }
-    public function riskType()    { return $this->belongsTo(RiskType::class); }
-    public function creator()     { return $this->belongsTo(User::class, 'created_by'); }
-    public function approver()    { return $this->belongsTo(User::class, 'approved_by'); }
+    public function serviceUser()
+    {
+        return $this->belongsTo(ServiceUser::class);
+    }
+    public function riskType()
+    {
+        return $this->belongsTo(RiskType::class);
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 
     // ✅ Added: fix RelationNotFoundException
-    public function controls()    { return $this->hasMany(RiskControl::class, 'risk_assessment_id'); }
-    public function reviews()     { return $this->hasMany(RiskReview::class, 'risk_assessment_id')->latest(); }
+    public function controls()
+    {
+        return $this->hasMany(RiskControl::class, 'risk_assessment_id');
+    }
+    public function reviews()
+    {
+        return $this->hasMany(RiskReview::class, 'risk_assessment_id')->latest();
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -66,7 +89,7 @@ class RiskAssessment extends Model
     public function scopeOverdue($q)
     {
         return $q->whereNotNull('next_review_date')
-                 ->whereDate('next_review_date', '<', now()->toDateString());
+            ->whereDate('next_review_date', '<', now()->toDateString());
     }
 
     public function getIsOverdueAttribute(): bool
@@ -99,8 +122,8 @@ class RiskAssessment extends Model
         // default 5x5: 1–5 Low, 6–12 Medium, 15–25 High
         return match (true) {
             $score >= 15 => RiskBand::High,
-            $score >= 6  => RiskBand::Medium,
-            default      => RiskBand::Low,
+            $score >= 6 => RiskBand::Medium,
+            default => RiskBand::Low,
         };
     }
 
@@ -108,7 +131,7 @@ class RiskAssessment extends Model
     {
         $score = $this->computeScore();
         $this->risk_score = $score;
-        $this->risk_band  = $this->bandFromScore($score)->value;
+        $this->risk_band = $this->bandFromScore($score)->value;
     }
 
     public function markApproved(int $userId): void
@@ -122,7 +145,7 @@ class RiskAssessment extends Model
     public function rescore(int $likelihood, int $severity): void
     {
         $this->likelihood = $likelihood;
-        $this->severity   = $severity;
+        $this->severity = $severity;
         $this->setScoreAndBand();
     }
 

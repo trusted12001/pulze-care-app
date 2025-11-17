@@ -20,20 +20,20 @@ class RiskAssessmentController extends Controller
      */
     public function index(Request $request)
     {
-        $search        = trim((string) $request->get('search'));
+        $search = trim((string) $request->get('search'));
         $serviceUserId = $request->get('service_user_id');
-        $status        = $request->get('status'); // draft|active|archived or null
+        $status = $request->get('status'); // draft|active|archived or null
 
         $serviceUsers = ServiceUser::query()
             ->orderBy('last_name')->orderBy('first_name')
-            ->get(['id','first_name','last_name']);
+            ->get(['id', 'first_name', 'last_name']);
 
         // Latest profile per service_user_id after filters
         $latestIdsSub = DB::table('risk_assessment_profiles as rap')
             ->selectRaw('MAX(rap.id) as max_id')
-            ->when($serviceUserId, fn (DBBuilder $q) => $q->where('rap.service_user_id', $serviceUserId))
-            ->when($status,        fn (DBBuilder $q) => $q->where('rap.status', $status))
-            ->when($search,        fn (DBBuilder $q) => $q->where('rap.title', 'like', "%{$search}%"))
+            ->when($serviceUserId, fn(DBBuilder $q) => $q->where('rap.service_user_id', $serviceUserId))
+            ->when($status, fn(DBBuilder $q) => $q->where('rap.status', $status))
+            ->when($search, fn(DBBuilder $q) => $q->where('rap.title', 'like', "%{$search}%"))
             ->groupBy('rap.service_user_id');
 
         $profiles = RiskAssessmentProfile::query()
@@ -45,7 +45,7 @@ class RiskAssessmentController extends Controller
             ->withQueryString();
 
         return view('backend.admin.risk-assessments.index', [
-            'assessments'  => $profiles,     // keep variable name to avoid blade changes
+            'assessments' => $profiles,     // keep variable name to avoid blade changes
             'serviceUsers' => $serviceUsers,
         ]);
     }
@@ -57,7 +57,7 @@ class RiskAssessmentController extends Controller
     {
         $serviceUsers = ServiceUser::query()
             ->orderBy('last_name')->orderBy('first_name')
-            ->get(['id','first_name','last_name']);
+            ->get(['id', 'first_name', 'last_name']);
 
         return view('backend.admin.risk-assessments.create', [
             'serviceUsers' => $serviceUsers,
@@ -70,32 +70,32 @@ class RiskAssessmentController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'service_user_id'  => ['required','exists:service_users,id'],
-            'title'            => ['required','string','max:255'],
-            'start_date'       => ['nullable','date'],
-            'next_review_date' => ['nullable','date','after_or_equal:start_date'],
-            'review_frequency' => ['nullable','string','max:100'],
-            'summary'          => ['nullable','string'],
-            'action'           => ['nullable', Rule::in(['save','save_draft','publish'])],
+            'service_user_id' => ['required', 'exists:service_users,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'start_date' => ['nullable', 'date'],
+            'next_review_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'review_frequency' => ['nullable', 'string', 'max:100'],
+            'summary' => ['nullable', 'string'],
+            'action' => ['nullable', Rule::in(['save', 'save_draft', 'publish'])],
         ]);
 
         $action = $data['action'] ?? 'save_draft';
         $status = match ($action) {
             'publish' => RiskAssessmentProfile::STATUS_ACTIVE,
-            'save'    => $request->input('status', RiskAssessmentProfile::STATUS_DRAFT),
-            default   => RiskAssessmentProfile::STATUS_DRAFT,
+            'save' => $request->input('status', RiskAssessmentProfile::STATUS_DRAFT),
+            default => RiskAssessmentProfile::STATUS_DRAFT,
         };
 
         $profile = RiskAssessmentProfile::create([
-            'service_user_id'  => $data['service_user_id'],
-            'title'            => $data['title'],
-            'status'           => $status,
-            'start_date'       => $data['start_date'] ?? null,
+            'service_user_id' => $data['service_user_id'],
+            'title' => $data['title'],
+            'status' => $status,
+            'start_date' => $data['start_date'] ?? null,
             'next_review_date' => $data['next_review_date'] ?? null,
             'review_frequency' => $data['review_frequency'] ?? null,
-            'summary'          => $data['summary'] ?? null,
-            'created_by_id'    => auth()->id(),
-            'updated_by_id'    => auth()->id(),
+            'summary' => $data['summary'] ?? null,
+            'created_by_id' => auth()->id(),
+            'updated_by_id' => auth()->id(),
         ]);
 
         return redirect()
@@ -114,18 +114,19 @@ class RiskAssessmentController extends Controller
         $riskAssessment->load([
             'serviceUser',
             'assessments.riskType',   // each item knows its type
-            'creator', 'updater',
+            'creator',
+            'updater',
         ]);
 
         // All risk types (for accordion list). If you only want types present on this profile, filter below instead.
-        $riskTypes = RiskType::query()->orderBy('name')->get(['id','name']);
+        $riskTypes = RiskType::query()->orderBy('name')->get(['id', 'name']);
 
         // Group the profile’s items by risk_type_id for fast rendering
         $itemsByType = $riskAssessment->assessments->groupBy('risk_type_id');
 
         return view('backend.admin.risk-assessments.show', [
-            'assessment'  => $riskAssessment,
-            'riskTypes'   => $riskTypes,
+            'assessment' => $riskAssessment,
+            'riskTypes' => $riskTypes,
             'itemsByType' => $itemsByType,
         ]);
     }
@@ -138,11 +139,11 @@ class RiskAssessmentController extends Controller
     {
         $serviceUsers = ServiceUser::query()
             ->orderBy('last_name')->orderBy('first_name')
-            ->get(['id','first_name','last_name']);
+            ->get(['id', 'first_name', 'last_name']);
 
         return view('backend.admin.risk-assessments.edit', [
             'riskAssessment' => $riskAssessment,
-            'serviceUsers'   => $serviceUsers,
+            'serviceUsers' => $serviceUsers,
         ]);
     }
     /**
@@ -152,13 +153,13 @@ class RiskAssessmentController extends Controller
     public function update(Request $request, RiskAssessmentProfile $riskAssessment)
     {
         $data = $request->validate([
-            'title'            => ['required','string','max:255'],
-            'service_user_id'  => ['required','integer','exists:service_users,id'],
-            'start_date'       => ['nullable','date'],              // profile column
-            'next_review_date' => ['nullable','date','after_or_equal:start_date'],
-            'review_frequency' => ['nullable','string','max:100'],
-            'summary'          => ['nullable','string'],
-            'status'           => ['nullable','in:draft,active,archived'],
+            'title' => ['required', 'string', 'max:255'],
+            'service_user_id' => ['required', 'integer', 'exists:service_users,id'],
+            'start_date' => ['nullable', 'date'],              // profile column
+            'next_review_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'review_frequency' => ['nullable', 'string', 'max:100'],
+            'summary' => ['nullable', 'string'],
+            'status' => ['nullable', 'in:draft,active,archived'],
         ]);
 
         $riskAssessment->fill($data);
@@ -186,25 +187,21 @@ class RiskAssessmentController extends Controller
     /**
      * Print/PDF of the risk assessment profile + its items
      */
-    // ✅ PRINT is already correct; ensure param name matches {riskAssessment}
     public function print(\App\Models\RiskAssessmentProfile $riskAssessment)
     {
         $riskAssessment->load([
             'serviceUser',
             'assessments.riskType',
-            'creator', 'updater',
+            'assessments.owner',
+            'creator',
+            'updater',
         ]);
 
         $itemsByType = $riskAssessment->assessments->groupBy('risk_type_id');
 
-        // Use the IoC wrapper – works without any facade/alias
-        $pdf = app('dompdf.wrapper');
-        $pdf->setPaper('A4', 'portrait')
-            ->loadView('backend.admin.risk-assessments.print', [
-                'assessment'  => $riskAssessment,
-                'itemsByType' => $itemsByType,
-            ]);
-
-        return $pdf->stream('Risk_Assessment_'.$riskAssessment->id.'.pdf');
+        return view('backend.admin.risk-assessments.print', [
+            'assessment' => $riskAssessment,
+            'itemsByType' => $itemsByType,
+        ]);
     }
 }
