@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
             $table->enum('status', ['draft', 'scheduled', 'in_progress', 'submitted', 'verified', 'closed', 'declined', 'expired', 'overdue'])->default('draft');
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('resident_id')->nullable()->constrained('residents')->nullOnDelete();
+            $table->foreignId('resident_id')->nullable()->constrained('service_users')->nullOnDelete();
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('assigned_to')->constrained('users');
             $table->foreignId('shift_id')->nullable()->constrained('shifts')->nullOnDelete();

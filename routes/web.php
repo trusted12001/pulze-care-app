@@ -58,20 +58,24 @@ use App\Http\Controllers\Backend\Admin\ShiftController;
 use App\Http\Controllers\Frontend\AttendanceController;
 use App\Http\Controllers\Backend\Admin\RiskItemController;
 
+use App\Http\Controllers\Backend\Admin\AssignmentPageController;
+use App\Http\Controllers\Backend\Admin\AssignmentController;
+
 
 /*
 |--------------------------------------------------------------------------
 | Public / Auth basics
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn () => view('auth.login'));
 
-Route::get('/dashboard', fn () => view('dashboard'))
+Route::get('/', fn() => view('auth.login'));
+
+Route::get('/dashboard', fn() => view('dashboard'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/operations', fn () => view('operations.index'))->name('operations');
+    Route::get('/operations', fn() => view('operations.index'))->name('operations');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -292,14 +296,14 @@ Route::prefix('backend/admin')
             'update'  => 'risk-assessments.update',
             'destroy' => 'risk-assessments.destroy',
         ])
-        ->parameters([
-        // IMPORTANT: route parameter becomes {riskAssessment}
-        'risk-assessments' => 'riskAssessment',
-    ]);
+            ->parameters([
+                // IMPORTANT: route parameter becomes {riskAssessment}
+                'risk-assessments' => 'riskAssessment',
+            ]);
 
         // Controls + Reviews (nested/shallow)
         Route::resource('risk-assessments.controls', RiskControlController::class)
-            ->shallow()->only(['store','update','destroy']);
+            ->shallow()->only(['store', 'update', 'destroy']);
 
         Route::resource('risk-assessments.reviews', RiskReviewController::class)
             ->shallow()->only(['store']);
@@ -311,14 +315,14 @@ Route::prefix('backend/admin')
 
         // Risk Types: minimal resource (index optional)
         Route::resource('risk-types', RiskTypeController::class)
-            ->only(['index','create','store'])
+            ->only(['index', 'create', 'store'])
             ->names('risk-types');
 
 
 
         // Risk Items (create, store, edit, update, destroy)
         Route::resource('risk-items', RiskItemController::class)
-            ->only(['create','store','edit','update','destroy'])
+            ->only(['create', 'store', 'edit', 'update', 'destroy'])
             ->names('risk-items');
 
         // Optional nested: quick POST from within a profile (kept)
@@ -389,6 +393,59 @@ Route::prefix('backend/admin')
         // Shift assignments
         Route::post('shifts/{shift}/assign', [ShiftController::class, 'assign'])->name('shifts.assign');
         Route::delete('shifts/{shift}/unassign/{user}', [ShiftController::class, 'unassign'])->name('shifts.unassign');
+
+
+        // 🔹 Assignment PAGES (AssignmentPageController)
+        Route::get('assignments', [AssignmentPageController::class, 'index'])->name('assignments.index');
+        Route::get('assignments/create', [AssignmentPageController::class, 'create'])->name('assignments.create');
+        Route::post('assignments', [AssignmentPageController::class, 'store'])->name('assignments.store');
+        Route::get('assignments/{assignment}', [AssignmentPageController::class, 'show'])->name('assignments.show');
+        Route::get('assignments/{assignment}/verify', [AssignmentPageController::class, 'verify'])->name('assignments.verify');
+
+        // (Optional) if you really want a POST verify from the admin area (non-/api) form:
+        Route::post('assignments/{assignment}/verify', [AssignmentController::class, 'verify'])
+            ->name('assignments.verify.post');
+
+        Route::get('assignments/{assignment}/edit', [AssignmentPageController::class, 'edit'])
+            ->name('assignments.edit');
+
+        Route::put('assignments/{assignment}', [AssignmentPageController::class, 'update'])
+            ->name('assignments.update');
+
+        Route::delete('assignments/{assignment}', [AssignmentPageController::class, 'destroy'])
+            ->name('assignments.destroy');
+    });
+
+
+
+//API Routes
+Route::middleware(['web', 'auth'])   // 'web' is default in web.php, but leaving it explicit is fine
+    ->prefix('api')
+    ->group(function () {
+
+        // If you *need* API index/store/show for mobile later, you can keep them:
+        Route::get('/assignments', [AssignmentController::class, 'index']);
+        Route::post('/assignments', [AssignmentController::class, 'store']);
+        Route::get('/assignments/{assignment}', [AssignmentController::class, 'show']);
+
+        // The ones your Blade JS is calling:
+        Route::post('/assignments/{assignment}/start', [AssignmentController::class, 'start'])
+            ->name('api.assignments.start');
+
+        Route::post('/assignments/{assignment}/submit', [AssignmentController::class, 'submit'])
+            ->name('api.assignments.submit');
+
+        Route::post('/assignments/{assignment}/verify', [AssignmentController::class, 'verify'])
+            ->name('api.assignments.verify');
+
+        Route::get('/assignments/{assignment}/timeline', [AssignmentController::class, 'timeline'])
+            ->name('api.assignments.timeline');
+
+        Route::put('/assignments/{assignment}', [AssignmentController::class, 'update'])
+            ->name('api.assignments.update');
+
+        Route::delete('/assignments/{assignment}', [AssignmentController::class, 'destroy'])
+            ->name('api.assignments.destroy');
     });
 
 /*
@@ -409,4 +466,4 @@ Route::middleware(['auth', 'role:carer'])
         Route::post('assignments/{assignment}/check-out', [AttendanceController::class, 'checkOut'])->name('assignments.check-out');
     });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

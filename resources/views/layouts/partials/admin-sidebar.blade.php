@@ -30,9 +30,17 @@
             <i class="ph ph-users-three"></i> <span class="menu-label">Service Users</span>
         </a>
 
-        <a href="{{ url('/assignments') }}" class="{{ request()->is('assignments*') ? 'active' : '' }}">
+        {{-- <a href="{{ url('/assignments') }}" class="{{ request()->is('assignments*') ? 'active' : '' }}">
             <i class="ph ph-handshake"></i> <span class="menu-label">Assignments</span>
+        </a> --}}
+
+        <a href="{{ route('backend.admin.assignments.index') }}"
+            class="{{ request()->routeIs('assignments.*') ? 'active' : '' }}">
+            <i class="ph ph-handshake"></i>
+            <span class="menu-label">Assignments</span>
         </a>
+
+
         <a href="{{ route('backend.admin.care-plans.index') }}"
             class="{{ request()->is('care-plans*') ? 'active' : (request()->is('backend/admin/care-plans*') ? 'active' : '') }}">
             <i class="ph ph-notebook"></i> <span class="menu-label">Care Plans</span>
