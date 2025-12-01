@@ -48,6 +48,9 @@ class Assignment extends Model
         'requires_signature' => 'boolean',
         'requires_photo' => 'boolean',
         'metadata' => 'array',
+        'verified_at'  => 'datetime',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
     ];
 
 

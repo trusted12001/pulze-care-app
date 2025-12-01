@@ -61,6 +61,9 @@ use App\Http\Controllers\Backend\Admin\RiskItemController;
 use App\Http\Controllers\Backend\Admin\AssignmentPageController;
 use App\Http\Controllers\Backend\Admin\AssignmentController;
 
+use App\Http\Controllers\Backend\Admin\ReportsController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -414,11 +417,28 @@ Route::prefix('backend/admin')
 
         Route::delete('assignments/{assignment}', [AssignmentPageController::class, 'destroy'])
             ->name('assignments.destroy');
+
+
+
+        //Reports Routes
+        Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
+
+        // Sub-report pages (stubs for now)
+        Route::get('reports/assignments', [ReportsController::class, 'assignmentsReport'])->name('reports.assignments');
+        Route::get('reports/staff', [ReportsController::class, 'staffReport'])->name('reports.staff');
+        Route::get('reports/service-users', [ReportsController::class, 'serviceUsersReport'])->name('reports.service-users');
+        Route::get('reports/locations', [ReportsController::class, 'locationsReport'])->name('reports.locations');
+        Route::get('reports/evidence', [ReportsController::class, 'evidenceReport'])->name('reports.evidence');
+        Route::get('reports/hours', [ReportsController::class, 'hoursReport'])->name('reports.hours');
     });
 
 
 
-//API Routes
+/*
+|--------------------------------------------------------------------------
+| 🧑‍⚕️ API Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['web', 'auth'])   // 'web' is default in web.php, but leaving it explicit is fine
     ->prefix('api')
     ->group(function () {

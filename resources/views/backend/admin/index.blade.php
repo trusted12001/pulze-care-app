@@ -117,7 +117,6 @@
                 </div>
             </a>
 
-            {{-- Disabled/Coming Soon Items --}}
             <a href="{{ route('backend.admin.rota-periods.index') }}"
                 class="bg-white border border-gray-200 rounded-lg p-6 hover:border-orange-500 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-center gap-4">
@@ -133,29 +132,35 @@
             </a>
 
 
+            {{-- Disabled/Coming Soon Items --}}
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 opacity-60">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
                         <i class="ph ph-clock text-gray-400 text-xl"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-semibold text-gray-600 mb-1">Timesheets</h3>
+                        <h3 class="font-semibold text-gray-400 mb-1">Timesheets</h3>
                         <p class="text-sm text-gray-400">Coming soon</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 opacity-60">
+
+            <a href="{{ route('backend.admin.reports.index') }}"
+                class="bg-white border border-gray-200 rounded-lg p-6 hover:border-teal-500 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <i class="ph ph-chart-bar text-gray-400 text-xl"></i>
+                    <div
+                        class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center group-hover:bg-teal-500 transition-colors">
+                        <i class="ph ph-chart-bar text-teal-600 group-hover:text-white text-xl transition-colors"></i>
                     </div>
                     <div class="flex-1">
                         <h3 class="font-semibold text-gray-600 mb-1">Reports</h3>
-                        <p class="text-sm text-gray-400">Coming soon</p>
+                        <p class="text-sm text-gray-500">Reports Overview</p>
                     </div>
                 </div>
-            </div>
+            </a>
+
+
 
             {{-- <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 opacity-60">
                 <div class="flex items-center gap-4">

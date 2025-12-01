@@ -76,7 +76,7 @@
         </a> --}}
 
 
-        <a href="{{ url('/reports') }}" class="{{ request()->is('reports*') ? 'active' : '' }}">
+        <a href="{{ route('backend.admin.reports.index') }}" class="{{ request()->is('reports*') ? 'active' : '' }}">
             <i class="ph ph-chart-bar"></i> <span class="menu-label">Reports</span>
         </a>
         <a href="{{ route('logout') }}"
