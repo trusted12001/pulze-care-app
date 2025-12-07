@@ -45,7 +45,7 @@ class ServiceUserController extends Controller
         $locations = Location::where('tenant_id', $this->tenantId())
             ->where('status', 'active')
             ->orderBy('name')
-            ->get(['id','name','city','postcode']);
+            ->get(['id', 'name', 'city', 'postcode']);
 
         return view('backend.admin.service-users.create', compact('locations'));
     }
@@ -67,14 +67,28 @@ class ServiceUserController extends Controller
     public function show(ServiceUser $service_user)
     {
         $this->authorizeTenant($service_user);
-        $service_user->load('location');
+
+        $service_user->load([
+            'location',
+            'documents' => function ($q) {
+                $q->where('category', 'Passport Photo')->latest('id');
+            },
+        ]);
+
         return view('backend.admin.service-users.show', ['su' => $service_user]);
     }
 
     public function profile(ServiceUser $service_user)
     {
         $this->authorizeTenant($service_user);
-        $service_user->load('location');
+
+        $service_user->load([
+            'location',
+            'documents' => function ($q) {
+                $q->where('category', 'Passport Photo')->latest('id');
+            },
+        ]);
+
         return view('backend.admin.service-users.profile', ['su' => $service_user]);
     }
 
@@ -83,9 +97,9 @@ class ServiceUserController extends Controller
         $this->authorizeTenant($service_user);
 
         $locations = Location::where('tenant_id', $this->tenantId())
-            ->where('status','active')
+            ->where('status', 'active')
             ->orderBy('name')
-            ->get(['id','name','city','postcode']);
+            ->get(['id', 'name', 'city', 'postcode']);
 
         return view('backend.admin.service-users.edit', [
             'su' => $service_user,
@@ -147,35 +161,22 @@ class ServiceUserController extends Controller
     }
 
 
-    // public function updateSection(UpdateServiceUserRequest $request, ServiceUser $service_user, string $section)
-    // {
-    //     $this->authorizeTenant($service_user);
+    // App\Http\Controllers\Backend\Admin\ServiceUserController.php
 
-    //     $data = $request->validated();
+    public function print(ServiceUser $service_user)
+    {
+        $this->authorizeTenant($service_user);
 
-    //     // Optional: normalize NHS number (strip spaces)
-    //     if (array_key_exists('nhs_number', $data) && $data['nhs_number'] !== null) {
-    //         $data['nhs_number'] = preg_replace('/\s+/', '', $data['nhs_number']);
-    //     }
+        // Load what we need for the print view
+        $service_user->load([
+            'location',
+            'passportPhoto', // assuming you added this relationship like for StaffProfile
+        ]);
 
-    //     // Coerce booleans for checkbox fields if your form posts "on"/null
-    //     foreach ([
-    //         'behaviour_support_plan','seizure_care_plan','diabetes_care_plan','oxygen_therapy',
-    //         'wander_elopement_risk','safeguarding_flag','infection_control_flag',
-    //         'dols_in_place','lpa_health_welfare','lpa_finance_property',
-    //         'interpreter_required',
-    //     ] as $boolField) {
-    //         if ($request->has($boolField)) {
-    //             $data[$boolField] = (bool) $request->boolean($boolField);
-    //         }
-    //     }
-
-    //     $data['updated_by'] = auth()->id();
-
-    //     $service_user->fill($data)->save();
-
-    //     return back()->with('success', ucfirst(str_replace('_', ' ', $section)).' updated.');
-    // }
+        return view('backend.admin.service-users.print', [
+            'su' => $service_user,
+        ]);
+    }
 
     public function updateSection(UpdateServiceUserRequest $request, ServiceUser $service_user, string $section)
     {
@@ -189,12 +190,21 @@ class ServiceUserController extends Controller
         }
 
         // Coerce booleans
-        foreach ([
-            'behaviour_support_plan','seizure_care_plan','diabetes_care_plan','oxygen_therapy',
-            'wander_elopement_risk','safeguarding_flag','infection_control_flag',
-            'dols_in_place','lpa_health_welfare','lpa_finance_property',
-            'interpreter_required',
-        ] as $boolField) {
+        foreach (
+            [
+                'behaviour_support_plan',
+                'seizure_care_plan',
+                'diabetes_care_plan',
+                'oxygen_therapy',
+                'wander_elopement_risk',
+                'safeguarding_flag',
+                'infection_control_flag',
+                'dols_in_place',
+                'lpa_health_welfare',
+                'lpa_finance_property',
+                'interpreter_required',
+            ] as $boolField
+        ) {
             if ($request->has($boolField)) {
                 $data[$boolField] = (bool) $request->boolean($boolField);
             }
@@ -215,7 +225,6 @@ class ServiceUserController extends Controller
 
         $service_user->fill($data)->save();
 
-        return back()->with('success', ucfirst(str_replace('_', ' ', $section)).' updated.');
+        return back()->with('success', ucfirst(str_replace('_', ' ', $section)) . ' updated.');
     }
-
 }

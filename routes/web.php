@@ -62,6 +62,7 @@ use App\Http\Controllers\Backend\Admin\AssignmentPageController;
 use App\Http\Controllers\Backend\Admin\AssignmentController;
 
 use App\Http\Controllers\Backend\Admin\ReportsController;
+use App\Http\Controllers\Backend\Admin\ServiceUserPhotoController;
 
 
 
@@ -430,6 +431,29 @@ Route::prefix('backend/admin')
         Route::get('reports/locations', [ReportsController::class, 'locationsReport'])->name('reports.locations');
         Route::get('reports/evidence', [ReportsController::class, 'evidenceReport'])->name('reports.evidence');
         Route::get('reports/hours', [ReportsController::class, 'hoursReport'])->name('reports.hours');
+
+
+
+        Route::get('staff-profiles/{staffProfile}/print', [StaffProfileController::class, 'print'])
+            ->name('staff-profiles.print');
+
+        Route::get('staff-profiles/{staffProfile}/pdf', [StaffProfileController::class, 'pdf'])
+            ->name('staff-profiles.pdf');
+
+
+        //Service User Controller Routes
+        Route::get('service-users/{service_user}/photo', [ServiceUserPhotoController::class, 'edit'])
+            ->name('service-users.photo.edit');
+
+        Route::post('service-users/{service_user}/photo', [ServiceUserPhotoController::class, 'update'])
+            ->name('service-users.photo.update');
+
+        Route::get('service-users/{service_user}/profile', [ServiceUserController::class, 'profile'])
+            ->name('service-users.profile');
+
+        // ✅ NEW: Print route (this is what Blade is calling)
+        Route::get('service-users/{service_user}/print', [ServiceUserController::class, 'print'])
+            ->name('service-users.print');
     });
 
 

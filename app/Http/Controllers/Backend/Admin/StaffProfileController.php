@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateStaffProfileRequest;
 use App\Models\StaffProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf; // add this line if using PDF
+
 
 class StaffProfileController extends Controller
 {
@@ -30,10 +32,10 @@ class StaffProfileController extends Controller
                     $sub->where('job_title', 'like', $like)
                         ->orWhereHas('user', function ($uq) use ($like) {
                             $uq->where('email', 'like', $like)
-                               ->orWhere('first_name', 'like', $like)
-                               ->orWhere('last_name', 'like', $like)
-                               ->orWhere('other_names', 'like', $like)
-                               ->orWhereRaw("CONCAT_WS(' ', first_name, other_names, last_name) LIKE ?", [$like]);
+                                ->orWhere('first_name', 'like', $like)
+                                ->orWhere('last_name', 'like', $like)
+                                ->orWhere('other_names', 'like', $like)
+                                ->orWhereRaw("CONCAT_WS(' ', first_name, other_names, last_name) LIKE ?", [$like]);
                         });
                 });
             })
@@ -55,19 +57,19 @@ class StaffProfileController extends Controller
             ->where('tenant_id', $tenantId)
             ->whereDoesntHave('staffProfile')
             ->orderBy('first_name')
-            ->get(['id','first_name','last_name','other_names','email']);
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
         // Optional: Locations & Managers (for new fields)
         $locations = class_exists(\App\Models\Location::class)
-            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id','name'])
+            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id', 'name'])
             : collect();
 
         $managers = User::query()
             ->where('tenant_id', $tenantId)
             ->orderBy('first_name')
-            ->get(['id','first_name','last_name','other_names','email']);
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
-        return view('backend.admin.staff-profiles.create', compact('users','locations','managers'));
+        return view('backend.admin.staff-profiles.create', compact('users', 'locations', 'managers'));
     }
 
     public function store(StoreStaffProfileRequest $request)
@@ -99,21 +101,21 @@ class StaffProfileController extends Controller
             ->where('tenant_id', $tenantId)
             ->where(function ($q) use ($staffProfile) {
                 $q->whereDoesntHave('staffProfile')
-                  ->orWhere('id', $staffProfile->user_id);
+                    ->orWhere('id', $staffProfile->user_id);
             })
             ->orderBy('first_name')
-            ->get(['id','first_name','last_name','other_names','email']);
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
         $locations = class_exists(\App\Models\Location::class)
-            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id','name'])
+            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id', 'name'])
             : collect();
 
         $managers = User::query()
             ->where('tenant_id', $tenantId)
             ->orderBy('first_name')
-            ->get(['id','first_name','last_name','other_names','email']);
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
-        return view('backend.admin.staff-profiles.edit', compact('staffProfile','users','locations','managers'));
+        return view('backend.admin.staff-profiles.edit', compact('staffProfile', 'users', 'locations', 'managers'));
     }
 
     public function update(UpdateStaffProfileRequest $request, StaffProfile $staffProfile)
@@ -150,10 +152,10 @@ class StaffProfileController extends Controller
                     $sub->where('job_title', 'like', $like)
                         ->orWhereHas('user', function ($uq) use ($like) {
                             $uq->where('email', 'like', $like)
-                               ->orWhere('first_name', 'like', $like)
-                               ->orWhere('last_name', 'like', $like)
-                               ->orWhere('other_names', 'like', $like)
-                               ->orWhereRaw("CONCAT_WS(' ', first_name, other_names, last_name) LIKE ?", [$like]);
+                                ->orWhere('first_name', 'like', $like)
+                                ->orWhere('last_name', 'like', $like)
+                                ->orWhere('other_names', 'like', $like)
+                                ->orWhereRaw("CONCAT_WS(' ', first_name, other_names, last_name) LIKE ?", [$like]);
                         });
                 });
             })
@@ -186,6 +188,82 @@ class StaffProfileController extends Controller
 
         return back()->with('success', 'Staff profile permanently deleted.');
     }
+
+    public function print(StaffProfile $staffProfile)
+    {
+        $this->authorizeTenant($staffProfile);
+
+        $staffProfile->load([
+            'user',
+            'workLocation',
+            'lineManager',
+            'contracts',
+            'payroll',
+            'bankAccounts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+        ]);
+
+        return view('backend.admin.staff-profiles.print', [
+            'staff' => $staffProfile,
+        ]);
+    }
+
+    public function pdf(StaffProfile $staffProfile)
+    {
+        $this->authorizeTenant($staffProfile);
+
+        $staffProfile->load([
+            'user',
+            'workLocation',
+            'lineManager',
+            'contracts',
+            'payroll',
+            'bankAccounts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+        ]);
+
+        $pdf = Pdf::loadView('backend.admin.staff-profiles.print', [
+            'staffProfile' => $staffProfile,
+            'isPdf'        => true,
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'staff-profile-' . $staffProfile->id . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
 
     protected function authorizeTenant(StaffProfile $p): void
     {

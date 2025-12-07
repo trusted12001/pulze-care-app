@@ -10,16 +10,30 @@ class Document extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'tenant_id','owner_type','owner_id',
-        'category','filename','path','mime','uploaded_by','hash',
+        'tenant_id',
+        'owner_type',
+        'owner_id',
+        'category',
+        'filename',
+        'path',
+        'mime',
+        'uploaded_by',
+        'hash',
     ];
 
-    public function owner() {
+    public function owner()
+    {
         return $this->morphTo();
     }
 
     // Convenience accessor for public URL
-    public function getUrlAttribute(): string {
-        return asset('storage/'.$this->path);
+    public function getUrlAttribute(): string
+    {
+        return asset('storage/' . $this->path);
+    }
+
+    public function uploadedBy()
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
     }
 }
