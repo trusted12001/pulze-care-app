@@ -393,6 +393,12 @@ Route::prefix('backend/admin')
         Route::get('rota-periods/{rota_period}', [RotaPeriodController::class, 'show'])->name('rota-periods.show');
         Route::post('rota-periods/{rota_period}/generate', [RotaPeriodController::class, 'generate'])->name('rota-periods.generate');
         Route::post('rota-periods/{rota_period}/publish', [RotaPeriodController::class, 'publish'])->name('rota-periods.publish');
+        Route::get('rota-periods/{rota_period}/table', [RotaPeriodController::class, 'table'])
+            ->name('rota-periods.table');
+        Route::get('rota-periods/{rota_period}/print', [RotaPeriodController::class, 'print'])
+            ->name('rota-periods.print');
+
+
 
         // Shift assignments
         Route::post('shifts/{shift}/assign', [ShiftController::class, 'assign'])->name('shifts.assign');

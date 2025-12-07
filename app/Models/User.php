@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class User extends Authenticatable
 {
@@ -33,7 +35,7 @@ class User extends Authenticatable
     ];
 
 
-      protected $appends = [
+    protected $appends = [
         'full_name',
     ];
 
@@ -74,7 +76,7 @@ class User extends Authenticatable
     }
 
 
-     public function getFullNameAttribute(): string
+    public function getFullNameAttribute(): string
     {
         return trim(implode(' ', array_filter([
             $this->first_name,
@@ -83,7 +85,8 @@ class User extends Authenticatable
         ])));
     }
 
-
-
-
+    public function timesheets(): HasMany
+    {
+        return $this->hasMany(Timesheet::class, 'staff_id');
+    }
 }
