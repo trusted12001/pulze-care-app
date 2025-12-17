@@ -4,16 +4,16 @@
 @section('content')
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-semibold">Rota: {{ $rota_period->start_date->format('d M') }} –
-            {{ $rota_period->end_date->format('d M Y') }}</h1>
+            {{ $rota_period->end_date->format('d M Y') }}
+        </h1>
+
+
+
         <div class="space-x-2">
-
-            <a href="{{ route('backend.admin.shift-templates.index', ['location_id' => $rota_period->location_id]) }}"
-                class="px-3 py-2 bg-gray-200 rounded">Manage Shift Templates</a>
-
 
             <form action="{{ route('backend.admin.rota-periods.generate', $rota_period) }}" method="POST" class="inline">
                 @csrf
-                <button class="px-3 py-2 bg-gray-800 text-white rounded">Generate from Templates</button>
+                <button class="px-3 py-2 bg-gray-800 text-white rounded">Generate Shift(s)</button>
             </form>
             <form action="{{ route('backend.admin.rota-periods.publish', $rota_period) }}" method="POST" class="inline"
                 onsubmit="return confirm('Publish this rota?')">@csrf
@@ -22,6 +22,24 @@
             <a href="{{ route('backend.admin.rota-periods.index') }}" class="px-3 py-2 bg-gray-200 rounded">Back</a>
         </div>
     </div>
+
+
+    @if(session('success'))
+        <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-lg shadow-sm">
+            <div class="flex items-center gap-2 text-sm sm:text-base">
+                <i class="ph ph-check-circle text-green-600 flex-shrink-0"></i>
+                <span class="break-words">{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-800 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
+
+
+
 
     <div class="bg-white rounded shadow overflow-x-auto">
         <table class="min-w-full text-sm">

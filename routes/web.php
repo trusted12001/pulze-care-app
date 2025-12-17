@@ -64,6 +64,10 @@ use App\Http\Controllers\Backend\Admin\AssignmentController;
 use App\Http\Controllers\Backend\Admin\ReportsController;
 use App\Http\Controllers\Backend\Admin\ServiceUserPhotoController;
 
+use App\Http\Controllers\Frontend\CarerRotaController;
+use App\Http\Controllers\Frontend\CarerController;
+use App\Http\Controllers\Frontend\CarerResidentsController;
+
 
 
 /*
@@ -398,6 +402,10 @@ Route::prefix('backend/admin')
         Route::get('rota-periods/{rota_period}/print', [RotaPeriodController::class, 'print'])
             ->name('rota-periods.print');
 
+        Route::resource('rota-periods', RotaPeriodController::class)
+            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
+            ->names('rota-periods');
+
 
 
         // Shift assignments
@@ -507,13 +515,30 @@ Route::middleware(['auth', 'role:carer'])
     ->prefix('frontend')
     ->name('frontend.')
     ->group(function () {
-        Route::view('/carer', 'frontend.carer.index')->name('carer.index');
+        Route::get('/carer', [CarerController::class, 'index'])->name('carer.index');
 
-        Route::get('handovers/{service_user}/top-risks', TopRisksController::class)->name('handovers.top-risks');
 
-        // Check-in/out endpoints (mobile)
-        Route::post('assignments/{assignment}/check-in', [AttendanceController::class, 'checkIn'])->name('assignments.check-in');
-        Route::post('assignments/{assignment}/check-out', [AttendanceController::class, 'checkOut'])->name('assignments.check-out');
+        Route::get('handovers/{service_user}/top-risks', TopRisksController::class)
+            ->name('handovers.top-risks');
+
+        Route::post('assignments/{assignment}/check-in', [AttendanceController::class, 'checkIn'])
+            ->name('assignments.check-in');
+        Route::post('assignments/{assignment}/check-out', [AttendanceController::class, 'checkOut'])
+            ->name('assignments.check-out');
+
+
+        Route::get('/rota', [CarerRotaController::class, 'index'])->name('rota.index');
+
+        // ✅ opens the currently active published rota (week containing today)
+        Route::get('/rota/current', [CarerRotaController::class, 'current'])->name('rota.current');
+
+        Route::get('/rota/{rota_period}', [CarerRotaController::class, 'show'])->name('rota.show');
+
+        Route::get('/residents', [CarerResidentsController::class, 'index'])->name('residents.index');
+        Route::get('/residents/{resident}', [CarerResidentsController::class, 'show'])->name('residents.show');
+
+        Route::get('/carer/residents/load-more', [CarerController::class, 'loadMoreResidents'])
+            ->name('carer.residents.load-more');
     });
 
 require __DIR__ . '/auth.php';

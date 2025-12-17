@@ -31,6 +31,13 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-800 rounded">
+                {{ session('error') }}
+            </div>
+        @endif
+
+
         {{-- Create Period Form --}}
         <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 mb-6 sm:mb-8 overflow-hidden">
             <div class="px-4 sm:px-6 py-4 bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-gray-200">
@@ -169,6 +176,19 @@
                                         <i class="ph ph-eye"></i>
                                         <span class="hidden lg:inline">Open</span>
                                     </a>
+
+
+                                    <a href="{{ route('backend.admin.rota-periods.edit', $p) }}"
+                                        class="btn btn-sm btn-outline-primary">Edit</a>
+
+                                    <form action="{{ route('backend.admin.rota-periods.destroy', $p) }}" method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Delete this rota period? This cannot be undone.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+
                                 </td>
                             </tr>
                         @empty
