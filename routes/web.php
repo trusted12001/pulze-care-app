@@ -66,7 +66,7 @@ use App\Http\Controllers\Backend\Admin\ServiceUserPhotoController;
 
 use App\Http\Controllers\Frontend\CarerRotaController;
 use App\Http\Controllers\Frontend\CarerController;
-use App\Http\Controllers\Frontend\CarerResidentsController;
+use App\Http\Controllers\Frontend\CarerResidentController;
 
 
 
@@ -534,8 +534,8 @@ Route::middleware(['auth', 'role:carer'])
 
         Route::get('/rota/{rota_period}', [CarerRotaController::class, 'show'])->name('rota.show');
 
-        Route::get('/residents', [CarerResidentsController::class, 'index'])->name('residents.index');
-        Route::get('/residents/{resident}', [CarerResidentsController::class, 'show'])->name('residents.show');
+        Route::get('/residents', [CarerResidentController::class, 'index'])->name('residents.index');
+        Route::get('/residents/{resident}', [CarerResidentController::class, 'show'])->name('residents.show');
 
         Route::get('/carer/residents/load-more', [CarerController::class, 'loadMoreResidents'])
             ->name('carer.residents.load-more');

@@ -85,7 +85,7 @@ class CarerResidentController extends Controller
             $query->latest();
         }
 
-        $residents = $query->paginate(12);
+        $residents = $query->paginate(12)->withQueryString();
 
         return view('frontend.carer.residents.index', [
             'currentLocationName' => $currentLocationName,

@@ -123,7 +123,7 @@
                     </div>
                     {{-- You can wire this to a residents search route later --}}
                     <input type="text" id="residentSearchInput" class="border-0 w-100 bg-transparent small"
-                        placeholder="Search residents by name, ID or room…" />
+                        placeholder="Search residents by name, ID or room…" value="{{ request('q') }}" />
                 </div>
 
                 <div class="search-button">
@@ -232,28 +232,26 @@
 
 
             <div class="d-flex flex-column gap-3 pt-3">
-                @isset($residents)
-                    @forelse($residents as $resident)
-                    @include('frontend.carer.partials.resident-card', ['resident' => $resident]) @empty
-                        <p class="text-muted small mb-0 pt-2">No residents to display yet.</p>
-                    @endforelse
-                @else
-                    {{-- Fallback if controller hasn’t wired $residents yet --}}
-                    <p class="text-muted small mb-0 pt-2">
-                        Residents will appear here once the controller passes a
-                        <code>$residents</code> collection.
-                    </p>
-                @endisset
-
-                <div class="pt-3">
-                    <button id="loadMoreResidentsBtn" class="w-100 btn btn-outline-secondary rounded-3" type="button">
-                        Load more
-                    </button>
-
-                    <p id="loadMoreHint" class="small text-muted text-center mt-2 mb-0"></p>
+                <div id="residentCardsWrap" class="d-flex flex-column gap-3 pt-3">
+                    @isset($residents)
+                        @forelse($residents as $resident)
+                            @include('frontend.carer.partials.resident-card', ['resident' => $resident])
+                        @empty
+                            <p class="text-muted small mb-0 pt-2">No residents to display yet.</p>
+                        @endforelse
+                    @endisset
                 </div>
 
             </div>
+
+            <div class="pt-3">
+                <button id="loadMoreResidentsBtn" class="w-100 btn btn-outline-secondary rounded-3" type="button">
+                    Load more
+                </button>
+
+                <p id="loadMoreHint" class="small text-muted text-center mt-2 mb-0"></p>
+            </div>
+
 
 
         </section>

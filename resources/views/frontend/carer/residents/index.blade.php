@@ -26,15 +26,16 @@
 
         {{-- Search --}}
         <section class="search-section w-100 px-4 pt-4">
-            <form method="GET" action="{{ route('frontend.residents.index') }}">
+            <form id="residentSearchForm" method="GET" action="{{ route('frontend.residents.index') }}">
                 <div class="search-area d-flex justify-content-between align-items-center gap-2 w-100">
                     <div
                         class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-3 bg-white shadow-sm">
                         <div class="flex-center">
                             <i class="ph ph-magnifying-glass"></i>
                         </div>
-                        <input type="text" name="q" value="{{ $q }}" class="border-0 w-100 bg-transparent small"
-                            placeholder="Search by name, room, ID…" />
+
+                        <input id="residentSearchInput" type="text" name="q" value="{{ $q }}"
+                            class="border-0 w-100 bg-transparent small" placeholder="Search by name, room, ID…" />
                     </div>
 
                     <div class="search-button">
@@ -58,7 +59,8 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="mb-0">Residents</h3>
                 <p class="mb-0 small text-muted">
-                    {{ method_exists($residents, 'total') ? $residents->total() : $residents->count() }}</p>
+                    {{ method_exists($residents, 'total') ? $residents->total() : $residents->count() }}
+                </p>
             </div>
 
             <div class="d-flex flex-column gap-3 pt-3">
@@ -80,4 +82,41 @@
         </section>
 
     </main>
+
+
+    @push('scripts')
+        <script>
+            (function () {
+                const form = document.getElementById('residentSearchForm');
+                const input = document.getElementById('residentSearchInput');
+                if (!form || !input) return;
+
+                let t = null;
+
+                // Debounced submit as you type (Home-like behaviour)
+                input.addEventListener('input', function () {
+                    clearTimeout(t);
+                    t = setTimeout(() => {
+                        // Always go to page 1 when searching
+                        const url = new URL(form.action, window.location.origin);
+                        const q = (input.value || '').trim();
+                        if (q) url.searchParams.set('q', q);
+
+                        // If you later add other filters, preserve them like this:
+                        // new URLSearchParams(window.location.search).forEach((v,k)=>{ if(k!=='q' && k!=='page') url.searchParams.set(k,v) });
+
+                        window.location.href = url.toString();
+                    }, 350);
+                });
+
+                // Enter key should submit immediately
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        form.submit();
+                    }
+                });
+            })();
+        </script>
+    @endpush
 @endsection

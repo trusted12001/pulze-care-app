@@ -13,6 +13,7 @@ class CarerResidentsController extends Controller
         // For now: show all residents (we’ll later filter by location/assignment/tenant)
         $residents = ServiceUser::query()->latest()->paginate(20);
 
+
         return view('frontend.carer.residents.index', compact('residents'));
     }
 

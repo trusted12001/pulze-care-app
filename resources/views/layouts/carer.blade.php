@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('./assets/css/plugins/swiper.min.css') }}" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
+
 <body class="bg-gray-50">
 
     <main class="p-6">
@@ -19,5 +21,7 @@
     <script src="{{ asset('assets/js/plugins/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/js/service-worker-settings.js') }}"></script>
+    @stack('scripts')
 </body>
+
 </html>
