@@ -92,42 +92,12 @@
                     </p>
                 </div>
             </div>
-
-            <div class="d-flex justify-content-end align-items-center header-right gap-2 flex-wrap">
-                {{-- Favourite Residents Modal --}}
-                <button class="p-2 flex-center rounded-circle bg-white shadow-sm border-0" id="favoriteModalOpenButton"
-                    type="button">
-                    <i class="ph ph-list fs-5"></i>
-                </button>
-
-                {{-- Notifications --}}
-                <button class="p-2 flex-center rounded-circle bg-white shadow-sm border-0 position-relative"
-                    id="notificationModalOpenButton" type="button">
-                    <i class="ph ph-bell fs-5"></i>
-                    <span class="notification"></span>
-                </button>
-
-                {{-- Dashboard shortcut --}}
-                <a href="{{ route('dashboard') }}"
-                    class="p-2 flex-center rounded-circle bg-white shadow-sm text-decoration-none">
-                    <i class="ph ph-gauge fs-5"></i>
-                </a>
-
-                {{-- Logout --}}
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                    @csrf
-                    <button class="p-2 flex-center rounded-circle bg-white shadow-sm border-0" type="submit">
-                        <i class="ph ph-sign-out fs-5"></i>
-                    </button>
-                </form>
-            </div>
         </section>
         {{-- ================= HEADER END ============= --}}
 
         {{-- ================= SEARCH RESIDENT ================= --}}
         <section class="search-section w-100 px-4 pt-4">
             <p class="date mb-1">{{ $today->format('l, F j') }}</p>
-            <h2 class="heading-2 pt-1 pb-3">Let’s find your resident</h2>
 
             <div class="search-area d-flex justify-content-between align-items-center gap-2 w-100">
                 <div
@@ -150,99 +120,19 @@
         </section>
         {{-- ================= SEARCH END ================= --}}
 
-        {{-- ================= QUICK ACTIONS ================= --}}
-        <section class="px-4 pt-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0">Quick actions</h6>
-            </div>
-
-            <div class="row g-3">
-                {{-- My Shifts – only show if route exists --}}
-                @if (RouteFacade::has('shifts.index'))
-                    <div class="col-6">
-                        <a href="{{ route('shifts.index') }}" class="d-block text-decoration-none">
-                            <div class="p-3 rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="badge bgMainColor text-white">Today</span>
-                                    <i class="ph ph-calendar-check fs-5 textMainColor"></i>
-                                </div>
-                                <p class="mb-0 small text-muted">My Shifts</p>
-                                <p class="mb-0 fw-semibold">View &amp; start shifts</p>
-                            </div>
-                        </a>
-                    </div>
-                @endif
-
-                {{-- ✅ My Rota – always link to frontend.rota.index --}}
-                {{-- Rota (list of published rota periods) --}}
-                @if (RouteFacade::has('frontend.rota.index'))
-                    <div class="col-6">
-                        <a href="{{ route('frontend.rota.index') }}" class="d-block text-decoration-none">
-                            Rotas
-                            <p class="mb-0 fw-semibold">All Rotas</p>
-                            Published
-                        </a>
-                    </div>
-                @endif
-
-                {{-- My Rota (opens current rota period and highlights me) --}}
-                @if (RouteFacade::has('frontend.rota.current'))
-                    <div class="col-6">
-                        <a href="{{ route('frontend.rota.current') }}" class="d-block text-decoration-none">
-                            ...
-                            <p class="mb-0 fw-semibold">This week</p>
-                            ...
-                        </a>
-                    </div>
-                @endif
-
-
-                {{-- Residents – placeholder for now --}}
-                <div class="col-6">
-                    <a href="{{ route('frontend.residents.index') }}" class="d-block text-decoration-none">
-                        <div class="p-3 rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="badge bg-info-subtle text-info">Care</span>
-                                <i class="ph ph-users-three fs-5 text-info"></i>
-                            </div>
-                            <p class="mb-0 small text-muted">Residents</p>
-                            <p class="mb-0 fw-semibold">Profiles &amp; plans</p>
-                        </div>
-                    </a>
-                </div>
-
-                {{-- Care Dashboard – uses your existing dashboard route --}}
-                <div class="col-6">
-                    <a href="{{ route('dashboard') }}" class="d-block text-decoration-none">
-                        <div class="p-3 rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="badge bg-secondary-subtle text-secondary">Overview</span>
-                                <i class="ph ph-gauge fs-5 text-secondary"></i>
-                            </div>
-                            <p class="mb-0 small text-muted">Care Dashboard</p>
-                            <p class="mb-0 fw-semibold">Insights &amp; stats</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-        {{-- ================= QUICK ACTIONS END ========== --}}
 
         {{-- ================= TOP RESIDENTS (dynamic ready) ================= --}}
         <section class="px-4 pt-4 pb-6 top-doctor-area">
             <div class="d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">Your residents</h3>
-                <button class="view-all btn btn-link p-0 small" id="topDoctorModalOpenButton" type="button">
-                    View all
-                </button>
+                <p class="small text-muted">
+                    Residents found? {{ isset($residents) ? 'YES' : 'NO' }}
+                    @if(isset($residents))
+                        | Count: {{ $residents->count() }}
+                    @endif
+                </p>
+                <a href="{{ route('frontend.residents.index') }}" class="view-all btn btn-link p-0 small"
+                    id="topDoctorModalOpenButton" type="button">View all</a>
             </div>
-
-            <p class="small text-muted">
-                Residents found? {{ isset($residents) ? 'YES' : 'NO' }}
-                @if(isset($residents))
-                    | Count: {{ $residents->count() }}
-                @endif
-            </p>
 
 
             <div class="d-flex flex-column gap-3 pt-3">
@@ -255,10 +145,9 @@
                         @endforelse
                     @endisset
                 </div>
-
             </div>
 
-            <div class="pt-3">
+            <div class="pt-3" style="margin-bottom: 120px">
                 <button id="loadMoreResidentsBtn" class="w-100 btn btn-outline-secondary rounded-3" type="button">
                     Load more
                 </button>
