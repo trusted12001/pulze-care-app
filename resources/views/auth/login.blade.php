@@ -59,6 +59,24 @@
                         </div>
                     @endif
 
+                    @if (session('warning'))
+                        <div class="mb-4 rounded bg-red-50 text-orange-800 px-4 py-3">
+                            {{ session('warning') }}
+                        </div>
+                    @endif
+
+                    @if (session('success'))
+                        <div class="mb-4 rounded bg-green-50 text-green-800 px-4 py-3">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="mb-4 rounded bg-red-50 text-red-800 px-4 py-3">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="mb-3 rounded-lg border border-red-200 bg-red-50 text-red-800 px-3 py-2">
                             <ul class="list-disc pl-5">

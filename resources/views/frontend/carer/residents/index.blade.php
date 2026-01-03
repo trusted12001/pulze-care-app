@@ -58,12 +58,20 @@
         <section class="px-4 pt-4 pb-6 top-doctor-area">
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="mb-0">Residents</h3>
+
+                {{-- Count --}}
                 <p class="mb-0 small text-muted">
-                    {{ method_exists($residents, 'total') ? $residents->total() : $residents->count() }}
+                    <span id="residentCount">
+                        {{ method_exists($residents, 'total') ? $residents->total() : $residents->count() }}
+                    </span>
                 </p>
             </div>
 
-            <div class="d-flex flex-column gap-3 pt-3">
+            <div id="residentLoading" class="small text-muted pt-2" style="display:none;">
+                Searching…
+            </div>
+
+            <div id="residentCardsWrap" class="d-flex flex-column gap-3 pt-3">
                 @forelse($residents as $resident)
                     @include('frontend.carer.partials.resident-card', ['resident' => $resident])
                 @empty
@@ -75,11 +83,12 @@
 
             {{-- Pagination --}}
             @if(method_exists($residents, 'links'))
-                <div class="pt-4">
+                <div id="residentPagination" class="pt-4">
                     {{ $residents->withQueryString()->links('vendor.pagination.tailwind') }}
                 </div>
             @endif
         </section>
+
 
     </main>
 
@@ -89,33 +98,92 @@
             (function () {
                 const form = document.getElementById('residentSearchForm');
                 const input = document.getElementById('residentSearchInput');
-                if (!form || !input) return;
+
+                const wrap = document.getElementById('residentCardsWrap');
+                const pagination = document.getElementById('residentPagination');
+                const countEl = document.getElementById('residentCount');
+                const loadingEl = document.getElementById('residentLoading');
+
+                if (!form || !input || !wrap) return;
 
                 let t = null;
+                let controller = null;
 
-                // Debounced submit as you type (Home-like behaviour)
+                async function fetchResults(url) {
+                    // Abort previous request
+                    if (controller) controller.abort();
+                    controller = new AbortController();
+
+                    loadingEl && (loadingEl.style.display = '');
+                    try {
+                        const res = await fetch(url, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                            signal: controller.signal
+                        });
+
+                        // If session expired, Laravel may return 419/redirect html.
+                        if (!res.ok) throw new Error('Request failed');
+
+                        const html = await res.text();
+                        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                        const newWrap = doc.querySelector('#residentCardsWrap');
+                        const newPagination = doc.querySelector('#residentPagination');
+                        const newCount = doc.querySelector('#residentCount');
+
+                        if (newWrap) wrap.innerHTML = newWrap.innerHTML;
+                        if (pagination) pagination.innerHTML = newPagination ? newPagination.innerHTML : '';
+                        if (countEl && newCount) countEl.textContent = newCount.textContent;
+
+                        // Update URL in address bar (no reload)
+                        window.history.replaceState({}, '', url);
+
+                        // Keep focus + caret at end
+                        input.focus();
+                        const val = input.value;
+                        input.setSelectionRange(val.length, val.length);
+                    } finally {
+                        loadingEl && (loadingEl.style.display = 'none');
+                    }
+                }
+
+                function buildUrl(q) {
+                    const url = new URL(form.action, window.location.origin);
+
+                    // Preserve other query params except q/page
+                    const current = new URLSearchParams(window.location.search);
+                    current.forEach((v, k) => {
+                        if (k !== 'q' && k !== 'page') url.searchParams.set(k, v);
+                    });
+
+                    if (q) url.searchParams.set('q', q);
+                    return url.toString();
+                }
+
+                // Debounced search (NO full page refresh)
                 input.addEventListener('input', function () {
                     clearTimeout(t);
                     t = setTimeout(() => {
-                        // Always go to page 1 when searching
-                        const url = new URL(form.action, window.location.origin);
-                        const q = (input.value || '').trim();
-                        if (q) url.searchParams.set('q', q);
-
-                        // If you later add other filters, preserve them like this:
-                        // new URLSearchParams(window.location.search).forEach((v,k)=>{ if(k!=='q' && k!=='page') url.searchParams.set(k,v) });
-
-                        window.location.href = url.toString();
-                    }, 350);
+                        fetchResults(buildUrl((input.value || '').trim()));
+                    }, 300);
                 });
 
-                // Enter key should submit immediately
+                // Enter: immediate search
                 input.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        form.submit();
+                        fetchResults(buildUrl((input.value || '').trim()));
                     }
                 });
+
+                // Handle pagination clicks via AJAX too
+                document.addEventListener('click', function (e) {
+                    const a = e.target.closest('#residentPagination a');
+                    if (!a) return;
+                    e.preventDefault();
+                    fetchResults(a.href);
+                });
+
             })();
         </script>
     @endpush

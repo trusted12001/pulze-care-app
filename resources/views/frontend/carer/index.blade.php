@@ -24,6 +24,20 @@
         $avatarUrl = $staffProfile?->passport_photo_url ?? asset('assets/img/user_img.png');
     @endphp
 
+    {{-- Display Session Messages --}}
+    @if (session('warning'))
+        <div class="mb-4 rounded bg-red-50 text-orange-800 px-4 py-3">
+            {{ session('warning') }}
+        </div>
+    @endif
+
+
+    @if (session('error'))
+        <div class="mb-4 rounded bg-red-50 text-red-800 px-4 py-3">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- Optional admin links (kept from your original) --}}
     <div class="mt-3 mb-2">
         @can('manage shifts')

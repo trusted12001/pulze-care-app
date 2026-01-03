@@ -6,11 +6,12 @@ use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\TokenMismatchException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -21,5 +22,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            // If it's an API request, return JSON
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Session expired. Please refresh and try again.',
+                ], 419);
+            }
+
+            return response()->view('errors.419', [], 419);
+        });
+    })
+
+    ->create();

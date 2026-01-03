@@ -9,19 +9,39 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
     <link rel="stylesheet" href="{{ asset('./assets/css/plugins/swiper.min.css') }}" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body class="bg-gray-50">
 
-    <main class="p-6">
-        @yield('content')
-    </main>
+    <div class="px-6 mt-4">
+        @if (session('warning'))
+            <div class="mb-4 rounded bg-red-50 text-orange-800 px-4 py-3">
+                {{ session('warning') }}
+            </div>
+        @endif
 
-    <script src="{{ asset('assets/js/plugins/swiper-bundle.min.js')}}"></script>
-    <script src="{{ asset('assets/js/plugins/bootstrap.js') }}"></script>
-    <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('assets/js/service-worker-settings.js') }}"></script>
-    @stack('scripts')
+        @if (session('success'))
+            <div class="mb-4 rounded bg-green-50 text-green-800 px-4 py-3">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-4 rounded bg-red-50 text-red-800 px-4 py-3">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @yield('content')
+        </main>
+
+        <script src="{{ asset('assets/js/plugins/swiper-bundle.min.js')}}"></script>
+        <script src="{{ asset('assets/js/plugins/bootstrap.js') }}"></script>
+        <script src="{{ asset('assets/js/main.js') }}"></script>
+        <script src="{{ asset('assets/js/service-worker-settings.js') }}"></script>
+        @stack('scripts')
 </body>
 
 </html>

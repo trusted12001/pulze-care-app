@@ -19,6 +19,13 @@
     <div class="main-content" id="mainContent">
         @include('layouts.partials.admin-header')
 
+
+        @if (session('warning'))
+            <div class="mb-4 rounded bg-red-50 text-orange-800 px-4 py-3">
+                {{ session('warning') }}
+            </div>
+        @endif
+
         @if (session('success'))
             <div class="mb-4 rounded bg-green-50 text-green-800 px-4 py-3">
                 {{ session('success') }}
@@ -30,6 +37,7 @@
                 {{ session('error') }}
             </div>
         @endif
+
 
         @if ($errors->any())
             <div class="mb-4 rounded bg-red-50 text-red-800 px-4 py-3">
