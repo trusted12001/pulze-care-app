@@ -74,46 +74,68 @@
     </div>
     {{-- ================= PRELOADER END ============= --}}
 
-    <main class="home-screen position-relative top-0 start-0 end-0 pb-7">
+    <main class="home-screen position-relative top-0 start-0 end-0 pb-5">
 
         {{-- ================= HEADER ================= --}}
-        <section class="d-flex justify-content-between align-items-center home-header-section w-100 px-4 pt-3">
-            <div class="d-flex justify-content-start align-items-center gap-3">
-                <div class="avatar rounded-circle overflow-hidden flex-center">
-                    <img src="{{ $avatarUrl }}" alt="{{ $displayName }}" class="img-fluid"
-                        style="width: 52px; height: 52px; object-fit: cover;" />
+        <section class="home-header-section w-100 px-3 px-md-4 pt-3 pb-2">
+            <div class="d-flex justify-content-between align-items-center gap-2 gap-md-3">
+                <div class="d-flex justify-content-start align-items-center gap-2 gap-md-3 flex-grow-1 min-w-0">
+                    <div class="avatar rounded-circle overflow-hidden flex-shrink-0" style="width: 48px; height: 48px;">
+                        <img src="{{ $avatarUrl }}" alt="{{ $displayName }}" class="w-100 h-100"
+                            style="object-fit: cover;" />
+                    </div>
+
+                    <div class="flex-grow-1 min-w-0">
+                        <h3 class="heading-3 mb-1 fw-semibold" style="font-size: 1.25rem; line-height: 1.3;">
+                            Hi, {{ $displayName }} 👋
+                        </h3>
+                        <p class="d-flex align-items-center gap-1 mb-0 small text-muted" style="font-size: 0.8125rem;">
+                            <i class="ph-fill ph-map-pin" style="font-size: 0.875rem;"></i>
+                            <span class="text-truncate">{{ $currentLocationName }}</span>
+                        </p>
+                    </div>
                 </div>
 
-                <div>
-                    <h3 class="heading-3 pb-1 mb-0">Hi, {{ $displayName }} 👋</h3>
-                    <p class="d-inline-flex gap-2 location justify-content-start align-items-center mb-0 small text-muted">
-                        {{ $currentLocationName }}
-                        <i class="ph-fill ph-map-pin"></i>
-                    </p>
-                </div>
+                {{-- Notification Icon --}}
+                <button type="button" 
+                    class="notification-header-btn flex-center bg-transparent border-0 flex-shrink-0"
+                    id="notificationModalOpenButton"
+                    style="position: relative;">
+                    <i class="ph ph-bell" style="font-size: 1.5rem; color: var(--n1);"></i>
+                    {{-- Notification Badge --}}
+                    <span class="notification-badge position-absolute rounded-circle"></span>
+                </button>
             </div>
         </section>
         {{-- ================= HEADER END ============= --}}
 
         {{-- ================= SEARCH RESIDENT ================= --}}
-        <section class="search-section w-100 px-4 pt-4">
-            <p class="date mb-1">{{ $today->format('l, F j') }}</p>
+        <section class="search-section w-100 px-3 px-md-4 pt-3 pb-2">
+            <p class="date mb-2 fw-medium" style="font-size: 0.875rem; color: var(--n2);">
+                {{ $today->format('l, F j') }}
+            </p>
 
             <div class="search-area d-flex justify-content-between align-items-center gap-2 w-100">
                 <div
-                    class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-3 bg-white shadow-sm">
-                    <div class="flex-center">
-                        <i class="ph ph-magnifying-glass"></i>
+                    class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
+                    style="transition: all 0.2s ease; border-radius: 16px !important;">
+                    <div class="flex-center" style="color: var(--n2);">
+                        <i class="ph ph-magnifying-glass" style="font-size: 1.125rem;"></i>
                     </div>
-                    {{-- You can wire this to a residents search route later --}}
-                    <input type="text" id="residentSearchInput" class="border-0 w-100 bg-transparent small"
-                        placeholder="Search residents by name, ID or room…" value="{{ request('q') }}" />
+                    <input type="text" id="residentSearchInput" 
+                        class="border-0 w-100 bg-transparent small flex-grow-1"
+                        style="font-size: 0.875rem; outline: none;"
+                        placeholder="Search residents by name, ID or room…" 
+                        value="{{ request('q') }}" />
                 </div>
 
-                <div class="search-button">
-                    <button class="flex-center rounded-3 bgMainColor text-white border-0 px-3 py-2"
-                        id="filterModalOpenButton" type="button">
-                        <i class="ph ph-sliders-horizontal"></i>
+                <div class="search-button flex-shrink-0">
+                    <button class="flex-center text-white border-0"
+                        style="width: 44px; height: 44px; background-color: var(--p1); transition: all 0.2s ease; border-radius: 16px;"
+                        id="filterModalOpenButton" type="button"
+                        onmouseover="this.style.transform='scale(1.05)'"
+                        onmouseout="this.style.transform='scale(1)'">
+                        <i class="ph ph-sliders-horizontal" style="font-size: 1.125rem;"></i>
                     </button>
                 </div>
             </div>
@@ -121,73 +143,80 @@
         {{-- ================= SEARCH END ================= --}}
 
 
-        {{-- ================= TOP RESIDENTS (dynamic ready) ================= --}}
-        <section class="px-4 pt-4 pb-6 top-doctor-area">
-            <div class="d-flex justify-content-between align-items-center">
-                <p class="small text-muted">
-                    Residents found? {{ isset($residents) ? 'YES' : 'NO' }}
-                    @if(isset($residents))
-                        | Count: {{ $residents->count() }}
-                    @endif
-                </p>
-                <a href="{{ route('frontend.residents.index') }}" class="view-all btn btn-link p-0 small"
-                    id="topDoctorModalOpenButton" type="button">View all</a>
+        {{-- ================= RESIDENTS SECTION ================= --}}
+        <section class="px-3 px-md-4 pt-3 pb-6 top-doctor-area">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <h4 class="mb-0 fw-semibold" style="font-size: 1rem; color: var(--n1);">
+                        Residents
+                        @if(isset($residents) && $residents->count() > 0)
+                            <span class="text-muted fw-normal" style="font-size: 0.875rem;">
+                                ({{ $residents->count() }})
+                            </span>
+                        @endif
+                    </h4>
+                </div>
+                <a href="{{ route('frontend.residents.index') }}" 
+                    class="view-all text-decoration-none fw-medium"
+                    style="font-size: 0.875rem; color: var(--p1); transition: color 0.2s ease;"
+                    onmouseover="this.style.color='var(--n1)'"
+                    onmouseout="this.style.color='var(--p1)'">
+                    View all
+                </a>
             </div>
 
-
-            <div class="d-flex flex-column gap-3 pt-3">
-                <div id="residentCardsWrap" class="d-flex flex-column gap-3 pt-3">
+            <div class="d-flex flex-column gap-3 pt-2">
+                <div id="residentCardsWrap" class="d-flex flex-column gap-3">
                     @isset($residents)
                         @forelse($residents as $resident)
                             @include('frontend.carer.partials.resident-card', ['resident' => $resident])
                         @empty
-                            <p class="text-muted small mb-0 pt-2">No residents to display yet.</p>
+                            <div class="text-center py-5">
+                                <i class="ph ph-users" style="font-size: 3rem; color: var(--n40); opacity: 0.5;"></i>
+                                <p class="text-muted small mb-0 pt-3">No residents to display yet.</p>
+                            </div>
                         @endforelse
                     @endisset
                 </div>
             </div>
 
-            <div class="pt-3" style="margin-bottom: 120px">
-                <button id="loadMoreResidentsBtn" class="w-100 btn btn-outline-secondary rounded-3" type="button">
+            <div class="pt-3" style="margin-bottom: 100px">
+                <button id="loadMoreResidentsBtn" 
+                    class="w-100 btn btn-outline-secondary fw-medium py-2"
+                    style="font-size: 0.875rem; transition: all 0.2s ease; border-radius: 16px; border-width: 2px;"
+                    type="button">
                     Load more
                 </button>
 
                 <p id="loadMoreHint" class="small text-muted text-center mt-2 mb-0"></p>
             </div>
 
-
-
         </section>
-        {{-- ================= TOP RESIDENTS END ================= --}}
+        {{-- ================= RESIDENTS END ================= --}}
 
         {{-- ================= FOOTER MENU ================= --}}
         <div class="footer-menu-area">
             <div class="footer-menu flex justify-content-center align-items-center">
-                <div class="d-flex justify-content-between align-items-center px-4 h-100 w-100">
+                <div class="d-flex justify-content-between align-items-center px-3 px-md-4 h-100 w-100">
 
-                    <a href="#" class="flex-center text-decoration-none">
+                    <a href="#" class="flex-center text-decoration-none footer-menu-link">
                         <i class="ph ph-list link-item"></i>
                     </a>
 
-                    <button type="button" class="flex-center text-decoration-none bg-transparent border-0"
-                        id="notificationModalOpenButtonFooter">
-                        <i class="ph ph-bell link-item"></i>
-                    </button>
-
                     {{-- Profile – placeholder for now, wire later --}}
-                    <a href="#" class="flex-center text-decoration-none">
+                    <a href="#" class="flex-center text-decoration-none footer-menu-link">
                         <i class="ph ph-user-circle link-item"></i>
                     </a>
 
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="flex-center text-decoration-none bg-transparent border-0">
+                        <button type="submit" class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
                             <i class="ph ph-sign-out link-item"></i>
                         </button>
                     </form>
 
                     {{-- Home --}}
-                    <a href="{{ route('frontend.carer.index') }}" class="flex-center text-decoration-none">
+                    <a href="{{ route('frontend.carer.index') }}" class="flex-center text-decoration-none footer-menu-link">
                         <i class="ph-fill ph-house link-item active"></i>
                     </a>
 
