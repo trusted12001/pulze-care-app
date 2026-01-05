@@ -97,10 +97,8 @@
                 </div>
 
                 {{-- Notification Icon --}}
-                <button type="button" 
-                    class="notification-header-btn flex-center bg-transparent border-0 flex-shrink-0"
-                    id="notificationModalOpenButton"
-                    style="position: relative;">
+                <button type="button" class="notification-header-btn flex-center bg-transparent border-0 flex-shrink-0"
+                    id="notificationModalOpenButton" style="position: relative;">
                     <i class="ph ph-bell" style="font-size: 1.5rem; color: var(--n1);"></i>
                     {{-- Notification Badge --}}
                     <span class="notification-badge position-absolute rounded-circle"></span>
@@ -115,29 +113,27 @@
                 {{ $today->format('l, F j') }}
             </p>
 
-            <div class="search-area d-flex justify-content-between align-items-center gap-2 w-100">
-                <div
-                    class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
+            <div class="search-area d-flex justify-content-between align-items-center  w-100">
+                <div class="search-box d-flex justify-content-start align-items-center  px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
                     style="transition: all 0.2s ease; border-radius: 16px !important;">
                     <div class="flex-center" style="color: var(--n2);">
                         <i class="ph ph-magnifying-glass" style="font-size: 1.125rem;"></i>
                     </div>
-                    <input type="text" id="residentSearchInput" 
-                        class="border-0 w-100 bg-transparent small flex-grow-1"
-                        style="font-size: 0.875rem; outline: none;"
-                        placeholder="Search residents by name, ID or room…" 
+                    <input type="text" id="residentSearchInput" class="border-0 w-100 bg-transparent small flex-grow-1"
+                        style="font-size: 0.875rem; outline: none;" placeholder="Search residents by name, ID or room…"
                         value="{{ request('q') }}" />
+
+                    <div class="search-button flex-shrink-0">
+                        <button class="flex-center text-white border-0"
+                            style="width: 33px; height: 33px; background-color: var(--p1); transition: all 0.2s ease; border-radius: 16px;"
+                            id="filterModalOpenButton" type="button" onmouseover="this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            <i class="ph ph-sliders-horizontal" style="font-size: 1.125rem;"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="search-button flex-shrink-0">
-                    <button class="flex-center text-white border-0"
-                        style="width: 44px; height: 44px; background-color: var(--p1); transition: all 0.2s ease; border-radius: 16px;"
-                        id="filterModalOpenButton" type="button"
-                        onmouseover="this.style.transform='scale(1.05)'"
-                        onmouseout="this.style.transform='scale(1)'">
-                        <i class="ph ph-sliders-horizontal" style="font-size: 1.125rem;"></i>
-                    </button>
-                </div>
+
             </div>
         </section>
         {{-- ================= SEARCH END ================= --}}
@@ -156,11 +152,9 @@
                         @endif
                     </h4>
                 </div>
-                <a href="{{ route('frontend.residents.index') }}" 
-                    class="view-all text-decoration-none fw-medium"
+                <a href="{{ route('frontend.residents.index') }}" class="view-all text-decoration-none fw-medium"
                     style="font-size: 0.875rem; color: var(--p1); transition: color 0.2s ease;"
-                    onmouseover="this.style.color='var(--n1)'"
-                    onmouseout="this.style.color='var(--p1)'">
+                    onmouseover="this.style.color='var(--n1)'" onmouseout="this.style.color='var(--p1)'">
                     View all
                 </a>
             </div>
@@ -181,8 +175,7 @@
             </div>
 
             <div class="pt-3" style="margin-bottom: 100px">
-                <button id="loadMoreResidentsBtn" 
-                    class="w-100 btn btn-outline-secondary fw-medium py-2"
+                <button id="loadMoreResidentsBtn" class="w-100 btn btn-outline-secondary fw-medium py-2"
                     style="font-size: 0.875rem; transition: all 0.2s ease; border-radius: 16px; border-width: 2px;"
                     type="button">
                     Load more
@@ -210,7 +203,8 @@
 
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
+                        <button type="submit"
+                            class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
                             <i class="ph ph-sign-out link-item"></i>
                         </button>
                     </form>
