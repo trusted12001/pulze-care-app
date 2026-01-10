@@ -40,13 +40,14 @@
                 {{-- Header --}}
                 <div class="px-6 pt-6">
                     <div class="flex items-center gap-3">
-                        <div class="brand-badge w-10 h-10 rounded-xl flex items-center justify-center">
+                        <div class="bg-green-700 brand-badge w-10 h-10 rounded-xl flex items-center justify-center">
                             <img src="{{ asset('assets/img/fav-logo.png') }}" alt="Pulze"
                                 class="w-7 h-7 object-contain" />
                         </div>
                         <div>
-                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Sign In</h1>
-                            <p class="text-sm text-gray-600">Access your support dashboard and care tools</p>
+                            <h1 class="text-xl sm:text-2xl font-bold text-green-900">Pulze!</h1>
+                            <p class="text-sm text-gray-600"> <span class="font-bold">Sign in</span> to acces your care
+                                tools</p>
                         </div>
                     </div>
                 </div>
@@ -130,13 +131,16 @@
 
                     {{-- Remember me --}}
                     <div class="flex items-center justify-between">
-                        <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                            <input type="checkbox" name="remember"
-                                class="rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
+                        <label class="inline-flex items-center gap-2 text-sm text-gray-700 whitespace-nowrap">
+                            <input
+                                type="checkbox"
+                                name="remember"
+                                class="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                            />
                             Remember me
                         </label>
-                        {{-- Optional link back to site/home --}}
                     </div>
+
 
                     {{-- Submit --}}
                     <div class="pt-2">
@@ -160,8 +164,7 @@
                     {{-- Register --}}
                     <p class="text-center text-sm text-gray-600">
                         Don’t have an account?
-                        <a href="{{ route('register') }}" class="text-orange-700 hover:text-orange-800 font-medium">Sign
-                            up</a>
+                        <span class="text-orange-700 hover:text-orange-800 font-medium">Contact Admin</span>
                     </p>
                 </form>
             </div>

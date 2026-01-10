@@ -68,6 +68,8 @@ use App\Http\Controllers\Frontend\CarerRotaController;
 use App\Http\Controllers\Frontend\CarerController;
 use App\Http\Controllers\Frontend\CarerResidentController;
 
+use App\Http\Controllers\Backend\Admin\StaffProfilePhotoController;
+
 
 
 /*
@@ -468,6 +470,12 @@ Route::prefix('backend/admin')
         // ✅ NEW: Print route (this is what Blade is calling)
         Route::get('service-users/{service_user}/print', [ServiceUserController::class, 'print'])
             ->name('service-users.print');
+
+        Route::get('/staff-profiles/{staffProfile}/photo', [StaffProfilePhotoController::class, 'edit'])
+            ->name('staff-profiles.photo.edit');
+
+        Route::post('/staff-profiles/{staffProfile}/photo', [StaffProfilePhotoController::class, 'update'])
+            ->name('staff-profiles.photo.update');
     });
 
 

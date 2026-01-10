@@ -16,10 +16,16 @@
                     <h2 class="mb-1 fw-bold" style="font-size: 1.5rem; color: var(--n1); line-height: 1.2;">
                         Residents
                     </h2>
-                    <p class="mb-0 small text-muted d-flex align-items-center gap-1" style="font-size: 0.8125rem;">
-                        <i class="ph-fill ph-map-pin" style="font-size: 0.875rem;"></i>
-                        <span>{{ $currentLocationName ?? 'Your assigned location' }}</span>
+                    <p class="d-inline-flex gap-2 location justify-content-start align-items-center mb-0 small text-muted">
+                        {{ $assignmentLabel ?? $currentLocationName }}
+                        <i class="ph-fill ph-map-pin"></i>
                     </p>
+
+                    <span class="d-inline-flex gap-2 location justify-content-start align-items-center mb-0 small">
+                        @if(!empty($assignmentSub))
+                            <p class="mb-0 small fw-semibold">{{ $assignmentSub }}</p>
+                        @endif
+                    </span>
                 </div>
 
                 <a href="{{ route('frontend.carer.index') }}"
@@ -35,8 +41,7 @@
         <section class="search-section w-100 px-3 px-md-4 pt-3 pb-2">
             <form id="residentSearchForm" method="GET" action="{{ route('frontend.residents.index') }}">
                 <div class="search-area d-flex justify-content-between align-items-center gap-2 w-100">
-                    <div
-                        class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
+                    <div class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
                         style="transition: all 0.2s ease; border-radius: 16px !important; border: 1.5px solid var(--borderColor);">
                         <div class="flex-center" style="color: var(--n2);">
                             <i class="ph ph-magnifying-glass" style="font-size: 1.125rem;"></i>
@@ -44,27 +49,28 @@
 
                         <input id="residentSearchInput" type="text" name="q" value="{{ $q }}"
                             class="border-0 w-100 bg-transparent small flex-grow-1"
-                            style="font-size: 0.875rem; outline: none;"
-                            placeholder="Search by name, room, ID…" />
+                            style="font-size: 0.875rem; outline: none;" placeholder="Search by name, room, ID…" />
 
                         @if($q)
-                            <button type="button" 
+                            <button type="button"
                                 onclick="document.getElementById('residentSearchInput').value=''; document.getElementById('residentSearchForm').submit();"
-                                class="border-0 bg-transparent p-0 flex-center"
-                                style="color: var(--n2); cursor: pointer;">
+                                class="border-0 bg-transparent p-0 flex-center" style="color: var(--n2); cursor: pointer;">
                                 <i class="ph ph-x" style="font-size: 1rem;"></i>
                             </button>
                         @endif
+
+
+                        <div class="search-button flex-shrink-0">
+                            <button class="flex-center text-white border-0" type="submit"
+                                style="width: 33px; height: 33px; background-color: var(--p1); transition: all 0.2s ease; border-radius: 16px;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                                <i class="ph ph-arrow-right" style="font-size: 1.125rem;"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="search-button flex-shrink-0">
-                        <button class="flex-center text-white border-0" type="submit"
-                            style="width: 44px; height: 44px; background-color: var(--p1); transition: all 0.2s ease; border-radius: 16px;"
-                            onmouseover="this.style.transform='scale(1.05)'"
-                            onmouseout="this.style.transform='scale(1)'">
-                            <i class="ph ph-arrow-right" style="font-size: 1.125rem;"></i>
-                        </button>
-                    </div>
+
                 </div>
 
                 @if($q)
@@ -73,10 +79,8 @@
                             <i class="ph ph-magnifying-glass" style="font-size: 0.875rem;"></i>
                             <span>Showing results for: <strong>{{ $q }}</strong></span>
                         </p>
-                        <a class="small text-decoration-none fw-medium" 
-                            href="{{ route('frontend.residents.index') }}"
-                            style="color: var(--p1); transition: color 0.2s ease;"
-                            onmouseover="this.style.color='var(--n1)'"
+                        <a class="small text-decoration-none fw-medium" href="{{ route('frontend.residents.index') }}"
+                            style="color: var(--p1); transition: color 0.2s ease;" onmouseover="this.style.color='var(--n1)'"
                             onmouseout="this.style.color='var(--p1)'">
                             Clear
                         </a>
@@ -95,12 +99,12 @@
 
                 {{-- Count --}}
                 <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-light text-dark border px-2 py-1" 
-                        style="font-size: 0.75rem; font-weight: 500;">
+                    <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem; font-weight: 500;">
                         <span id="residentCount">
                             {{ method_exists($residents, 'total') ? $residents->total() : $residents->count() }}
                         </span>
-                        <span class="ms-1">{{ (method_exists($residents, 'total') ? $residents->total() : $residents->count()) === 1 ? 'resident' : 'residents' }}</span>
+                        <span
+                            class="ms-1">{{ (method_exists($residents, 'total') ? $residents->total() : $residents->count()) === 1 ? 'resident' : 'residents' }}</span>
                     </span>
                 </div>
             </div>
@@ -175,7 +179,8 @@
 
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
+                        <button type="submit"
+                            class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
                             <i class="ph ph-sign-out link-item"></i>
                         </button>
                     </form>
@@ -200,31 +205,31 @@
     </main>
 
     @push('styles')
-    <style>
-        .residents-index-screen {
-            min-height: 100vh;
-            background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
-        }
+        <style>
+            .residents-index-screen {
+                min-height: 100vh;
+                background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+            }
 
-        .home-button-header:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        }
+            .home-button-header:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            }
 
-        .home-button-header:active {
-            transform: scale(0.95);
-        }
+            .home-button-header:active {
+                transform: scale(0.95);
+            }
 
-        .search-box:focus-within {
-            border-color: var(--p1) !important;
-            box-shadow: 0 0 0 3px rgba(0, 146, 129, 0.1) !important;
-            transform: translateY(-1px);
-        }
+            .search-box:focus-within {
+                border-color: var(--p1) !important;
+                box-shadow: 0 0 0 3px rgba(0, 146, 129, 0.1) !important;
+                transform: translateY(-1px);
+            }
 
-        .empty-state {
-            border: 1.5px solid var(--borderColor);
-        }
-    </style>
+            .empty-state {
+                border: 1.5px solid var(--borderColor);
+            }
+        </style>
     @endpush
 
     @push('scripts')
@@ -252,7 +257,7 @@
                         loadingEl.style.display = '';
                         wrap.style.opacity = '0.5';
                     }
-                    
+
                     try {
                         const res = await fetch(url, {
                             headers: { 'X-Requested-With': 'XMLHttpRequest' },

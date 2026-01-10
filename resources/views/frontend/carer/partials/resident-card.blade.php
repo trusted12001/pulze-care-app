@@ -11,7 +11,7 @@
 
     $roomLabel = $resident->room_label
         ?? ($resident->room_number ? ('Room ' . $resident->room_number) : null)
-        ?? 'Room not set';
+        ?? 'N/A';
 
     $locationLabel = optional($resident->location)->name ?? null;
 

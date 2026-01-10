@@ -7,67 +7,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Carbon;
 
-use App\Models\ServiceUser;     // ✅ keep this if your resident model is ServiceUser
+use App\Models\ServiceUser;
 use App\Models\ShiftAssignment;
 use App\Models\Location;
 
 class CarerController extends Controller
 {
+    /**
+     * Carer dashboard
+     */
     public function index(Request $request)
     {
         $user = $request->user();
         $staffProfile = $user?->staffProfile;
 
-        $locationId = null;
+        // 1) Determine assignment (active / next) + location to use
+        $assignment = $this->resolveAssignmentContext($user);
 
-        /**
-         * IMPORTANT:
-         * Most apps store start_at/end_at in UTC in DB.
-         * So compute "today" in UK time, then convert to UTC for DB query.
-         */
-        $todayUkStart = Carbon::now('Europe/London')->startOfDay();
-        $todayUkEnd   = Carbon::now('Europe/London')->endOfDay();
+        $assignmentLabel   = $assignment['assignmentLabel'];
+        $assignmentSub     = $assignment['assignmentSub'];
+        $activeLocationId  = $assignment['activeLocationId'];   // used for filtering residents on home
+        $currentLocationId = $assignment['locationId'];         // can be active OR fallback
+        $currentLocationName = $assignment['currentLocationName'];
 
-        $todayUtcStart = $todayUkStart->copy()->timezone('UTC');
-        $todayUtcEnd   = $todayUkEnd->copy()->timezone('UTC');
-
-        // A) Try location from today's assigned shift
-        if (class_exists(ShiftAssignment::class) && Schema::hasTable('shift_assignments')) {
-
-            $assignment = ShiftAssignment::query()
-                ->where('staff_id', $user->id)
-                ->whereHas('shift', function ($q) use ($todayUtcStart, $todayUtcEnd) {
-                    // shift overlaps today
-                    $q->where(function ($qq) use ($todayUtcStart, $todayUtcEnd) {
-                        $qq->whereBetween('start_at', [$todayUtcStart, $todayUtcEnd])
-                            ->orWhereBetween('end_at', [$todayUtcStart, $todayUtcEnd])
-                            ->orWhere(function ($q3) use ($todayUtcStart, $todayUtcEnd) {
-                                $q3->where('start_at', '<=', $todayUtcStart)
-                                    ->where('end_at', '>=', $todayUtcEnd);
-                            });
-                    });
-                })
-                ->with(['shift:id,location_id,start_at,end_at'])
-                ->latest('id')
-                ->first();
-
-            $locationId = $assignment?->shift?->location_id;
-        }
-
-        // B) fallback: staff_profiles.location_id
-        if (!$locationId && $staffProfile && Schema::hasColumn('staff_profiles', 'location_id')) {
-            $locationId = $staffProfile->location_id;
-        }
-
-        $currentLocationName = $locationId
-            ? optional(Location::find($locationId))->name
-            : 'Your assigned location';
-
-        // -------------------------
-        // Residents query (safe)
-        // -------------------------
-        $residentsQuery = ServiceUser::query();
-        $residentTable = $residentsQuery->getModel()->getTable();
+        // 2) Residents query (home = small subset)
+        $residentsQuery = ServiceUser::query()->with('location');
+        $residentTable  = $residentsQuery->getModel()->getTable();
 
         // Tenant filter (only if both columns exist)
         if (
@@ -78,16 +43,27 @@ class CarerController extends Controller
             $residentsQuery->where('tenant_id', $staffProfile->tenant_id);
         }
 
-        // Location filter (only if we actually have a locationId)
-        if ($locationId) {
+        /**
+         * IMPORTANT HOME RULE:
+         * - If we have an ACTIVE location => show residents for that location.
+         * - Else if no active shift, you can decide:
+         *    A) show none (strict)
+         *    B) show next location residents as preview (friendly)
+         *
+         * We’ll do friendly default: use $currentLocationId (active if present, else next/fallback).
+         * If you want strict, change $currentLocationId to $activeLocationId.
+         */
+        $locationToUse = $currentLocationId;
+
+        if ($locationToUse) {
             if (Schema::hasColumn($residentTable, 'location_id')) {
-                $residentsQuery->where('location_id', $locationId);
+                $residentsQuery->where('location_id', $locationToUse);
             } elseif (Schema::hasColumn($residentTable, 'current_location_id')) {
-                $residentsQuery->where('current_location_id', $locationId);
+                $residentsQuery->where('current_location_id', $locationToUse);
             }
         }
 
-        // Order nicely
+        // Sort nicely
         if (Schema::hasColumn($residentTable, 'first_name')) {
             $residentsQuery->orderBy('first_name')->orderBy('last_name');
         } elseif (Schema::hasColumn($residentTable, 'name')) {
@@ -96,16 +72,12 @@ class CarerController extends Controller
             $residentsQuery->latest();
         }
 
-        // Take 12 for dashboard
-        $residents = $residentsQuery->take(12)->get();
+        // Home shows a small number
+        $residents = $residentsQuery->take(10)->get();
 
-        /**
-         * ✅ Fallback:
-         * If filters returned 0, show something (tenant-scoped if possible).
-         * This prevents the dashboard from looking “broken”.
-         */
+        // Fallback so the dashboard doesn’t look broken
         if ($residents->isEmpty()) {
-            $fallback = ServiceUser::query();
+            $fallback = ServiceUser::query()->with('location');
             $fallbackTable = $fallback->getModel()->getTable();
 
             if (
@@ -124,49 +96,38 @@ class CarerController extends Controller
                 $fallback->latest();
             }
 
-            $residents = $fallback->take(12)->get();
+            $residents = $fallback->take(10)->get();
         }
 
         return view('frontend.carer.index', [
             'user' => $user,
+
+            // Header assignment UI
+            'assignmentLabel' => $assignmentLabel,
+            'assignmentSub'   => $assignmentSub,
+
+            // Backward compatibility with your earlier variable
             'currentLocationName' => $currentLocationName,
+
+            // Data
             'residents' => $residents,
-            'currentLocationId' => $locationId, // handy for debugging/UI later
+
+            // Debug/optional
+            'currentLocationId' => $currentLocationId,
+            'activeLocationId'  => $activeLocationId,
         ]);
     }
 
+    /**
+     * Load more residents (AJAX) for home page
+     */
     public function loadMoreResidents(Request $request)
     {
         $user = $request->user();
         $staffProfile = $user?->staffProfile;
 
-        // Same logic as index() for location
-        $locationId = null;
-
-        if (class_exists(\App\Models\ShiftAssignment::class) && \Illuminate\Support\Facades\Schema::hasTable('shift_assignments')) {
-            $todayStart = \Illuminate\Support\Carbon::now('Europe/London')->startOfDay();
-            $todayEnd   = \Illuminate\Support\Carbon::now('Europe/London')->endOfDay();
-
-            $assignment = \App\Models\ShiftAssignment::query()
-                ->where('staff_id', $user->id)
-                ->whereHas('shift', function ($q) use ($todayStart, $todayEnd) {
-                    $q->whereBetween('start_at', [$todayStart, $todayEnd])
-                        ->orWhereBetween('end_at', [$todayStart, $todayEnd])
-                        ->orWhere(function ($qq) use ($todayStart, $todayEnd) {
-                            $qq->where('start_at', '<=', $todayStart)
-                                ->where('end_at', '>=', $todayEnd);
-                        });
-                })
-                ->with(['shift:id,location_id,start_at,end_at'])
-                ->orderByDesc('id')
-                ->first();
-
-            $locationId = $assignment?->shift?->location_id;
-        }
-
-        if (!$locationId && $staffProfile && \Illuminate\Support\Facades\Schema::hasColumn('staff_profiles', 'location_id')) {
-            $locationId = $staffProfile->location_id;
-        }
+        $assignment = $this->resolveAssignmentContext($user);
+        $locationId = $assignment['locationId']; // use same rule as Home
 
         // filters
         $q = trim((string) $request->query('q', ''));
@@ -174,40 +135,64 @@ class CarerController extends Controller
         $limit  = (int) $request->query('limit', 10);
         $limit  = max(1, min($limit, 30)); // safety
 
-        $residentsQuery = \App\Models\ServiceUser::query();
+        $residentsQuery = ServiceUser::query()->with('location');
+        $residentTable  = $residentsQuery->getModel()->getTable();
 
+        // Tenant filter
         if (
-            $staffProfile
-            && \Illuminate\Support\Facades\Schema::hasColumn($residentsQuery->getModel()->getTable(), 'tenant_id')
-            && \Illuminate\Support\Facades\Schema::hasColumn('staff_profiles', 'tenant_id')
+            $staffProfile &&
+            Schema::hasColumn('staff_profiles', 'tenant_id') &&
+            Schema::hasColumn($residentTable, 'tenant_id')
         ) {
             $residentsQuery->where('tenant_id', $staffProfile->tenant_id);
         }
 
+        // Location filter
         if ($locationId) {
-            if (\Illuminate\Support\Facades\Schema::hasColumn($residentsQuery->getModel()->getTable(), 'location_id')) {
+            if (Schema::hasColumn($residentTable, 'location_id')) {
                 $residentsQuery->where('location_id', $locationId);
-            } elseif (\Illuminate\Support\Facades\Schema::hasColumn($residentsQuery->getModel()->getTable(), 'current_location_id')) {
+            } elseif (Schema::hasColumn($residentTable, 'current_location_id')) {
                 $residentsQuery->where('current_location_id', $locationId);
             }
         }
 
+        // Search
         if ($q !== '') {
-            $residentsQuery->where(function ($qq) use ($q, $residentsQuery) {
-                if (\Illuminate\Support\Facades\Schema::hasColumn($residentsQuery->getModel()->getTable(), 'first_name')) {
-                    $qq->where('first_name', 'like', "%{$q}%")
-                        ->orWhere('last_name', 'like', "%{$q}%");
+            $residentsQuery->where(function ($qq) use ($q, $residentTable) {
+                // ID
+                if (ctype_digit($q)) {
+                    $qq->orWhere($residentTable . '.id', (int) $q);
                 }
-                if (\Illuminate\Support\Facades\Schema::hasColumn($residentsQuery->getModel()->getTable(), 'room_number')) {
-                    $qq->orWhere('room_number', 'like', "%{$q}%");
+
+                // Names
+                if (Schema::hasColumn($residentTable, 'first_name')) {
+                    $qq->orWhere($residentTable . '.first_name', 'like', "%{$q}%")
+                        ->orWhere($residentTable . '.last_name', 'like', "%{$q}%")
+                        ->orWhereRaw(
+                            "CONCAT(COALESCE(first_name,''),' ',COALESCE(last_name,'')) LIKE ?",
+                            ["%{$q}%"]
+                        );
+                } elseif (Schema::hasColumn($residentTable, 'name')) {
+                    $qq->orWhere($residentTable . '.name', 'like', "%{$q}%");
                 }
-                $qq->orWhere('id', $q); // allow ID search
+
+                // Room
+                if (Schema::hasColumn($residentTable, 'room_number')) {
+                    $qq->orWhere($residentTable . '.room_number', 'like', "%{$q}%");
+                }
             });
         }
 
+        // Sort
+        if (Schema::hasColumn($residentTable, 'first_name')) {
+            $residentsQuery->orderBy('first_name')->orderBy('last_name');
+        } elseif (Schema::hasColumn($residentTable, 'name')) {
+            $residentsQuery->orderBy('name');
+        } else {
+            $residentsQuery->latest();
+        }
+
         $residents = $residentsQuery
-            ->orderBy('first_name')
-            ->orderBy('last_name')
             ->skip($offset)
             ->take($limit)
             ->get();
@@ -218,10 +203,116 @@ class CarerController extends Controller
         }
 
         return response()->json([
-            'count' => $residents->count(),
-            'html'  => $html,
+            'count'       => $residents->count(),
+            'html'        => $html,
             'next_offset' => $offset + $residents->count(),
-            'has_more' => $residents->count() === $limit,
+            'has_more'    => $residents->count() === $limit,
         ]);
+    }
+
+    /**
+     * Shared logic:
+     * Determines active shift, next shift, location id, and header strings.
+     *
+     * Assumptions:
+     * - Shifts are stored in UTC (start_at/end_at)
+     * - UI is UK time (Europe/London)
+     */
+    private function resolveAssignmentContext($user): array
+    {
+        $staffProfile = $user?->staffProfile;
+
+        $nowUk = Carbon::now('Europe/London');
+        $todayUkStart = $nowUk->copy()->startOfDay();
+        $todayUkEnd   = $nowUk->copy()->endOfDay();
+
+        // Convert day boundaries to UTC for querying DB
+        $todayUtcStart = $todayUkStart->copy()->timezone('UTC');
+        $todayUtcEnd   = $todayUkEnd->copy()->timezone('UTC');
+
+        $activeShift = null;
+        $nextShift   = null;
+
+        // Pull today's shifts for this staff (shift overlaps today)
+        if (class_exists(ShiftAssignment::class) && Schema::hasTable('shift_assignments')) {
+            $shifts = ShiftAssignment::query()
+                ->where('staff_id', $user->id)
+                ->whereHas('shift', function ($q) use ($todayUtcStart, $todayUtcEnd) {
+                    $q->where(function ($qq) use ($todayUtcStart, $todayUtcEnd) {
+                        $qq->whereBetween('start_at', [$todayUtcStart, $todayUtcEnd])
+                            ->orWhereBetween('end_at', [$todayUtcStart, $todayUtcEnd])
+                            ->orWhere(function ($q3) use ($todayUtcStart, $todayUtcEnd) {
+                                $q3->where('start_at', '<=', $todayUtcStart)
+                                    ->where('end_at', '>=', $todayUtcEnd);
+                            });
+                    });
+                })
+                ->with(['shift.location'])
+                ->get()
+                ->map(fn($a) => $a->shift)
+                ->filter()
+                ->sortBy('start_at')
+                ->values();
+
+            // Determine active / next using UK time for comparison
+            $activeShift = $shifts->first(function ($shift) use ($nowUk) {
+                $startUk = Carbon::parse($shift->start_at)->timezone('Europe/London');
+                $endUk   = Carbon::parse($shift->end_at)->timezone('Europe/London');
+                return $nowUk->between($startUk, $endUk);
+            });
+
+            if (!$activeShift) {
+                $nextShift = $shifts->first(function ($shift) use ($nowUk) {
+                    $startUk = Carbon::parse($shift->start_at)->timezone('Europe/London');
+                    return $startUk->gt($nowUk);
+                });
+            }
+        }
+
+        // Decide which location id to use for "current context"
+        // - If active shift => use it
+        // - Else if next shift today => use it
+        // - Else fallback to staff profile location_id
+        $activeLocationId = $activeShift?->location_id;
+
+        $locationId = $activeShift?->location_id
+            ?: $nextShift?->location_id
+            ?: (($staffProfile && Schema::hasColumn('staff_profiles', 'location_id')) ? $staffProfile->location_id : null);
+
+        $currentLocationName = $locationId
+            ? optional(Location::find($locationId))->name
+            : 'Your assigned location';
+
+        // Build header label text
+        $assignmentLabel = 'Your assigned location';
+        $assignmentSub   = null;
+
+        if ($activeShift) {
+            $startUk = Carbon::parse($activeShift->start_at)->timezone('Europe/London');
+            $endUk   = Carbon::parse($activeShift->end_at)->timezone('Europe/London');
+
+            $assignmentLabel = 'On duty at';
+            $assignmentSub   = ($activeShift->location?->name ?? $currentLocationName)
+                . ' (' . $startUk->format('H:i') . '–' . $endUk->format('H:i') . ')';
+        } elseif ($nextShift) {
+            $startUk = Carbon::parse($nextShift->start_at)->timezone('Europe/London');
+            $endUk   = Carbon::parse($nextShift->end_at)->timezone('Europe/London');
+
+            $assignmentLabel = 'No active assignment';
+            $assignmentSub   = 'Next: '
+                . ($nextShift->location?->name ?? $currentLocationName)
+                . ' (' . $startUk->format('H:i') . '–' . $endUk->format('H:i') . ')';
+        } else {
+            $assignmentLabel = 'No active assignment';
+            $assignmentSub   = 'No more shifts today';
+        }
+
+        return [
+            'assignmentLabel'     => $assignmentLabel,
+            'assignmentSub'       => $assignmentSub,
+            'activeLocationId'    => $activeLocationId,
+            'locationId'          => $locationId,
+            'currentLocationName' => $currentLocationName,
+        ];
     }
 }

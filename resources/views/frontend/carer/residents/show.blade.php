@@ -14,7 +14,7 @@
 
         $roomLabel = $resident->room_label
             ?? ($resident->room_number ? ('Room ' . $resident->room_number) : null)
-            ?? 'Room not set';
+            ?? 'N/A';
 
         $locationLabel = optional($resident->location)->name ?? null;
 
@@ -37,7 +37,7 @@
         {{-- ================= HEADER WITH BACK BUTTON ================= --}}
         <section class="resident-header-section w-100 px-3 px-md-4 pt-3 pb-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="{{ route('frontend.carer.index') }}" 
+                <a href="{{ route('frontend.carer.index') }}"
                     class="back-button-header d-flex align-items-center gap-2 text-decoration-none">
                     <i class="ph ph-arrow-left" style="font-size: 1.25rem; color: var(--n1);"></i>
                     <span class="fw-medium" style="color: var(--n1); font-size: 0.9375rem;">Back</span>
@@ -47,10 +47,9 @@
             {{-- Resident Profile Header --}}
             <div class="d-flex align-items-center gap-3">
                 <div class="resident-avatar-wrapper position-relative">
-                    <div class="resident-avatar rounded-circle overflow-hidden" 
+                    <div class="resident-avatar rounded-circle overflow-hidden"
                         style="width: 80px; height: 80px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-                        <img src="{{ $photo }}" alt="{{ $residentName }}" 
-                            class="w-100 h-100" style="object-fit: cover;" />
+                        <img src="{{ $photo }}" alt="{{ $residentName }}" class="w-100 h-100" style="object-fit: cover;" />
                     </div>
                     @if($isActive)
                         <span class="position-absolute bottom-0 end-0 rounded-circle border border-white"
@@ -63,7 +62,8 @@
                         {{ $residentName }}
                     </h2>
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                        <span class="badge {{ $isActive ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }} px-2 py-1"
+                        <span
+                            class="badge {{ $isActive ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }} px-2 py-1"
                             style="font-size: 0.75rem; font-weight: 500;">
                             {{ ucfirst($resident->status ?? 'active') }}
                         </span>
@@ -172,7 +172,7 @@
         {{-- ================= KEY INFORMATION ================= --}}
         <section class="px-3 px-md-4 pt-2 pb-6">
             <h4 class="mb-3 fw-semibold" style="font-size: 1rem; color: var(--n1);">Key Information</h4>
-            
+
             <div class="d-flex flex-column gap-3">
                 {{-- Medical Information --}}
                 @if($resident->primary_diagnosis || $resident->allergies_summary)
@@ -211,13 +211,16 @@
                                 <h5 class="mb-2 fw-semibold" style="font-size: 0.9375rem; color: var(--n1);">Care Plans</h5>
                                 <div class="d-flex flex-wrap gap-2">
                                     @if($resident->behaviour_support_plan)
-                                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem;">Behaviour Support</span>
+                                        <span class="badge bg-light text-dark border px-2 py-1"
+                                            style="font-size: 0.75rem;">Behaviour Support</span>
                                     @endif
                                     @if($resident->seizure_care_plan)
-                                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem;">Seizure Care</span>
+                                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem;">Seizure
+                                            Care</span>
                                     @endif
                                     @if($resident->diabetes_care_plan)
-                                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem;">Diabetes Care</span>
+                                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem;">Diabetes
+                                            Care</span>
                                     @endif
                                 </div>
                             </div>
@@ -234,10 +237,12 @@
                                 <i class="ph ph-warning" style="font-size: 1.25rem; color: var(--y300);"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <h5 class="mb-2 fw-semibold" style="font-size: 0.9375rem; color: var(--n1);">Risk Indicators</h5>
+                                <h5 class="mb-2 fw-semibold" style="font-size: 0.9375rem; color: var(--n1);">Risk Indicators
+                                </h5>
                                 <div class="d-flex flex-wrap gap-2">
                                     @if($resident->fall_risk)
-                                        <span class="badge {{ $resident->fall_risk === 'high' ? 'bg-danger-subtle text-danger' : ($resident->fall_risk === 'medium' ? 'bg-warning-subtle text-warning' : 'bg-info-subtle text-info') }} px-2 py-1" 
+                                        <span
+                                            class="badge {{ $resident->fall_risk === 'high' ? 'bg-danger-subtle text-danger' : ($resident->fall_risk === 'medium' ? 'bg-warning-subtle text-warning' : 'bg-info-subtle text-info') }} px-2 py-1"
                                             style="font-size: 0.75rem;">
                                             Fall Risk: {{ ucfirst($resident->fall_risk) }}
                                         </span>
@@ -275,7 +280,8 @@
                                 <h5 class="mb-2 fw-semibold" style="font-size: 0.9375rem; color: var(--n1);">Tags</h5>
                                 <div class="d-flex flex-wrap gap-2">
                                     @foreach($tags as $tag)
-                                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem; font-weight: 500;">
+                                        <span class="badge bg-light text-dark border px-2 py-1"
+                                            style="font-size: 0.75rem; font-weight: 500;">
                                             {{ $tag }}
                                         </span>
                                     @endforeach
@@ -307,7 +313,8 @@
 
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
+                        <button type="submit"
+                            class="flex-center text-decoration-none bg-transparent border-0 footer-menu-link">
                             <i class="ph ph-sign-out link-item"></i>
                         </button>
                     </form>
@@ -332,43 +339,43 @@
     </main>
 
     @push('styles')
-    <style>
-        .resident-profile-screen {
-            min-height: 100vh;
-            background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
-        }
+        <style>
+            .resident-profile-screen {
+                min-height: 100vh;
+                background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+            }
 
-        .back-button-header {
-            transition: all 0.2s ease;
-        }
+            .back-button-header {
+                transition: all 0.2s ease;
+            }
 
-        .back-button-header:hover {
-            transform: translateX(-2px);
-        }
+            .back-button-header:hover {
+                transform: translateX(-2px);
+            }
 
-        .back-button-header:active {
-            transform: translateX(0);
-        }
+            .back-button-header:active {
+                transform: translateX(0);
+            }
 
-        .quick-action-card:hover > div {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-            border-color: var(--p1) !important;
-        }
+            .quick-action-card:hover>div {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+                border-color: var(--p1) !important;
+            }
 
-        .quick-action-card:active > div {
-            transform: translateY(0);
-        }
+            .quick-action-card:active>div {
+                transform: translateY(0);
+            }
 
-        .info-card {
-            transition: all 0.2s ease;
-        }
+            .info-card {
+                transition: all 0.2s ease;
+            }
 
-        .info-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        }
-    </style>
+            .info-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            }
+        </style>
     @endpush
 
 @endsection

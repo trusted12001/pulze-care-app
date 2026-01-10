@@ -34,7 +34,7 @@
                     @foreach($users as $user)
                         <tr class="border-t">
                             <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                            <td class="px-4 py-2">{{ $user->name }}</td>
+                            <td class="px-4 py-2">{{ $user->full_name }}</td>
                             <td class="px-4 py-2">{{ $user->email }}</td>
                             <td class="px-4 py-2">{{ $user->deleted_at->diffForHumans() }}</td>
                             <td class="px-4 py-2 space-x-2">

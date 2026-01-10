@@ -140,6 +140,13 @@
                 </td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex items-center justify-end gap-2">
+                    <a href="{{ route('backend.admin.staff-profiles.photo.edit', $p) }}"
+                        class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-amber-700 hover:bg-amber-50 rounded-lg transition-colors duration-200"
+                        title="Update Profile Photo">
+                        <i class="ph ph-camera"></i>
+                        <span class="hidden lg:inline">Profile</span>
+                    </a>
+
                     <a href="{{ route('backend.admin.staff-profiles.show', $p) }}"
                       class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200"
                       title="Open">
@@ -217,6 +224,12 @@
                   </span>
                 </div>
                 <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+                 <a href="{{ route('backend.admin.staff-profiles.photo.edit', $p) }}"
+                    class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-amber-700 hover:bg-amber-50 rounded-lg transition-colors duration-200"
+                    title="Update Profile Photo">
+                    <i class="ph ph-camera"></i>
+                    <span class="hidden lg:inline">Profile</span>
+                </a>
                   <a href="{{ route('backend.admin.staff-profiles.show', $p) }}"
                     class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 active:bg-green-200 transition-colors text-sm font-medium">
                     <i class="ph ph-eye"></i>

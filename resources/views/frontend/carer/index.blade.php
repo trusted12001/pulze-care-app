@@ -89,10 +89,18 @@
                         <h3 class="heading-3 mb-1 fw-semibold" style="font-size: 1.25rem; line-height: 1.3;">
                             Hi, {{ $displayName }} 👋
                         </h3>
-                        <p class="d-flex align-items-center gap-1 mb-0 small text-muted" style="font-size: 0.8125rem;">
-                            <i class="ph-fill ph-map-pin" style="font-size: 0.875rem;"></i>
-                            <span class="text-truncate">{{ $currentLocationName }}</span>
+                        <p
+                            class="d-inline-flex gap-2 location justify-content-start align-items-center mb-0 small text-muted">
+                            {{ $assignmentLabel ?? $currentLocationName }}
+                            <i class="ph-fill ph-map-pin"></i>
                         </p>
+
+                        <span class="d-inline-flex gap-2 location justify-content-start align-items-center mb-0 small">
+                            @if(!empty($assignmentSub))
+                                <p class="mb-0 small fw-semibold">{{ $assignmentSub }}</p>
+                            @endif
+                        </span>
+
                     </div>
                 </div>
 
@@ -113,8 +121,8 @@
                 {{ $today->format('l, F j') }}
             </p>
 
-            <div class="search-area d-flex justify-content-between align-items-center  w-100">
-                <div class="search-box d-flex justify-content-start align-items-center  px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
+            <div class="search-area d-flex justify-content-between align-items-center gap-2 w-100">
+                <div class="search-box d-flex justify-content-start align-items-center gap-2 px-3 py-2 w-100 rounded-4 bg-white shadow-sm border-0"
                     style="transition: all 0.2s ease; border-radius: 16px !important;">
                     <div class="flex-center" style="color: var(--n2);">
                         <i class="ph ph-magnifying-glass" style="font-size: 1.125rem;"></i>

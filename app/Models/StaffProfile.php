@@ -10,6 +10,7 @@ use App\Models\Document;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
+
 class StaffProfile extends Model
 {
     use SoftDeletes;
@@ -217,5 +218,21 @@ class StaffProfile extends Model
         }
 
         return null;
+    }
+
+
+
+    public function profilePassportPhotoDocument()
+    {
+        return $this->morphOne(\App\Models\Document::class, 'owner')
+            ->where('category', 'Passport Photo')
+            ->latestOfMany(); // picks latest Passport Photo
+    }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        $doc = $this->profilePassportPhotoDocument()->first();
+
+        return $doc?->path ? Storage::disk('public')->url($doc->path) : null;
     }
 }

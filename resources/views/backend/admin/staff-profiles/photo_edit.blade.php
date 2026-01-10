@@ -7,13 +7,14 @@
         <div class="mb-6 flex items-center justify-between gap-3">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">
-                    Update Profile Photo — {{ $su->full_name }}
+                    Update Profile Photo — {{ $profile->user->full_name ?? 'Staff' }}
                 </h1>
                 <p class="text-sm text-gray-600 mt-1">
-                    Upload a clear head-and-shoulders photo for this service user.
+                    Upload a clear head-and-shoulders photo for this staff member.
                 </p>
             </div>
-            <a href="{{ route('backend.admin.service-users.show', $su->id) }}"
+
+            <a href="{{ route('backend.admin.staff-profiles.show', $profile) }}"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
                 <i class="ph ph-arrow-left"></i>
                 <span>Back to Profile</span>
@@ -48,8 +49,9 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sm:p-6">
             <div class="flex flex-col sm:flex-row gap-6">
                 @php
-                    $photoUrl = $su->passport_photo_url;
-                    $initials = collect(explode(' ', $su->full_name))
+                    $photoUrl = $profile->profile_photo_url; // accessor we added
+                    $fullName = $profile->user->full_name ?? $profile->user->name ?? 'Staff';
+                    $initials = collect(explode(' ', $fullName))
                         ->filter()
                         ->map(fn($part) => mb_substr($part, 0, 1))
                         ->take(2)
@@ -60,18 +62,18 @@
                     <div
                         class="relative inline-flex items-center justify-center w-28 h-28 rounded-full bg-gray-100 text-gray-600 text-2xl font-semibold overflow-hidden">
                         @if($photoUrl)
-                            <img src="{{ $photoUrl }}" alt="{{ $su->full_name }}" class="w-full h-full object-cover">
+                            <img src="{{ $photoUrl }}" alt="{{ $fullName }}" class="w-full h-full object-cover">
                         @else
-                            <span>{{ $initials }}</span>
+                            <span>{{ strtoupper($initials) }}</span>
                         @endif
                     </div>
                     <p class="text-xs text-gray-500 text-center">
-                        This is the photo that will appear on reports and key screens.
+                        This photo will be saved under Documents → “Passport Photo”.
                     </p>
                 </div>
 
                 <div class="flex-1">
-                    <form method="POST" action="{{ route('backend.admin.service-users.photo.update', $su->id) }}"
+                    <form method="POST" action="{{ route('backend.admin.staff-profiles.photo.update', $profile) }}"
                         enctype="multipart/form-data" class="space-y-4">
                         @csrf
 
@@ -82,7 +84,7 @@
                             <input type="file" name="photo" accept="image/*"
                                 class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-sm" required>
                             <p class="mt-1 text-xs text-gray-500">
-                                JPG or PNG, max 4MB. Ideally a clear headshot on a plain background.
+                                JPG or PNG, max 4MB. Use a clear headshot on a plain background.
                             </p>
                         </div>
 
@@ -92,12 +94,14 @@
                                 <i class="ph ph-upload-simple"></i>
                                 <span>Upload & Save</span>
                             </button>
-                            <a href="{{ route('backend.admin.service-users.show', $su->id) }}"
+
+                            <a href="{{ route('backend.admin.staff-profiles.show', $profile) }}"
                                 class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
                                 <i class="ph ph-x-circle"></i>
                                 <span>Cancel</span>
                             </a>
                         </div>
+
                     </form>
                 </div>
             </div>

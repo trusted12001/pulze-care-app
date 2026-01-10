@@ -774,7 +774,7 @@
                         class="px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-gradient-to-r from-sky-50 to-blue-50 border-b border-gray-200">
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
                             <i class="ph ph-identification-card text-sky-600 flex-shrink-0"></i>
-                            <span>Passport Photo</span>
+                            <span>Profile Photo</span>
                         </h2>
                     </div>
                     <div class="p-4 sm:p-5 lg:p-6 flex flex-col items-center gap-3">

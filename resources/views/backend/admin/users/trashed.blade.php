@@ -90,7 +90,7 @@
                                         <div class="flex items-center gap-3">
                                             <div
                                                 class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
-                                                {{ strtoupper(substr($user->first_name ?? $user->name ?? 'U', 0, 1)) }}
+                                                {{ strtoupper(substr($user->full_name ?? $user->name ?? 'U', 0, 1)) }}
                                             </div>
                                             <div>
                                                 <div class="text-sm sm:text-base font-medium text-gray-900">
