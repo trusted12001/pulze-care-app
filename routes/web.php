@@ -69,6 +69,8 @@ use App\Http\Controllers\Frontend\CarerController;
 use App\Http\Controllers\Frontend\CarerResidentController;
 
 use App\Http\Controllers\Backend\Admin\StaffProfilePhotoController;
+use App\Http\Controllers\Backend\Admin\TenantSettingsController;
+
 
 
 
@@ -476,6 +478,10 @@ Route::prefix('backend/admin')
 
         Route::post('/staff-profiles/{staffProfile}/photo', [StaffProfilePhotoController::class, 'update'])
             ->name('staff-profiles.photo.update');
+
+
+        Route::get('/settings', [TenantSettingsController::class, 'edit'])->name('settings.edit');
+        Route::post('/settings', [TenantSettingsController::class, 'update'])->name('settings.update');
     });
 
 

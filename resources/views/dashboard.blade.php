@@ -25,6 +25,7 @@
     @endphp
 
     <h2 class="heading-2">Welcome to Your Dashboard</h2>
+
     <p class="paragraph-small pt-3">
         You're logged in to Pulze! Use the menu to access available modules.
     </p>

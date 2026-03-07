@@ -22,36 +22,42 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
+
     public function store(LoginRequest $request): RedirectResponse
     {
-        // If authentication fails, LoginRequest will redirect back automatically with errors.
         $request->authenticate();
 
         $request->session()->regenerate();
 
+        // Prevent Laravel from redirecting to a previously intended URL
+        $request->session()->forget('url.intended');
+
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // If you use Spatie roles
-        $role = $user?->getRoleNames()->first() ?? 'Guest';
-
-        return match ($role) {
-            'super-admin' => redirect()
+        if ($user->hasRole('super-admin')) {
+            return redirect()
                 ->route('backend.super-admin.index')
-                ->with('success', "Welcome back, {$user->first_name}!"),
+                ->with('success', "Welcome back, {$user->first_name}!");
+        }
 
-            'admin' => redirect()
+        if ($user->hasRole('admin')) {
+            return redirect()
                 ->route('backend.admin.index')
-                ->with('success', "Welcome back, {$user->first_name}!"),
+                ->with('success', "Welcome back, {$user->first_name}!");
+        }
 
-            'carer' => redirect()
+        if ($user->hasRole('carer')) {
+            return redirect()
                 ->route('frontend.carer.index')
-                ->with('success', "Welcome back, {$user->first_name}!"),
+                ->with('success', "Welcome back, {$user->first_name}!");
+        }
 
-            default => redirect('/dashboard')
-                ->with('warning', 'You are logged in, but your account role is not recognised. Please contact the administrator.'),
-        };
+        return redirect('/dashboard')
+            ->with('warning', 'You are logged in, but your account role is not recognised. Please contact the administrator.');
     }
+
+
 
     /**
      * Destroy an authenticated session.

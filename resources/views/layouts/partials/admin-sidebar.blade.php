@@ -4,6 +4,20 @@
             <i class="ph ph-list"></i>
         </button>
     </div>
+
+    @php
+        // lightweight tenant settings loader
+        $tenant = Auth::user()->tenant_id ? \App\Models\Tenant::find(Auth::user()->tenant_id) : \App\Models\Tenant::first();
+        $settings = $tenant ? $tenant->settings()->firstOrCreate(['tenant_id' => $tenant->id]) : null;
+        $logoUrl = $settings ? $settings->logo_url : asset('assets/logos/rmbj_logo_png.png');
+    @endphp
+
+    <div class="px-4 pb-4">
+        <div class="flex items-center justify-center">
+            <img src="{{ $logoUrl }}" alt="Company Logo" style="max-height: 120px; width: auto;" />
+        </div>
+    </div>
+
     <nav>
         <a href="{{ route('backend.admin.index') }}" class="{{ request()->is('admin*') ? 'active' : '' }}">
             <i class="ph ph-gauge"></i> <span class="menu-label">Dashboard</span>
@@ -75,6 +89,10 @@
             <i class="ph ph-receipt"></i> <span class="menu-label">Payment History</span>
         </a> --}}
 
+        <a href="{{ route('backend.admin.settings.edit') }}"
+            class="{{ request()->routeIs('backend.admin.settings.*') ? 'active' : '' }}">
+            <i class="ph ph-gear-six"></i> <span class="menu-label">Settings</span>
+        </a>
 
         <a href="{{ route('backend.admin.reports.index') }}" class="{{ request()->is('reports*') ? 'active' : '' }}">
             <i class="ph ph-chart-bar"></i> <span class="menu-label">Reports</span>

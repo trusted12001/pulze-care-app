@@ -1,48 +1,84 @@
-<!-- resources/views/auth/verify-email.blade.php -->
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <link rel="shortcut icon" href="{{ asset('assets/img/fav-logo.png') }}" type="image/x-icon" />
     <title>Verify Email - Pulze</title>
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  </head>
-  <body>
-    <main class="flex-center h-100">
-      <section class="sign-in-area">
-        <h2 class="heading-2">Verify Your Email</h2>
-        <p class="paragraph-small pt-3">
-          Thanks for signing up! Please verify your email address by clicking the link we just emailed you.
-        </p>
 
-        @if (session('status') == 'verification-link-sent')
-          <div class="alert alert-success text-green-600 text-sm mt-3">
-            A new verification link has been sent to the email address you provided during registration.
-          </div>
-        @endif
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+    <link rel="manifest" href="{{ asset('manifest.json') }}" />
 
-        <form method="POST" action="{{ route('verification.send') }}" class="input-field-area d-flex flex-column gap-3 mt-4">
-          @csrf
-          <button type="submit" class="link-button d-block">
-            Resend Verification Email
-          </button>
-        </form>
+    <style>
+        .brand-badge {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(245, 158, 11, 0.15));
+        }
+    </style>
+</head>
 
-        <form method="POST" action="{{ route('logout') }}" class="mt-3">
-          @csrf
-          <button type="submit" class="d-block text-center text-sm underline text-gray-600">
-            Log Out
-          </button>
-        </form>
-      </section>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 antialiased">
+    <main class="min-h-screen flex items-center justify-center px-4 py-10">
+        <section class="w-full max-w-md">
+            <div class="bg-white/90 backdrop-blur-sm border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
+                <div class="px-6 pt-6">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-700 brand-badge w-10 h-10 rounded-xl flex items-center justify-center">
+                            <img src="{{ asset('assets/img/fav-logo.png') }}" alt="Pulze" class="w-7 h-7 object-contain" />
+                        </div>
+                        <div>
+                            <h1 class="text-xl sm:text-2xl font-bold text-green-900">Verify Your Email</h1>
+                            <p class="text-sm text-gray-600">Please confirm your email address to continue</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 mt-4 space-y-3">
+                    <div class="rounded-lg border border-amber-200 bg-amber-50 text-amber-800 px-3 py-3 text-sm">
+                        Thanks for signing up. Before getting started, please verify your email address by clicking the link we just emailed you.
+                    </div>
+
+                    @if (session('status') == 'verification-link-sent')
+                        <div class="rounded-lg border border-green-200 bg-green-50 text-green-800 px-3 py-2 text-sm">
+                            A new verification link has been sent to the email address you provided during registration.
+                        </div>
+                    @endif
+                </div>
+
+                <div class="px-6 pb-6 pt-4 space-y-3">
+                    <form method="POST" action="{{ route('verification.send') }}">
+                        @csrf
+                        <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 active:bg-orange-800 transition shadow-sm">
+                            <i class="ph ph-paper-plane-tilt"></i>
+                            <span>Resend Verification Email</span>
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                            <i class="ph ph-sign-out"></i>
+                            <span>Log Out</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-center text-xs text-gray-500 mt-4">
+                © {{ date('Y') }} Pulze — Secure access
+            </p>
+        </section>
     </main>
 
-    <!-- Js Dependencies -->
     <script src="{{ asset('assets/js/plugins/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/js/service-worker-settings.js') }}"></script>
-  </body>
+</body>
+
 </html>

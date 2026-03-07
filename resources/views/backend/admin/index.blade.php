@@ -7,11 +7,22 @@
     <div class="min-h-screen p-4 sm:p-6 lg:p-8">
 
         {{-- Header --}}
-        <div class="mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-            <p class="text-gray-600">
-                Welcome back, <span class="font-semibold">{{ Auth::user()->full_name }}</span>
-            </p>
+        @php
+            $tenant = Auth::user()->tenant_id ? \App\Models\Tenant::find(Auth::user()->tenant_id) : \App\Models\Tenant::first();
+            $settings = $tenant ? $tenant->settings()->firstOrCreate(['tenant_id' => $tenant->id]) : null;
+            $logoUrl = $settings ? $settings->logo_url : asset('assets/logos/rmbj_logo_png.png');
+        @endphp
+
+        <div class="mb-8 flex items-start gap-4">
+            <img src="{{ $logoUrl }}" alt="Company Logo"
+                class="w-20 h-20 rounded bg-white border border-gray-200 object-contain" />
+
+            <div>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+                <p class="text-gray-600">
+                    Welcome back, <span class="font-semibold">{{ Auth::user()->full_name }}</span>
+                </p>
+            </div>
         </div>
 
         {{-- Quick Actions Grid --}}
@@ -26,8 +37,8 @@
                         <i class="ph ph-users text-blue-600 group-hover:text-white text-xl transition-colors"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-semibold text-gray-900 mb-1">Manage Staff</h3>
-                        <p class="text-sm text-gray-500">Staff accounts</p>
+                        <h3 class="font-semibold text-gray-900 mb-1">Staff accounts</h3>
+                        <p class="text-sm text-gray-500">Manage Staff</p>
                     </div>
                 </div>
             </a>
@@ -41,7 +52,7 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="font-semibold text-gray-900 mb-1">Staff Profile</h3>
-                        <p class="text-sm text-gray-500">Staff profiles</p>
+                        <p class="text-sm text-gray-500">Manage profiles</p>
                     </div>
                 </div>
             </a>
