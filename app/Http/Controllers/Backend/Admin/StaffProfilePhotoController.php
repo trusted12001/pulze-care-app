@@ -10,15 +10,35 @@ use Illuminate\Support\Facades\Storage;
 
 class StaffProfilePhotoController extends Controller
 {
-    private function tenantId(): int
+    // private function tenantId(): int
+    // {
+    //     return (int) auth()->user()->tenant_id;
+    // }
+
+    // private function authorizeProfile(StaffProfile $p): void
+    // {
+    //     abort_unless($p->tenant_id === $this->tenantId(), 404);
+    // }
+    
+    
+    private function tenantId(): ?int
     {
         return (int) auth()->user()->tenant_id;
     }
 
     private function authorizeProfile(StaffProfile $p): void
     {
-        abort_unless($p->tenant_id === $this->tenantId(), 404);
+        $user = auth()->user();
+    
+        // Allow super admin / central admin users to access any tenant profile
+        if ($user && method_exists($user, 'hasRole') && $user->hasRole('super-admin')) {
+            return;
+        }
+    
+        abort_unless($user && $p->tenant_id === $user->tenant_id, 404);
     }
+
+
 
     public function edit(StaffProfile $staffProfile)
     {

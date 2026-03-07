@@ -265,8 +265,14 @@ class StaffProfileController extends Controller
     }
 
 
-    protected function authorizeTenant(StaffProfile $p): void
-    {
-        abort_unless($p->tenant_id === $this->tenantId(), 404);
+private function authorizeTenant(StaffProfile $staffProfile): void
+{
+    $user = auth()->user();
+
+    if ($user && method_exists($user, 'hasRole') && $user->hasRole('superadmin')) {
+        return;
     }
+
+    abort_unless($user && $staffProfile->tenant_id === $user->tenant_id, 404);
+}
 }
