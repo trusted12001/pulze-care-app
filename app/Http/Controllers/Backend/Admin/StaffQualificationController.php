@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffQualificationRequest;
 use App\Http\Requests\UpdateStaffQualificationRequest;
@@ -11,15 +12,29 @@ use Illuminate\Http\Request;
 
 class StaffQualificationController extends Controller
 {
-    private function tenantId(): int { return (int) auth()->user()->tenant_id; }
-    private function authorizeProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function authorizeQualification(StaffQualification $q): void { abort_unless($q->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function authorizeQualification(StaffQualification $qualification): void
+    {
+        $this->authorizeTenantRecord($qualification);
+    }
 
     public function index(Request $request, StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
 
         $q = trim((string) $request->get('q', ''));
+
         $quals = $staffProfile->qualifications()
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($sub) use ($q) {
@@ -34,27 +49,52 @@ class StaffQualificationController extends Controller
             ->withQueryString();
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-qualifications.index', compact('staffProfile','quals','q'));
+        return view('backend.admin.staff-qualifications.index', compact('staffProfile', 'quals', 'q'));
     }
 
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-qualifications.create', compact('staffProfile'));
@@ -65,7 +105,7 @@ class StaffQualificationController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->qualifications()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -78,24 +118,38 @@ class StaffQualificationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeQualification($qualification);
+
         abort_unless($qualification->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-qualifications.edit', compact('staffProfile','qualification'));
+        return view('backend.admin.staff-qualifications.edit', compact('staffProfile', 'qualification'));
     }
 
     public function update(UpdateStaffQualificationRequest $request, StaffProfile $staffProfile, StaffQualification $qualification)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeQualification($qualification);
+
         abort_unless($qualification->staff_profile_id === $staffProfile->id, 404);
 
         $qualification->update($request->validated());
@@ -109,6 +163,7 @@ class StaffQualificationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeQualification($qualification);
+
         abort_unless($qualification->staff_profile_id === $staffProfile->id, 404);
 
         $qualification->delete();

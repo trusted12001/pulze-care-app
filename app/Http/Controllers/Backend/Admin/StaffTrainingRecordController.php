@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffTrainingRecordRequest;
 use App\Http\Requests\UpdateStaffTrainingRecordRequest;
@@ -11,48 +12,88 @@ use Illuminate\Http\Request;
 
 class StaffTrainingRecordController extends Controller
 {
-    private function tenantId(): int { return (int) auth()->user()->tenant_id; }
-    private function authorizeProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function authorizeRecord(StaffTrainingRecord $r): void { abort_unless($r->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function authorizeRecord(StaffTrainingRecord $trainingRecord): void
+    {
+        $this->authorizeTenantRecord($trainingRecord);
+    }
 
     public function index(Request $request, StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
 
-        $q = trim((string)$request->get('q', ''));
+        $q = trim((string) $request->get('q', ''));
+
         $records = $staffProfile->trainingRecords()
             ->when($q !== '', function ($query) use ($q) {
-                $query->where('module_title','like',"%{$q}%")
-                      ->orWhere('module_code','like',"%{$q}%")
-                      ->orWhere('provider','like',"%{$q}%");
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('module_title', 'like', "%{$q}%")
+                        ->orWhere('module_code', 'like', "%{$q}%")
+                        ->orWhere('provider', 'like', "%{$q}%");
+                });
             })
             ->orderByRaw('valid_until IS NULL, valid_until ASC')
             ->paginate(15)
             ->withQueryString();
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-
-        return view('backend.admin.staff-training-records.index', compact('staffProfile','records','q'));
+        return view('backend.admin.staff-training-records.index', compact('staffProfile', 'records', 'q'));
     }
 
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-training-records.create', compact('staffProfile'));
@@ -63,30 +104,42 @@ class StaffTrainingRecordController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->trainingRecords()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
         return redirect()
             ->route('backend.admin.staff-profiles.training-records.index', $staffProfile)
-            ->with('success','Training record added.');
+            ->with('success', 'Training record added.');
     }
 
     public function edit(StaffProfile $staffProfile, StaffTrainingRecord $training_record)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeRecord($training_record);
+
         abort_unless($training_record->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
-
 
         return view('backend.admin.staff-training-records.edit', [
             'staffProfile' => $staffProfile,
@@ -98,23 +151,25 @@ class StaffTrainingRecordController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeRecord($training_record);
+
         abort_unless($training_record->staff_profile_id === $staffProfile->id, 404);
 
         $training_record->update($request->validated());
 
         return redirect()
             ->route('backend.admin.staff-profiles.training-records.index', $staffProfile)
-            ->with('success','Training record updated.');
+            ->with('success', 'Training record updated.');
     }
 
     public function destroy(StaffProfile $staffProfile, StaffTrainingRecord $training_record)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeRecord($training_record);
+
         abort_unless($training_record->staff_profile_id === $staffProfile->id, 404);
 
         $training_record->delete();
 
-        return back()->with('success','Training record deleted.');
+        return back()->with('success', 'Training record deleted.');
     }
 }

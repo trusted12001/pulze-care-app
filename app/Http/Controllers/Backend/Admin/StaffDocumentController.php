@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffDocumentRequest;
 use App\Http\Requests\UpdateStaffDocumentRequest;
@@ -12,17 +13,21 @@ use Illuminate\Support\Facades\Storage;
 
 class StaffDocumentController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int)auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
-    private function authorizeProfile(StaffProfile $p): void
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
     {
-        abort_unless($p->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($staffProfile);
     }
-    private function authorizeItem(Document $d): void
+
+    private function authorizeItem(Document $document): void
     {
-        abort_unless($d->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($document);
     }
 
     /**
@@ -44,18 +49,19 @@ class StaffDocumentController extends Controller
             'Other',
         ];
     }
+
     public function index(Request $request, StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
 
         $category = $request->string('category')->toString();
-        $q = trim((string)$request->get('q', ''));
+        $q = trim((string) $request->get('q', ''));
 
         $docs = $staffProfile->documents()
-            ->with('uploadedBy') // 👈 add this line
-            ->when($category !== '', fn($qq) => $qq->where('category', $category))
-            ->when($q !== '', function ($qq) use ($q) {
-                $qq->where(function ($sub) use ($q) {
+            ->with('uploadedBy')
+            ->when($category !== '', fn($query) => $query->where('category', $category))
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
                     $sub->where('filename', 'like', "%{$q}%")
                         ->orWhere('mime', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
@@ -88,10 +94,10 @@ class StaffDocumentController extends Controller
 
         return view('backend.admin.staff-documents.index', [
             'staffProfile' => $staffProfile,
-            'docs'         => $docs,
-            'categories'   => $this->categories(),
-            'category'     => $category,
-            'q'            => $q,
+            'docs' => $docs,
+            'categories' => $this->categories(),
+            'category' => $category,
+            'q' => $q,
         ]);
     }
 
@@ -107,18 +113,18 @@ class StaffDocumentController extends Controller
     {
         $this->authorizeProfile($staffProfile);
 
-        $file   = $request->file('file');
-        $tenant = $this->tenantId();
-        $path   = $file->store("documents/tenant_{$tenant}/staff_profile_{$staffProfile->id}", 'public');
+        $file = $request->file('file');
+        $tenantId = $this->tenantIdOrFail();
+        $path = $file->store("documents/tenant_{$tenantId}/staff_profile_{$staffProfile->id}", 'public');
 
         $staffProfile->documents()->create([
-            'tenant_id'   => $tenant,
-            'category'    => $request->category,
-            'filename'    => $file->getClientOriginalName(),
-            'path'        => $path,
-            'mime'        => $file->getMimeType() ?? 'application/octet-stream',
+            'tenant_id' => $tenantId,
+            'category' => $request->category,
+            'filename' => $file->getClientOriginalName(),
+            'path' => $path,
+            'mime' => $file->getMimeType() ?? 'application/octet-stream',
             'uploaded_by' => auth()->id(),
-            'hash'        => hash_file('sha256', $file->getRealPath()),
+            'hash' => hash_file('sha256', $file->getRealPath()),
         ]);
 
         return redirect()
@@ -130,7 +136,11 @@ class StaffDocumentController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($document);
-        abort_unless($document->owner_type === StaffProfile::class && (int)$document->owner_id === (int)$staffProfile->id, 404);
+
+        abort_unless(
+            $document->owner_type === StaffProfile::class && (int) $document->owner_id === (int) $staffProfile->id,
+            404
+        );
 
         $categories = $this->categories();
 
@@ -141,23 +151,30 @@ class StaffDocumentController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($document);
-        abort_unless($document->owner_type === StaffProfile::class && (int)$document->owner_id === (int)$staffProfile->id, 404);
 
-        $data = ['category' => $request->category];
+        abort_unless(
+            $document->owner_type === StaffProfile::class && (int) $document->owner_id === (int) $staffProfile->id,
+            404
+        );
+
+        $data = [
+            'category' => $request->category,
+        ];
 
         if ($request->hasFile('file')) {
-            // delete old file (optional)
             if ($document->path && Storage::disk('public')->exists($document->path)) {
                 Storage::disk('public')->delete($document->path);
             }
-            $file   = $request->file('file');
-            $tenant = $this->tenantId();
-            $path   = $file->store("documents/tenant_{$tenant}/staff_profile_{$staffProfile->id}", 'public');
+
+            $file = $request->file('file');
+            $tenantId = $this->tenantIdOrFail();
+            $path = $file->store("documents/tenant_{$tenantId}/staff_profile_{$staffProfile->id}", 'public');
+
             $data += [
                 'filename' => $file->getClientOriginalName(),
-                'path'     => $path,
-                'mime'     => $file->getMimeType() ?? 'application/octet-stream',
-                'hash'     => hash_file('sha256', $file->getRealPath()),
+                'path' => $path,
+                'mime' => $file->getMimeType() ?? 'application/octet-stream',
+                'hash' => hash_file('sha256', $file->getRealPath()),
             ];
         }
 
@@ -172,11 +189,16 @@ class StaffDocumentController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($document);
-        abort_unless($document->owner_type === StaffProfile::class && (int)$document->owner_id === (int)$staffProfile->id, 404);
+
+        abort_unless(
+            $document->owner_type === StaffProfile::class && (int) $document->owner_id === (int) $staffProfile->id,
+            404
+        );
 
         if ($document->path && Storage::disk('public')->exists($document->path)) {
             Storage::disk('public')->delete($document->path);
         }
+
         $document->delete();
 
         return back()->with('success', 'Document deleted.');

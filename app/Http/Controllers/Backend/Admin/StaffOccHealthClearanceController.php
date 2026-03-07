@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffOccHealthClearanceRequest;
 use App\Http\Requests\UpdateStaffOccHealthClearanceRequest;
@@ -11,9 +12,22 @@ use Illuminate\Http\Request;
 
 class StaffOccHealthClearanceController extends Controller
 {
-    private function tenantId(): int { return (int) auth()->user()->tenant_id; }
-    private function authorizeProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function authorizeItem(StaffOccHealthClearance $i): void { abort_unless($i->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function authorizeItem(StaffOccHealthClearance $occHealth): void
+    {
+        $this->authorizeTenantRecord($occHealth);
+    }
 
     public function index(Request $request, StaffProfile $staffProfile)
     {
@@ -25,15 +39,27 @@ class StaffOccHealthClearanceController extends Controller
             ->paginate(15);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-occ-health.index', compact('staffProfile','items'));
+        return view('backend.admin.staff-occ-health.index', compact('staffProfile', 'items'));
     }
 
     public function create(StaffProfile $staffProfile)
@@ -41,12 +67,24 @@ class StaffOccHealthClearanceController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-occ-health.create', compact('staffProfile'));
@@ -57,7 +95,7 @@ class StaffOccHealthClearanceController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->occHealthClearances()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -70,24 +108,38 @@ class StaffOccHealthClearanceController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($occ_health);
+
         abort_unless($occ_health->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-occ-health.edit', compact('staffProfile','occ_health'));
+        return view('backend.admin.staff-occ-health.edit', compact('staffProfile', 'occ_health'));
     }
 
     public function update(UpdateStaffOccHealthClearanceRequest $request, StaffProfile $staffProfile, StaffOccHealthClearance $occ_health)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($occ_health);
+
         abort_unless($occ_health->staff_profile_id === $staffProfile->id, 404);
 
         $occ_health->update($request->validated());
@@ -101,6 +153,7 @@ class StaffOccHealthClearanceController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($occ_health);
+
         abort_unless($occ_health->staff_profile_id === $staffProfile->id, 404);
 
         $occ_health->delete();

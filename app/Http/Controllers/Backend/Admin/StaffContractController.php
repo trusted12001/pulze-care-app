@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffContractRequest;
 use App\Http\Requests\UpdateStaffContractRequest;
@@ -11,19 +12,21 @@ use Illuminate\Http\Request;
 
 class StaffContractController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int) auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
 
-    private function authorizeProfile(StaffProfile $profile): void
+    private function authorizeProfile(StaffProfile $staffProfile): void
     {
-        abort_unless($profile->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($staffProfile);
     }
 
     private function authorizeContract(StaffContract $contract): void
     {
-        abort_unless($contract->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($contract);
     }
 
     public function index(StaffProfile $staffProfile)
@@ -32,12 +35,13 @@ class StaffContractController extends Controller
 
         $contracts = $staffProfile->contracts()->latest('start_date')->paginate(15);
 
-        return view('backend.admin.staff-contracts.index', compact('staffProfile','contracts'));
+        return view('backend.admin.staff-contracts.index', compact('staffProfile', 'contracts'));
     }
 
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         return view('backend.admin.staff-contracts.create', compact('staffProfile'));
     }
 
@@ -46,7 +50,7 @@ class StaffContractController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->contracts()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -59,15 +63,17 @@ class StaffContractController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeContract($contract);
+
         abort_unless($contract->staff_profile_id === $staffProfile->id, 404);
 
-        return view('backend.admin.staff-contracts.edit', compact('staffProfile','contract'));
+        return view('backend.admin.staff-contracts.edit', compact('staffProfile', 'contract'));
     }
 
     public function update(UpdateStaffContractRequest $request, StaffProfile $staffProfile, StaffContract $contract)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeContract($contract);
+
         abort_unless($contract->staff_profile_id === $staffProfile->id, 404);
 
         $contract->update($request->validated());
@@ -81,6 +87,7 @@ class StaffContractController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeContract($contract);
+
         abort_unless($contract->staff_profile_id === $staffProfile->id, 404);
 
         $contract->delete();

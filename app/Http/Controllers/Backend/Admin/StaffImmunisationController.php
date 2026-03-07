@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffImmunisationRequest;
 use App\Http\Requests\UpdateStaffImmunisationRequest;
@@ -11,11 +12,24 @@ use Illuminate\Http\Request;
 
 class StaffImmunisationController extends Controller
 {
-    private function tenantId(): int { return (int) auth()->user()->tenant_id; }
-    private function authorizeProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function authorizeItem(StaffImmunisation $i): void { abort_unless($i->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
 
-    private array $vaccines = ['HepB','MMR','Varicella','TB_BCG','Flu','Covid19','Tetanus','Pertussis','Other'];
+    private array $vaccines = ['HepB', 'MMR', 'Varicella', 'TB_BCG', 'Flu', 'Covid19', 'Tetanus', 'Pertussis', 'Other'];
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function authorizeItem(StaffImmunisation $immunisation): void
+    {
+        $this->authorizeTenantRecord($immunisation);
+    }
 
     public function index(Request $request, StaffProfile $staffProfile)
     {
@@ -25,11 +39,11 @@ class StaffImmunisationController extends Controller
         $q = $request->string('q')->toString();
 
         $items = $staffProfile->immunisations()
-            ->when($filterV !== '', fn($qq) => $qq->where('vaccine', $filterV))
-            ->when($q !== '', function ($qq) use ($q) {
-                $qq->where(function ($sub) use ($q) {
-                    $sub->where('dose','like',"%{$q}%")
-                        ->orWhere('notes','like',"%{$q}%");
+            ->when($filterV !== '', fn($query) => $query->where('vaccine', $filterV))
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('dose', 'like', "%{$q}%")
+                        ->orWhere('notes', 'like', "%{$q}%");
                 });
             })
             ->orderByDesc('administered_at')
@@ -37,12 +51,24 @@ class StaffImmunisationController extends Controller
             ->withQueryString();
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-immunisations.index', [
@@ -59,12 +85,24 @@ class StaffImmunisationController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-immunisations.create', [
@@ -78,7 +116,7 @@ class StaffImmunisationController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->immunisations()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -91,15 +129,28 @@ class StaffImmunisationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($immunisation);
+
         abort_unless($immunisation->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-immunisations.edit', [
@@ -113,6 +164,7 @@ class StaffImmunisationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($immunisation);
+
         abort_unless($immunisation->staff_profile_id === $staffProfile->id, 404);
 
         $immunisation->update($request->validated());
@@ -126,6 +178,7 @@ class StaffImmunisationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($immunisation);
+
         abort_unless($immunisation->staff_profile_id === $staffProfile->id, 404);
 
         $immunisation->delete();

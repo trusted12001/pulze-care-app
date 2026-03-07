@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Models\ServiceUser;
-use App\Models\Document;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ServiceUserPhotoController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int) auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
 
     private function authorizeTenant(ServiceUser $su): void
     {
-        abort_unless($su->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($su);
     }
 
     public function edit(ServiceUser $service_user)
     {
         $this->authorizeTenant($service_user);
 
-        // Ensure latest Passport Photo is available
         $service_user->load([
             'documents' => function ($q) {
                 $q->where('category', 'Passport Photo')->latest('id');
@@ -41,20 +41,19 @@ class ServiceUserPhotoController extends Controller
         $this->authorizeTenant($service_user);
 
         $request->validate([
-            'photo' => ['required', 'file', 'image', 'max:4096'], // 4MB, image only
+            'photo' => ['required', 'file', 'image', 'max:4096'],
         ]);
 
-        $file   = $request->file('photo');
-        $tenant = $this->tenantId();
+        $file = $request->file('photo');
+        $tenantId = $this->tenantIdOrFail();
 
         $path = $file->store(
-            "documents/tenant_{$tenant}/service_user_{$service_user->id}",
+            "documents/tenant_{$tenantId}/service_user_{$service_user->id}",
             'public'
         );
 
-        // Create a new Document record for this Passport Photo
         $service_user->documents()->create([
-            'tenant_id'   => $tenant,
+            'tenant_id'   => $tenantId,
             'category'    => 'Passport Photo',
             'filename'    => $file->getClientOriginalName(),
             'path'        => $path,
@@ -62,10 +61,6 @@ class ServiceUserPhotoController extends Controller
             'uploaded_by' => auth()->id(),
             'hash'        => hash_file('sha256', $file->getRealPath()),
         ]);
-
-        // (Optional) If you want to delete OLD passport photo files, we can
-        // add a cleanup step here later. For now, we keep history and only
-        // show the latest via passport_photo_url.
 
         return redirect()
             ->route('backend.admin.service-users.show', $service_user->id)

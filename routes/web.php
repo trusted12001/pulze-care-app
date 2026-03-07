@@ -143,7 +143,7 @@ Route::prefix('backend/super-admin')
 | If you use a tenant middleware, add it here: ['auth','role:admin','tenant']
 */
 Route::prefix('backend/admin')
-    ->middleware(['auth', 'role:admin'])
+    ->middleware(['auth', 'role:admin|super-admin'])
     ->name('backend.admin.')
     ->group(function () {
         Route::view('/', 'backend.admin.index')->name('index');
@@ -554,5 +554,58 @@ Route::middleware(['auth', 'role:carer'])
         Route::get('/carer/residents/load-more', [CarerController::class, 'loadMoreResidents'])
             ->name('carer.residents.load-more');
     });
+
+
+
+/*
+|--------------------------------------------------------------------------
+| DEV SUPPORT ROUTES (LOCAL ONLY)
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| DEV SUPPORT ROUTES (LOCAL ONLY)
+|--------------------------------------------------------------------------
+*/
+
+if (app()->environment('local')) {
+    Route::get('/dev/support/tenant/{tenant}', function ($tenant) {
+        abort_unless(auth()->check(), 403);
+
+        session([
+            'active_tenant_id' => (int) $tenant,
+            'support_mode' => true,
+        ]);
+
+        return redirect()
+            ->route('backend.admin.staff-profiles.index')
+            ->with('success', 'Support tenant context set to tenant ID ' . (int) $tenant);
+    })->name('dev.support.tenant');
+
+    Route::get('/dev/support/clear', function () {
+        abort_unless(auth()->check(), 403);
+
+        session()->forget(['active_tenant_id', 'support_mode']);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Support tenant context cleared.');
+    })->name('dev.support.clear');
+
+    Route::get('/dev/support/status', function () {
+        abort_unless(auth()->check(), 403);
+
+        return response()->json([
+            'user_id' => auth()->id(),
+            'email' => auth()->user()->email,
+            'role_names' => method_exists(auth()->user(), 'getRoleNames') ? auth()->user()->getRoleNames() : [],
+            'user_tenant_id' => auth()->user()->tenant_id,
+            'active_tenant_id' => session('active_tenant_id'),
+            'support_mode' => session('support_mode'),
+        ]);
+    })->name('dev.support.status');
+}
+
 
 require __DIR__ . '/auth.php';

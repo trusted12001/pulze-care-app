@@ -2,34 +2,41 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServiceUserRequest;
 use App\Http\Requests\UpdateServiceUserRequest;
-use App\Models\ServiceUser;
 use App\Models\Location;
+use App\Models\ServiceUser;
 use Illuminate\Http\Request;
 
 class ServiceUserController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int) auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
 
     protected function authorizeTenant(ServiceUser $su): void
     {
         \Log::info('Tenant check', [
             'user_id' => auth()->id(),
+            'effective_tenant' => $this->tenantIdOrFail(),
             'user_tenant' => auth()->user()->tenant_id ?? null,
             'su_id' => $su->id,
             'su_tenant' => $su->tenant_id,
+            'support_mode' => session('support_mode', false),
+            'active_tenant_id' => session('active_tenant_id'),
         ]);
-        abort_unless($su->tenant_id == $this->tenantId(), 404);
+
+        $this->authorizeTenantRecord($su);
     }
 
     public function index(Request $request)
     {
-        $tenantId = $this->tenantId();
+        $tenantId = $this->tenantIdOrFail();
 
         $serviceUsers = ServiceUser::where('tenant_id', $tenantId)
             ->with('location')
@@ -42,7 +49,9 @@ class ServiceUserController extends Controller
 
     public function create()
     {
-        $locations = Location::where('tenant_id', $this->tenantId())
+        $tenantId = $this->tenantIdOrFail();
+
+        $locations = Location::where('tenant_id', $tenantId)
             ->where('status', 'active')
             ->orderBy('name')
             ->get(['id', 'name', 'city', 'postcode']);
@@ -53,7 +62,7 @@ class ServiceUserController extends Controller
     public function store(StoreServiceUserRequest $request)
     {
         $data = $request->validated();
-        $data['tenant_id'] = $this->tenantId();
+        $data['tenant_id'] = $this->tenantIdOrFail();
         $data['created_by'] = auth()->id();
         $data['updated_by'] = auth()->id();
 
@@ -96,7 +105,9 @@ class ServiceUserController extends Controller
     {
         $this->authorizeTenant($service_user);
 
-        $locations = Location::where('tenant_id', $this->tenantId())
+        $tenantId = $this->tenantIdOrFail();
+
+        $locations = Location::where('tenant_id', $tenantId)
             ->where('status', 'active')
             ->orderBy('name')
             ->get(['id', 'name', 'city', 'postcode']);
@@ -124,6 +135,7 @@ class ServiceUserController extends Controller
     public function destroy(ServiceUser $service_user)
     {
         $this->authorizeTenant($service_user);
+
         $service_user->delete();
 
         return back()->with('success', 'Service user moved to recycle bin.');
@@ -131,7 +143,7 @@ class ServiceUserController extends Controller
 
     public function trashed()
     {
-        $tenantId = $this->tenantId();
+        $tenantId = $this->tenantIdOrFail();
 
         $serviceUsers = ServiceUser::onlyTrashed()
             ->where('tenant_id', $tenantId)
@@ -146,6 +158,7 @@ class ServiceUserController extends Controller
     {
         $su = ServiceUser::onlyTrashed()->findOrFail($id);
         $this->authorizeTenant($su);
+
         $su->restore();
 
         return back()->with('success', 'Service user restored.');
@@ -155,22 +168,19 @@ class ServiceUserController extends Controller
     {
         $su = ServiceUser::onlyTrashed()->findOrFail($id);
         $this->authorizeTenant($su);
+
         $su->forceDelete();
 
         return back()->with('success', 'Service user permanently deleted.');
     }
 
-
-    // App\Http\Controllers\Backend\Admin\ServiceUserController.php
-
     public function print(ServiceUser $service_user)
     {
         $this->authorizeTenant($service_user);
 
-        // Load what we need for the print view
         $service_user->load([
             'location',
-            'passportPhoto', // assuming you added this relationship like for StaffProfile
+            'passportPhoto',
         ]);
 
         return view('backend.admin.service-users.print', [
@@ -184,12 +194,10 @@ class ServiceUserController extends Controller
 
         $data = $request->validated();
 
-        // Normalize NHS number
         if (array_key_exists('nhs_number', $data) && $data['nhs_number'] !== null) {
             $data['nhs_number'] = preg_replace('/\s+/', '', $data['nhs_number']);
         }
 
-        // Coerce booleans
         foreach (
             [
                 'behaviour_support_plan',
@@ -210,14 +218,11 @@ class ServiceUserController extends Controller
             }
         }
 
-        // NEW: tags — accept comma string, store valid JSON array
         if ($section === 'tags' && $request->filled('tags')) {
             $raw = $request->string('tags')->toString();
 
-            // split on commas/semicolons, trim, remove empties & dups
             $arr = array_values(array_unique(array_filter(array_map('trim', preg_split('/[,;]+/', $raw)))));
 
-            // store as JSON (valid for CHECK json_valid(tags))
             $data['tags'] = json_encode($arr, JSON_UNESCAPED_UNICODE);
         }
 

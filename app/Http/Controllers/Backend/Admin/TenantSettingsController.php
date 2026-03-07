@@ -2,29 +2,23 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\TenantSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class TenantSettingsController extends Controller
 {
+    use ResolvesTenantContext;
+
     /**
-     * NOTE:
-     * This assumes your admin user is tied to a tenant somehow.
-     * Adjust getTenant() to match your actual structure.
+     * Resolve the tenant from the current effective tenant context.
      */
     private function getTenant(): Tenant
     {
-        // OPTION A (recommended): if users table has tenant_id
-        if (Auth::user() && isset(Auth::user()->tenant_id) && Auth::user()->tenant_id) {
-            return Tenant::findOrFail(Auth::user()->tenant_id);
-        }
-
-        // OPTION B: fallback to first tenant (dev/demo)
-        return Tenant::query()->firstOrFail();
+        return Tenant::findOrFail($this->tenantIdOrFail());
     }
 
     public function edit()
@@ -33,7 +27,7 @@ class TenantSettingsController extends Controller
 
         $settings = TenantSetting::firstOrCreate(
             ['tenant_id' => $tenant->id],
-            ['office_address' => $tenant->address] // optional: start with tenant address
+            ['office_address' => $tenant->address]
         );
 
         return view('backend.admin.settings.edit', compact('tenant', 'settings'));
@@ -50,12 +44,9 @@ class TenantSettingsController extends Controller
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
         ]);
 
-        // Update office address
         $settings->office_address = $validated['office_address'] ?? null;
 
-        // Handle logo upload (replace old)
         if ($request->hasFile('logo')) {
-            // delete old logo (only if it was an uploaded one)
             if (!empty($settings->logo_path) && Storage::disk('public')->exists($settings->logo_path)) {
                 Storage::disk('public')->delete($settings->logo_path);
             }

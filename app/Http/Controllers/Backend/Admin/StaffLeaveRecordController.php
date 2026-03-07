@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffLeaveRecordRequest;
 use App\Http\Requests\UpdateStaffLeaveRecordRequest;
@@ -11,22 +12,35 @@ use Illuminate\Http\Request;
 
 class StaffLeaveRecordController extends Controller
 {
-    private function tenantId(): int { return (int)auth()->user()->tenant_id; }
-    private function authorizeProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function authorizeItem(StaffLeaveRecord $i): void { abort_unless($i->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function authorizeItem(StaffLeaveRecord $leaveRecord): void
+    {
+        $this->authorizeTenantRecord($leaveRecord);
+    }
 
     public function index(Request $request, StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
 
         $type = $request->string('type')->toString();
-        $q = trim((string)$request->get('q',''));
+        $q = trim((string) $request->get('q', ''));
 
         $records = $staffProfile->leaveRecords()
-            ->when($type !== '', fn($qq) => $qq->where('type', $type))
-            ->when($q !== '', function ($qq) use ($q) {
-                $qq->where(function ($sub) use ($q) {
-                    $sub->where('reason','like',"%{$q}%");
+            ->when($type !== '', fn($query) => $query->where('type', $type))
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('reason', 'like', "%{$q}%");
                 });
             })
             ->orderByDesc('start_date')
@@ -34,12 +48,24 @@ class StaffLeaveRecordController extends Controller
             ->withQueryString();
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-leave-records.index', [
@@ -53,13 +79,26 @@ class StaffLeaveRecordController extends Controller
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-leave-records.create', compact('staffProfile'));
@@ -70,7 +109,7 @@ class StaffLeaveRecordController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->leaveRecords()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -83,15 +122,28 @@ class StaffLeaveRecordController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_record);
+
         abort_unless($leave_record->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-leave-records.edit', [
@@ -104,6 +156,7 @@ class StaffLeaveRecordController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_record);
+
         abort_unless($leave_record->staff_profile_id === $staffProfile->id, 404);
 
         $leave_record->update($request->validated());
@@ -117,6 +170,7 @@ class StaffLeaveRecordController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_record);
+
         abort_unless($leave_record->staff_profile_id === $staffProfile->id, 404);
 
         $leave_record->delete();

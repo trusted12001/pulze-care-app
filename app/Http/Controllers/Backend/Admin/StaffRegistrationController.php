@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffRegistrationRequest;
 use App\Http\Requests\UpdateStaffRegistrationRequest;
@@ -10,19 +11,21 @@ use App\Models\StaffRegistration;
 
 class StaffRegistrationController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int) auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
 
-    private function authorizeProfile(StaffProfile $profile): void
+    private function authorizeProfile(StaffProfile $staffProfile): void
     {
-        abort_unless($profile->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($staffProfile);
     }
 
     private function authorizeRegistration(StaffRegistration $registration): void
     {
-        abort_unless($registration->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($registration);
     }
 
     public function index(StaffProfile $staffProfile)
@@ -31,12 +34,13 @@ class StaffRegistrationController extends Controller
 
         $registrations = $staffProfile->registrations()->latest('expires_at')->paginate(15);
 
-        return view('backend.admin.staff-registrations.index', compact('staffProfile','registrations'));
+        return view('backend.admin.staff-registrations.index', compact('staffProfile', 'registrations'));
     }
 
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         return view('backend.admin.staff-registrations.create', compact('staffProfile'));
     }
 
@@ -45,7 +49,7 @@ class StaffRegistrationController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->registrations()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -58,15 +62,17 @@ class StaffRegistrationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeRegistration($registration);
+
         abort_unless($registration->staff_profile_id === $staffProfile->id, 404);
 
-        return view('backend.admin.staff-registrations.edit', compact('staffProfile','registration'));
+        return view('backend.admin.staff-registrations.edit', compact('staffProfile', 'registration'));
     }
 
     public function update(UpdateStaffRegistrationRequest $request, StaffProfile $staffProfile, StaffRegistration $registration)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeRegistration($registration);
+
         abort_unless($registration->staff_profile_id === $staffProfile->id, 404);
 
         $registration->update($request->validated());
@@ -80,6 +86,7 @@ class StaffRegistrationController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeRegistration($registration);
+
         abort_unless($registration->staff_profile_id === $staffProfile->id, 404);
 
         $registration->delete();

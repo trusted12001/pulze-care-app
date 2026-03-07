@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffVisaRequest;
 use App\Http\Requests\UpdateStaffVisaRequest;
@@ -10,19 +11,21 @@ use App\Models\StaffVisa;
 
 class StaffVisaController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int) auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
 
-    private function authorizeProfile(StaffProfile $profile): void
+    private function authorizeProfile(StaffProfile $staffProfile): void
     {
-        abort_unless($profile->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($staffProfile);
     }
 
     private function authorizeVisa(StaffVisa $visa): void
     {
-        abort_unless($visa->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($visa);
     }
 
     public function index(StaffProfile $staffProfile)
@@ -34,34 +37,59 @@ class StaffVisaController extends Controller
             ->paginate(15);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-visas.index', compact('staffProfile','visas'));
+        return view('backend.admin.staff-visas.index', compact('staffProfile', 'visas'));
     }
 
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        $verifiers = \App\Models\User::where('tenant_id', $this->tenantId())
+        $verifiers = \App\Models\User::where('tenant_id', $this->tenantIdOrFail())
             ->orderBy('first_name')
-            ->get(['id','first_name','last_name','other_names','email']);
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
-        return view('backend.admin.staff-visas.create', compact('staffProfile','verifiers'));
+        return view('backend.admin.staff-visas.create', compact('staffProfile', 'verifiers'));
     }
 
     public function store(StoreStaffVisaRequest $request, StaffProfile $staffProfile)
@@ -69,7 +97,7 @@ class StaffVisaController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->visas()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -82,28 +110,42 @@ class StaffVisaController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeVisa($visa);
+
         abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        $verifiers = \App\Models\User::where('tenant_id', $this->tenantId())
+        $verifiers = \App\Models\User::where('tenant_id', $this->tenantIdOrFail())
             ->orderBy('first_name')
-            ->get(['id','first_name','last_name','other_names','email']);
+            ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
-        return view('backend.admin.staff-visas.edit', compact('staffProfile','visa','verifiers'));
+        return view('backend.admin.staff-visas.edit', compact('staffProfile', 'visa', 'verifiers'));
     }
 
     public function update(UpdateStaffVisaRequest $request, StaffProfile $staffProfile, StaffVisa $visa)
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeVisa($visa);
+
         abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
 
         $visa->update($request->validated());
@@ -117,6 +159,7 @@ class StaffVisaController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeVisa($visa);
+
         abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
 
         $visa->delete();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffBankAccountRequest;
 use App\Http\Requests\UpdateStaffBankAccountRequest;
@@ -11,25 +12,51 @@ use Illuminate\Http\Request;
 
 class StaffBankAccountController extends Controller
 {
-    private function tenantId(): int { return (int) auth()->user()->tenant_id; }
-    private function guardProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function guardItem(StaffBankAccount $i): void { abort_unless($i->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function guardProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function guardItem(StaffBankAccount $bankAccount): void
+    {
+        $this->authorizeTenantRecord($bankAccount);
+    }
 
     public function index(StaffProfile $staffProfile)
     {
         $this->guardProfile($staffProfile);
 
         $bankAccounts = $staffProfile->bankAccounts()->latest('id')->paginate(15);
+
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-bank-accounts.index', compact('staffProfile','bankAccounts'));
+        return view('backend.admin.staff-bank-accounts.index', compact('staffProfile', 'bankAccounts'));
     }
 
     public function create(StaffProfile $staffProfile)
@@ -37,12 +64,24 @@ class StaffBankAccountController extends Controller
         $this->guardProfile($staffProfile);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-bank-accounts.create', compact('staffProfile'));
@@ -53,7 +92,7 @@ class StaffBankAccountController extends Controller
         $this->guardProfile($staffProfile);
 
         $staffProfile->bankAccounts()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -66,24 +105,38 @@ class StaffBankAccountController extends Controller
     {
         $this->guardProfile($staffProfile);
         $this->guardItem($bank_account);
+
         abort_unless($bank_account->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-bank-accounts.edit', compact('staffProfile','bank_account'));
+        return view('backend.admin.staff-bank-accounts.edit', compact('staffProfile', 'bank_account'));
     }
 
     public function update(UpdateStaffBankAccountRequest $request, StaffProfile $staffProfile, StaffBankAccount $bank_account)
     {
         $this->guardProfile($staffProfile);
         $this->guardItem($bank_account);
+
         abort_unless($bank_account->staff_profile_id === $staffProfile->id, 404);
 
         $bank_account->update($request->validated());
@@ -97,6 +150,7 @@ class StaffBankAccountController extends Controller
     {
         $this->guardProfile($staffProfile);
         $this->guardItem($bank_account);
+
         abort_unless($bank_account->staff_profile_id === $staffProfile->id, 404);
 
         $bank_account->delete();

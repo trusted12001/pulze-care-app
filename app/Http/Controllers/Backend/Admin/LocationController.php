@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLocationRequest;
 use App\Http\Requests\UpdateLocationRequest;
@@ -10,19 +11,21 @@ use Illuminate\Http\Request;
 
 class LocationController extends Controller
 {
+    use ResolvesTenantContext;
+
     private function tenantId(): int
     {
-        return (int) auth()->user()->tenant_id;
+        return $this->tenantIdOrFail();
     }
 
     protected function authorizeTenant(Location $location): void
     {
-        abort_unless($location->tenant_id === $this->tenantId(), 404);
+        $this->authorizeTenantRecord($location);
     }
 
     public function index(Request $request)
     {
-        $tenantId = $this->tenantId();
+        $tenantId = $this->tenantIdOrFail();
         $q = $request->get('q');
 
         $query = Location::where('tenant_id', $tenantId)
@@ -51,7 +54,7 @@ class LocationController extends Controller
     public function store(StoreLocationRequest $request)
     {
         Location::create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -96,7 +99,7 @@ class LocationController extends Controller
 
     public function trashed(Request $request)
     {
-        $tenantId = $this->tenantId();
+        $tenantId = $this->tenantIdOrFail();
 
         $locations = Location::onlyTrashed()
             ->where('tenant_id', $tenantId)
@@ -111,6 +114,7 @@ class LocationController extends Controller
     {
         $location = Location::onlyTrashed()->findOrFail($id);
         $this->authorizeTenant($location);
+
         $location->restore();
 
         return back()->with('success', 'Location restored.');
@@ -120,6 +124,7 @@ class LocationController extends Controller
     {
         $location = Location::onlyTrashed()->findOrFail($id);
         $this->authorizeTenant($location);
+
         $location->forceDelete();
 
         return back()->with('success', 'Location permanently deleted.');

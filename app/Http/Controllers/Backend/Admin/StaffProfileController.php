@@ -2,26 +2,23 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffProfileRequest;
 use App\Http\Requests\UpdateStaffProfileRequest;
 use App\Models\StaffProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf; // add this line if using PDF
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StaffProfileController extends Controller
 {
-    private function tenantId(): int
-    {
-        return (int) auth()->user()->tenant_id;
-    }
+    use ResolvesTenantContext;
 
     public function index(Request $request)
     {
-        $tenantId = $this->tenantId();
-        $search   = trim((string) $request->get('q', ''));
+        $tenantId = $this->tenantIdOrFail();
+        $search = trim((string) $request->get('q', ''));
 
         $profiles = StaffProfile::query()
             ->where('tenant_id', $tenantId)
@@ -45,13 +42,13 @@ class StaffProfileController extends Controller
 
         return view('backend.admin.staff-profiles.index', [
             'profiles' => $profiles,
-            'search'   => $search,
+            'search' => $search,
         ]);
     }
 
     public function create()
     {
-        $tenantId = $this->tenantId();
+        $tenantId = $this->tenantIdOrFail();
 
         $users = User::query()
             ->where('tenant_id', $tenantId)
@@ -59,9 +56,10 @@ class StaffProfileController extends Controller
             ->orderBy('first_name')
             ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
-        // Optional: Locations & Managers (for new fields)
         $locations = class_exists(\App\Models\Location::class)
-            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id', 'name'])
+            ? \App\Models\Location::where('tenant_id', $tenantId)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : collect();
 
         $managers = User::query()
@@ -75,7 +73,7 @@ class StaffProfileController extends Controller
     public function store(StoreStaffProfileRequest $request)
     {
         StaffProfile::create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -95,7 +93,7 @@ class StaffProfileController extends Controller
     {
         $this->authorizeTenant($staffProfile);
 
-        $tenantId = $this->tenantId();
+        $tenantId = $this->tenantIdOrFail();
 
         $users = User::query()
             ->where('tenant_id', $tenantId)
@@ -107,7 +105,9 @@ class StaffProfileController extends Controller
             ->get(['id', 'first_name', 'last_name', 'other_names', 'email']);
 
         $locations = class_exists(\App\Models\Location::class)
-            ? \App\Models\Location::where('tenant_id', $tenantId)->orderBy('name')->get(['id', 'name'])
+            ? \App\Models\Location::where('tenant_id', $tenantId)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : collect();
 
         $managers = User::query()
@@ -140,8 +140,8 @@ class StaffProfileController extends Controller
 
     public function trashed(Request $request)
     {
-        $tenantId = $this->tenantId();
-        $search   = trim((string) $request->get('q', ''));
+        $tenantId = $this->tenantIdOrFail();
+        $search = trim((string) $request->get('q', ''));
 
         $profiles = StaffProfile::onlyTrashed()
             ->where('tenant_id', $tenantId)
@@ -165,7 +165,7 @@ class StaffProfileController extends Controller
 
         return view('backend.admin.staff-profiles.trashed', [
             'profiles' => $profiles,
-            'search'   => $search,
+            'search' => $search,
         ]);
     }
 
@@ -256,7 +256,7 @@ class StaffProfileController extends Controller
 
         $pdf = Pdf::loadView('backend.admin.staff-profiles.print', [
             'staffProfile' => $staffProfile,
-            'isPdf'        => true,
+            'isPdf' => true,
         ])->setPaper('a4', 'portrait');
 
         $filename = 'staff-profile-' . $staffProfile->id . '.pdf';
@@ -264,15 +264,8 @@ class StaffProfileController extends Controller
         return $pdf->download($filename);
     }
 
-
-private function authorizeTenant(StaffProfile $staffProfile): void
-{
-    $user = auth()->user();
-
-    if ($user && method_exists($user, 'hasRole') && $user->hasRole('superadmin')) {
-        return;
+    private function authorizeTenant(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
     }
-
-    abort_unless($user && $staffProfile->tenant_id === $user->tenant_id, 404);
-}
 }

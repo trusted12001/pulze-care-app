@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Controllers\Concerns\ResolvesTenantContext;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffLeaveEntitlementRequest;
 use App\Http\Requests\UpdateStaffLeaveEntitlementRequest;
@@ -10,9 +11,22 @@ use App\Models\StaffProfile;
 
 class StaffLeaveEntitlementController extends Controller
 {
-    private function tenantId(): int { return (int)auth()->user()->tenant_id; }
-    private function authorizeProfile(StaffProfile $p): void { abort_unless($p->tenant_id === $this->tenantId(), 404); }
-    private function authorizeItem(StaffLeaveEntitlement $i): void { abort_unless($i->tenant_id === $this->tenantId(), 404); }
+    use ResolvesTenantContext;
+
+    private function tenantId(): int
+    {
+        return $this->tenantIdOrFail();
+    }
+
+    private function authorizeProfile(StaffProfile $staffProfile): void
+    {
+        $this->authorizeTenantRecord($staffProfile);
+    }
+
+    private function authorizeItem(StaffLeaveEntitlement $leaveEntitlement): void
+    {
+        $this->authorizeTenantRecord($leaveEntitlement);
+    }
 
     public function index(StaffProfile $staffProfile)
     {
@@ -23,27 +37,52 @@ class StaffLeaveEntitlementController extends Controller
             ->paginate(15);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
-        return view('backend.admin.staff-leave-entitlements.index', compact('staffProfile','items'));
+        return view('backend.admin.staff-leave-entitlements.index', compact('staffProfile', 'items'));
     }
 
     public function create(StaffProfile $staffProfile)
     {
         $this->authorizeProfile($staffProfile);
+
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-leave-entitlements.create', compact('staffProfile'));
@@ -54,7 +93,7 @@ class StaffLeaveEntitlementController extends Controller
         $this->authorizeProfile($staffProfile);
 
         $staffProfile->leaveEntitlements()->create([
-            'tenant_id' => $this->tenantId(),
+            'tenant_id' => $this->tenantIdOrFail(),
             ...$request->validated(),
         ]);
 
@@ -67,15 +106,28 @@ class StaffLeaveEntitlementController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_entitlement);
+
         abort_unless($leave_entitlement->staff_profile_id === $staffProfile->id, 404);
 
         $staffProfile->loadCount([
-            'disciplinaryRecords','documents',
-            'contracts','registrations','employmentChecks','visas',
-            'trainingRecords','supervisionsAppraisals','qualifications',
-            'occHealthClearances','immunisations',
-            'leaveEntitlements','leaveRecords','availabilityPreferences',
-            'emergencyContacts','equalityData','adjustments','drivingLicences',
+            'disciplinaryRecords',
+            'documents',
+            'contracts',
+            'registrations',
+            'employmentChecks',
+            'visas',
+            'trainingRecords',
+            'supervisionsAppraisals',
+            'qualifications',
+            'occHealthClearances',
+            'immunisations',
+            'leaveEntitlements',
+            'leaveRecords',
+            'availabilityPreferences',
+            'emergencyContacts',
+            'equalityData',
+            'adjustments',
+            'drivingLicences',
         ]);
 
         return view('backend.admin.staff-leave-entitlements.edit', [
@@ -88,6 +140,7 @@ class StaffLeaveEntitlementController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_entitlement);
+
         abort_unless($leave_entitlement->staff_profile_id === $staffProfile->id, 404);
 
         $leave_entitlement->update($request->validated());
@@ -101,6 +154,7 @@ class StaffLeaveEntitlementController extends Controller
     {
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_entitlement);
+
         abort_unless($leave_entitlement->staff_profile_id === $staffProfile->id, 404);
 
         $leave_entitlement->delete();
