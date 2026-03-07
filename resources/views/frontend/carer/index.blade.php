@@ -205,7 +205,8 @@
                     </a>
 
                     {{-- Profile – placeholder for now, wire later --}}
-                    <a href="#" class="flex-center text-decoration-none footer-menu-link">
+                    <a href="{{ route('account.settings.edit') }}" title="My Account"
+                        class="flex-center text-decoration-none footer-menu-link">
                         <i class="ph ph-user-circle link-item"></i>
                     </a>
 

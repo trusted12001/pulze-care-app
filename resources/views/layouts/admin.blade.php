@@ -51,6 +51,31 @@
 
 
         <div class="main-body">
+
+            @if(session('support_mode') && session('active_tenant_id') && auth()->user()?->hasRole('super-admin'))
+                @php
+                    $activeTenant = \App\Models\Tenant::find(session('active_tenant_id'));
+                @endphp
+
+                @if($activeTenant)
+                    <div class="alert alert-warning d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <strong>Support Mode Active</strong>
+                            - Currently, you are technically supporting:
+                            <strong>{{ $activeTenant->name }}</strong>
+                        </div>
+
+                        <form action="{{ route('backend.super-admin.support-mode.exit') }}" method="POST" class="mb-0">
+                            @csrf
+                            <button type="submit"
+                                class="rounded bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700">
+                                Exit Support Mode
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            @endif
+
             @yield('content')
         </div>
     </div>
@@ -75,6 +100,28 @@
         document.getElementById('toggleSidebarBtn').addEventListener('click', function () {
             sidebar.classList.toggle('collapsed');
             content.classList.toggle('expanded');
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const button = document.getElementById("userMenuButton");
+            const menu = document.getElementById("userMenuDropdown");
+
+            if (button && menu) {
+                button.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    menu.style.display = menu.style.display === "block" ? "none" : "block";
+                });
+
+                document.addEventListener("click", function (e) {
+                    if (!button.contains(e.target) && !menu.contains(e.target)) {
+                        menu.style.display = "none";
+                    }
+                });
+            }
         });
     </script>
 </body>

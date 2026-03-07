@@ -55,4 +55,18 @@ trait ResolvesTenantContext
             'You are not authorized to access this tenant record.'
         );
     }
+
+
+    protected function inSupportMode(): bool
+    {
+        return auth()->check()
+            && auth()->user()->hasRole('super-admin')
+            && session('support_mode') === true
+            && filled(session('active_tenant_id'));
+    }
+
+    protected function activeTenantId(): ?int
+    {
+        return session('active_tenant_id');
+    }
 }

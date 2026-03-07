@@ -3,163 +3,215 @@
 @section('title', 'Manage Tenants')
 
 @section('content')
-<div class="min-h-screen p-0 rounded-lg">
+    @php
+        $openTenantForm = $errors->any() || old('name') || old('email') || old('phone') || old('address') || old('status');
+    @endphp
 
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold text-black">Add New Tenant</h1>
-        <a href="{{ route('backend.super-admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
-    </div>
+    <div class="min-h-screen p-0 rounded-lg">
 
-    @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div class="mb-4 p-3 bg-red-100 text-red-800 rounded">
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-<!-- Add Tenant Form -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200">
-        <form action="{{ route('backend.super-admin.tenants.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @csrf
-
-            <div>
-                <label class="block text-sm text-gray-600 mb-1">Tenant Name</label>
-                <input type="text" name="name" value="{{ old('name') }}"
-                    class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:ring-2 focus:ring-blue-300"
-                    placeholder="e.g., Royal Care Ltd." required>
-            </div>
-
-            <div>
-                <label class="block text-sm text-gray-600 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email') }}"
-                    class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:ring-2 focus:ring-blue-300"
-                    placeholder="admin@carehome.com" required>
-            </div>
-
-            <div>
-                <label class="block text-sm text-gray-600 mb-1">Phone</label>
-                <input type="text" name="phone" value="{{ old('phone') }}"
-                    class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:ring-2 focus:ring-blue-300"
-                    placeholder="+44 123 456 7890" required>
-            </div>
-
-            <div>
-                <label class="block text-sm text-gray-600 mb-1">Address</label>
-                <input type="text" name="address" value="{{ old('address') }}"
-                    class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:ring-2 focus:ring-blue-300"
-                    placeholder="123 Main St, London" required>
-            </div>
-
-            <div>
-                <label class="block text-sm text-gray-600 mb-1">Status</label>
-                <select name="status" class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:ring-2 focus:ring-blue-300" required>
-                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
-            </div>
-
-            <div class="md:col-span-2 text-right mt-2">
-                <button type="submit"
-                        class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-                    Add Tenant
-                </button>
-            </div>
-        </form>
-    </div>
-
-<!-- Tenants Table -->
-    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-semibold text-gray-800">Registered Tenants</h3>
-            <input type="text" id="tenantSearch" placeholder="Search Tenants..."
-            class="w-full sm:w-1/3 px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+            <h1 class="text-3xl font-bold text-black">Add New Tenant</h1>
+            <a href="{{ route('backend.super-admin.index') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
         </div>
 
-        <div class="overflow-x-auto">
-            <table id="tenantsTable" class="min-w-full table-auto border-collapse">
-                <thead class="bg-gray-100 text-left text-sm font-medium text-gray-600">
-                    <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Name</th>
-                        <th class="px-4 py-2">Email</th>
-                        <th class="px-4 py-2">Phone</th>
-                        <th class="px-4 py-2">Address</th>
-                        <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm text-gray-700">
-                    @forelse ($tenants as $tenant)
-                    <tr class="hover:bg-gray-50 border-t">
-                        <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                        <td class="px-4 py-2 font-medium">{{ $tenant->name }}</td>
-                        <td class="px-4 py-2">{{ $tenant->email }}</td>
-                        <td class="px-4 py-2">{{ $tenant->phone }}</td>
-                        <td class="px-4 py-2">{{ $tenant->address }}</td>
-                        <td class="px-4 py-2">
-                            <span class="inline-block px-2 py-1 text-xs rounded
-                                {{ $tenant->status === 'active' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' }}">
-                                {{ ucfirst($tenant->status) }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-2 space-x-2">
-                             <a href="{{ route('backend.super-admin.tenants.show', $tenant->id) }}"
-                                class="text-green-600 hover:underline">
-                                View</a>
-                            <a href="{{ route('backend.super-admin.tenants.edit', $tenant->id) }}"
-                                class="text-blue-600 hover:underline">Edit</a>
+        @if(session('success'))
+            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
 
-                            <form action="{{ route('backend.super-admin.tenants.destroy', $tenant->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this tenant?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="px-4 py-4 text-center text-gray-500">No tenants found.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        @if ($errors->any())
+            <div class="mb-4 p-3 bg-red-100 text-red-800 rounded">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            <div class="px-4 py-3 bg-gray-50 border-t">
-                {{ $tenants->links('vendor.pagination.tailwind') }}
+        <!-- Collapsible Add Tenant Form -->
+        <div class="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+            <button type="button" id="tenantFormToggle"
+                class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition">
+                <div class="flex items-center gap-3">
+                    <span
+                        class="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 text-blue-600 text-xl leading-none">
+                        +
+                    </span>
+                    <h2 class="text-2xl font-semibold text-gray-900">Create New Tenant</h2>
+                </div>
+
+                <svg id="tenantFormChevron"
+                    class="w-5 h-5 text-gray-500 transition-transform duration-300 {{ $openTenantForm ? 'rotate-180' : '' }}"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <div id="tenantFormWrapper" class="{{ $openTenantForm ? '' : 'hidden' }} border-t border-gray-200">
+                <div class="p-6">
+                    <form action="{{ route('backend.super-admin.tenants.store') }}" method="POST"
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @csrf
+
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Tenant Name</label>
+                            <input type="text" name="name" value="{{ old('name') }}"
+                                class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                placeholder="e.g., Royal Care Ltd." required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Email</label>
+                            <input type="email" name="email" value="{{ old('email') }}"
+                                class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                placeholder="admin@carehome.com" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Phone</label>
+                            <input type="text" name="phone" value="{{ old('phone') }}"
+                                class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                placeholder="+44 123 456 7890" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Address</label>
+                            <input type="text" name="address" value="{{ old('address') }}"
+                                class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                placeholder="123 Main St, London" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Status</label>
+                            <select name="status"
+                                class="w-full bg-gray-50 border border-gray-300 rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                required>
+                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2 flex justify-end mt-2">
+                            <button type="submit"
+                                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+                                Add Tenant
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+
+        <!-- Tenants Table -->
+        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800">Registered Tenants</h3>
+                <input type="text" id="tenantSearch" placeholder="Search Tenants..."
+                    class="w-full sm:w-1/3 px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+            </div>
+
+            <div class="overflow-x-auto">
+                <table id="tenantsTable" class="min-w-full table-auto border-collapse">
+                    <thead class="bg-gray-100 text-left text-sm font-medium text-gray-600">
+                        <tr>
+                            <th class="px-4 py-2">#</th>
+                            <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Email</th>
+                            <th class="px-4 py-2">Phone</th>
+                            <th class="px-4 py-2">Address</th>
+                            <th class="px-4 py-2">Status</th>
+                            <th class="px-4 py-2">Mode Changer</th>
+                            <th class="px-4 py-2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-700">
+                        @forelse ($tenants as $tenant)
+                            <tr class="hover:bg-gray-50 border-t">
+                                <td class="px-4 py-2">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-2 font-medium">{{ $tenant->name }}</td>
+                                <td class="px-4 py-2">{{ $tenant->email }}</td>
+                                <td class="px-4 py-2">{{ $tenant->phone }}</td>
+                                <td class="px-4 py-2">{{ $tenant->address }}</td>
+                                <td class="px-4 py-2">
+                                    <span
+                                        class="inline-block px-2 py-1 text-xs rounded {{ $tenant->status === 'active' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' }}">
+                                        {{ ucfirst($tenant->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <form action="{{ route('backend.super-admin.support-mode.enter', $tenant) }}" method="POST"
+                                        class="inline-block">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition">
+                                            Enter Support Mode
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="px-4 py-2 space-x-2">
+                                    <a href="{{ route('backend.super-admin.tenants.show', $tenant->id) }}"
+                                        class="text-green-600 hover:underline">View</a>
+
+                                    <a href="{{ route('backend.super-admin.tenants.edit', $tenant->id) }}"
+                                        class="text-blue-600 hover:underline">Edit</a>
+
+                                    <form action="{{ route('backend.super-admin.tenants.destroy', $tenant->id) }}" method="POST"
+                                        class="inline-block"
+                                        onsubmit="return confirm('Are you sure you want to delete this tenant?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-4 py-4 text-center text-gray-500">No tenants found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                <div class="px-4 py-3 bg-gray-50 border-t">
+                    {{ $tenants->links('vendor.pagination.tailwind') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{{ route('backend.super-admin.tenants.trashed') }}"
+                class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 hover:underline">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z">
+                    </path>
+                </svg>
+                View Trash
+            </a>
+        </div>
     </div>
-    <div class="mt-4">
-        <a href="{{ route('backend.super-admin.tenants.trashed') }}"
-            class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 hover:underline">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z"></path>
-            </svg>
-            View Trash
-        </a>
-    </div>
-</div>
 
-<script>
-document.getElementById('tenantSearch').addEventListener('keyup', function () {
-    const value = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#tenantsTable tbody tr');
+    <script>
+        const tenantFormToggle = document.getElementById('tenantFormToggle');
+        const tenantFormWrapper = document.getElementById('tenantFormWrapper');
+        const tenantFormChevron = document.getElementById('tenantFormChevron');
 
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(value) ? '' : 'none';
-    });
-});
-</script>
+        tenantFormToggle.addEventListener('click', function () {
+            tenantFormWrapper.classList.toggle('hidden');
+            tenantFormChevron.classList.toggle('rotate-180');
+        });
 
+        document.getElementById('tenantSearch').addEventListener('keyup', function () {
+            const value = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#tenantsTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(value) ? '' : 'none';
+            });
+        });
+    </script>
 @endsection

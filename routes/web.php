@@ -71,6 +71,9 @@ use App\Http\Controllers\Frontend\CarerResidentController;
 use App\Http\Controllers\Backend\Admin\StaffProfilePhotoController;
 use App\Http\Controllers\Backend\Admin\TenantSettingsController;
 
+use App\Http\Controllers\Backend\SuperAdmin\SupportModeController;
+use App\Http\Controllers\Account\AccountSettingsController;
+
 
 
 
@@ -134,6 +137,13 @@ Route::prefix('backend/super-admin')
             'destroy' => 'tenants.destroy',
             'show'    => 'tenants.show',
         ]);
+
+        Route::post('support-mode/exit', [SupportModeController::class, 'exit'])
+            ->name('support-mode.exit');
+
+        Route::post('support-mode/{tenant}', [SupportModeController::class, 'enter'])
+            ->whereNumber('tenant')
+            ->name('support-mode.enter');
     });
 
 /*
@@ -559,53 +569,19 @@ Route::middleware(['auth', 'role:carer'])
 
 /*
 |--------------------------------------------------------------------------
-| DEV SUPPORT ROUTES (LOCAL ONLY)
+| ACCOUNT SETTINGS GROUP
 |--------------------------------------------------------------------------
 */
 
-/*
-|--------------------------------------------------------------------------
-| DEV SUPPORT ROUTES (LOCAL ONLY)
-|--------------------------------------------------------------------------
-*/
+Route::middleware(['auth'])->prefix('account')->name('account.')->group(function () {
+    Route::get('/settings', [AccountSettingsController::class, 'edit'])->name('settings.edit');
 
-if (app()->environment('local')) {
-    Route::get('/dev/support/tenant/{tenant}', function ($tenant) {
-        abort_unless(auth()->check(), 403);
+    Route::post('/settings/profile', [AccountSettingsController::class, 'updateProfile'])
+        ->name('settings.profile.update');
 
-        session([
-            'active_tenant_id' => (int) $tenant,
-            'support_mode' => true,
-        ]);
-
-        return redirect()
-            ->route('backend.admin.staff-profiles.index')
-            ->with('success', 'Support tenant context set to tenant ID ' . (int) $tenant);
-    })->name('dev.support.tenant');
-
-    Route::get('/dev/support/clear', function () {
-        abort_unless(auth()->check(), 403);
-
-        session()->forget(['active_tenant_id', 'support_mode']);
-
-        return redirect()
-            ->back()
-            ->with('success', 'Support tenant context cleared.');
-    })->name('dev.support.clear');
-
-    Route::get('/dev/support/status', function () {
-        abort_unless(auth()->check(), 403);
-
-        return response()->json([
-            'user_id' => auth()->id(),
-            'email' => auth()->user()->email,
-            'role_names' => method_exists(auth()->user(), 'getRoleNames') ? auth()->user()->getRoleNames() : [],
-            'user_tenant_id' => auth()->user()->tenant_id,
-            'active_tenant_id' => session('active_tenant_id'),
-            'support_mode' => session('support_mode'),
-        ]);
-    })->name('dev.support.status');
-}
+    Route::post('/settings/password', [AccountSettingsController::class, 'updatePassword'])
+        ->name('settings.password.update');
+});
 
 
 require __DIR__ . '/auth.php';

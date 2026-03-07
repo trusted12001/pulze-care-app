@@ -32,6 +32,12 @@ class User extends Authenticatable
         'password',
         'tenant_id',
         'status',
+        'phone',
+        'address_line_1',
+        'address_line_2',
+        'town_city',
+        'county',
+        'postcode',
     ];
 
 
