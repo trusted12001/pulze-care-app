@@ -130,7 +130,7 @@ class StaffImmunisationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($immunisation);
 
-        abort_unless($immunisation->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $immunisation->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -165,7 +165,7 @@ class StaffImmunisationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($immunisation);
 
-        abort_unless($immunisation->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $immunisation->staff_profile_id === (int) $staffProfile->id, 404);
 
         $immunisation->update($request->validated());
 
@@ -179,7 +179,7 @@ class StaffImmunisationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($immunisation);
 
-        abort_unless($immunisation->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $immunisation->staff_profile_id === (int) $staffProfile->id, 404);
 
         $immunisation->delete();
 

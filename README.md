@@ -1,5 +1,7 @@
 # Pulze Care Management System
 
+Before working on Pulze, read: docs/ReadMeFirst.md
+
 <div align="center">
 
 ![Pulze Care](https://img.shields.io/badge/Pulze-Care%20Management-blue?style=for-the-badge&logo=heart)
@@ -20,6 +22,7 @@
 Pulze Care Management System is a modern, multi-tenant SaaS platform designed specifically for care organizations. It provides comprehensive tools for managing staff, residents, care planning, risk assessments, and shift scheduling with GPS-verified attendance tracking.
 
 ### 🎯 Target Users
+
 - **Care Homes** - Residential care facilities
 - **Supported Living** - Independent living with support
 - **Domiciliary Care** - Home-based care services
@@ -30,11 +33,13 @@ Pulze Care Management System is a modern, multi-tenant SaaS platform designed sp
 ## ✨ Features
 
 ### 👥 **Multi-Tenant Architecture**
+
 - Organization-level data isolation
 - Scalable for multiple care providers
 - Subscription management and billing
 
 ### 👨‍⚕️ **Staff Management**
+
 - Comprehensive HR records and documentation
 - Professional registrations (NMC, GPHC)
 - Training records and compliance tracking
@@ -42,30 +47,35 @@ Pulze Care Management System is a modern, multi-tenant SaaS platform designed sp
 - Document management with expiry alerts
 
 ### 🏠 **Service User Management**
+
 - Detailed resident/client profiles
 - Medical history and care needs tracking
 - Legal and consent management
 - Admission and discharge processes
 
 ### 📋 **Care Planning System**
+
 - Structured care plan development
 - Goal setting and intervention tracking
 - Review scheduling and approval workflows
 - Version control and audit trails
 
 ### ⚠️ **Risk Management**
+
 - Comprehensive risk assessments
 - Risk scoring and banding (Low/Medium/High)
 - Control measures and monitoring
 - Review scheduling and tracking
 
 ### 📅 **Shift Management**
+
 - Template-based shift creation
 - Automatic rota generation
 - Staff assignment and skill matching
 - GPS-verified attendance tracking
 
 ### 📊 **Reporting & Analytics**
+
 - Risk insights and trends
 - Staff performance metrics
 - Compliance reporting
@@ -97,52 +107,59 @@ Pulze Care Management System is a modern, multi-tenant SaaS platform designed sp
 ### Quick Start
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/pulze-care-app.git
-   cd pulze-care-app
-   ```
+
+    ```bash
+    git clone https://github.com/yourusername/pulze-care-app.git
+    cd pulze-care-app
+    ```
 
 2. **Install PHP dependencies**
-   ```bash
-   composer install
-   ```
+
+    ```bash
+    composer install
+    ```
 
 3. **Install Node dependencies**
-   ```bash
-   npm install
-   ```
+
+    ```bash
+    npm install
+    ```
 
 4. **Environment setup**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
 5. **Configure database**
-   ```bash
-   # Update .env with your database credentials
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=pulze_care
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
-   ```
+
+    ```bash
+    # Update .env with your database credentials
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=pulze_care
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+    ```
 
 6. **Run migrations and seeders**
-   ```bash
-   php artisan migrate --seed
-   ```
+
+    ```bash
+    php artisan migrate --seed
+    ```
 
 7. **Build assets**
-   ```bash
-   npm run dev
-   ```
+
+    ```bash
+    npm run dev
+    ```
 
 8. **Start the development server**
-   ```bash
-   php artisan serve
-   ```
+    ```bash
+    php artisan serve
+    ```
 
 Visit `http://localhost:8000` to access the application.
 
@@ -167,17 +184,20 @@ php artisan queue:listen
 ## 👥 User Roles
 
 ### 🔑 Super Admin
+
 - System-wide access across all tenants
 - User and tenant management
 - Global system configuration
 
 ### 🛠️ Admin
+
 - Organization-level administration
 - Staff and service user management
 - Care planning and risk assessment
 - Shift scheduling and reporting
 
 ### 👨‍⚕️ Carer
+
 - Mobile-friendly interface
 - GPS-verified check-in/out
 - Care task management

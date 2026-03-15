@@ -64,7 +64,7 @@ class StaffContractController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeContract($contract);
 
-        abort_unless($contract->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $contract->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-contracts.edit', compact('staffProfile', 'contract'));
     }
@@ -74,7 +74,7 @@ class StaffContractController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeContract($contract);
 
-        abort_unless($contract->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $contract->staff_profile_id === (int) $staffProfile->id, 404);
 
         $contract->update($request->validated());
 
@@ -88,7 +88,7 @@ class StaffContractController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeContract($contract);
 
-        abort_unless($contract->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $contract->staff_profile_id === (int) $staffProfile->id, 404);
 
         $contract->delete();
 

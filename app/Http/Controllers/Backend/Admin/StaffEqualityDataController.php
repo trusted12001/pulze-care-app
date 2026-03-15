@@ -88,7 +88,7 @@ class StaffEqualityDataController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($equality);
 
-        abort_unless($equality->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $equality->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-equality.edit', compact('staffProfile', 'equality'));
     }
@@ -98,7 +98,7 @@ class StaffEqualityDataController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($equality);
 
-        abort_unless($equality->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $equality->staff_profile_id === (int) $staffProfile->id, 404);
 
         $equality->update($request->validated());
 
@@ -112,7 +112,7 @@ class StaffEqualityDataController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($equality);
 
-        abort_unless($equality->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $equality->staff_profile_id === (int) $staffProfile->id, 404);
 
         $equality->delete();
 

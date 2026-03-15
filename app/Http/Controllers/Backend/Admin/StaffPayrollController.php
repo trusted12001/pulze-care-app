@@ -110,7 +110,7 @@ class StaffPayrollController extends Controller
         $this->guardProfile($staffProfile);
         $this->guardPayroll($payroll);
 
-        abort_unless($payroll->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $payroll->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -141,7 +141,7 @@ class StaffPayrollController extends Controller
         $this->guardProfile($staffProfile);
         $this->guardPayroll($payroll);
 
-        abort_unless($payroll->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $payroll->staff_profile_id === (int) $staffProfile->id, 404);
 
         $data = $request->validated();
 
@@ -161,7 +161,7 @@ class StaffPayrollController extends Controller
         $this->guardProfile($staffProfile);
         $this->guardPayroll($payroll);
 
-        abort_unless($payroll->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $payroll->staff_profile_id === (int) $staffProfile->id, 404);
 
         $payroll->delete();
 

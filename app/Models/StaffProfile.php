@@ -229,10 +229,21 @@ class StaffProfile extends Model
             ->latestOfMany(); // picks latest Passport Photo
     }
 
+    // USE THIS FOR LOCAL ACCESSOR
+    // public function getProfilePhotoUrlAttribute(): ?string
+    // {
+    //     $doc = $this->profilePassportPhotoDocument()->first();
+
+    //     return $doc?->path ? Storage::disk('public')->url($doc->path) : null;
+    // }
+
+    //USE THIS FOR ONLINE ACCESSOR
     public function getProfilePhotoUrlAttribute(): ?string
     {
         $doc = $this->profilePassportPhotoDocument()->first();
 
-        return $doc?->path ? Storage::disk('public')->url($doc->path) : null;
+        return $doc?->path
+            ? asset('storage/app/public/' . $doc->path)
+            : null;
     }
 }

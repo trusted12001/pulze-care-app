@@ -106,7 +106,7 @@ class StaffBankAccountController extends Controller
         $this->guardProfile($staffProfile);
         $this->guardItem($bank_account);
 
-        abort_unless($bank_account->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $bank_account->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -137,7 +137,7 @@ class StaffBankAccountController extends Controller
         $this->guardProfile($staffProfile);
         $this->guardItem($bank_account);
 
-        abort_unless($bank_account->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $bank_account->staff_profile_id === (int) $staffProfile->id, 404);
 
         $bank_account->update($request->validated());
 
@@ -151,7 +151,7 @@ class StaffBankAccountController extends Controller
         $this->guardProfile($staffProfile);
         $this->guardItem($bank_account);
 
-        abort_unless($bank_account->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $bank_account->staff_profile_id === (int) $staffProfile->id, 404);
 
         $bank_account->delete();
 

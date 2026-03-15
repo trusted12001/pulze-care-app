@@ -118,7 +118,7 @@ class StaffTrainingRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeRecord($training_record);
 
-        abort_unless($training_record->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $training_record->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -152,7 +152,7 @@ class StaffTrainingRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeRecord($training_record);
 
-        abort_unless($training_record->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $training_record->staff_profile_id === (int) $staffProfile->id, 404);
 
         $training_record->update($request->validated());
 
@@ -166,7 +166,7 @@ class StaffTrainingRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeRecord($training_record);
 
-        abort_unless($training_record->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $training_record->staff_profile_id === (int) $staffProfile->id, 404);
 
         $training_record->delete();
 

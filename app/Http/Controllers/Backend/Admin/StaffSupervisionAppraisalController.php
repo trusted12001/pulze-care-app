@@ -115,7 +115,7 @@ class StaffSupervisionAppraisalController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($supervision);
 
-        abort_unless($supervision->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $supervision->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -150,7 +150,7 @@ class StaffSupervisionAppraisalController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($supervision);
 
-        abort_unless($supervision->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $supervision->staff_profile_id === (int) $staffProfile->id, 404);
 
         $supervision->update($request->validated());
 
@@ -164,7 +164,7 @@ class StaffSupervisionAppraisalController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($supervision);
 
-        abort_unless($supervision->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $supervision->staff_profile_id === (int) $staffProfile->id, 404);
 
         $supervision->delete();
 

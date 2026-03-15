@@ -254,6 +254,7 @@ Route::prefix('backend/admin')
 
         Route::resource('staff-profiles.qualifications', StaffQualificationController::class)
             ->parameters(['staff-profiles' => 'staffProfile'])
+            ->scoped()
             ->except(['show']);
 
         Route::resource('staff-profiles.occ-health', StaffOccHealthClearanceController::class)

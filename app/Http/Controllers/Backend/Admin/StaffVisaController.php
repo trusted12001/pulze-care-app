@@ -111,7 +111,7 @@ class StaffVisaController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeVisa($visa);
 
-        abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $visa->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -146,7 +146,7 @@ class StaffVisaController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeVisa($visa);
 
-        abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $visa->staff_profile_id === (int) $staffProfile->id, 404);
 
         $visa->update($request->validated());
 
@@ -160,7 +160,7 @@ class StaffVisaController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeVisa($visa);
 
-        abort_unless($visa->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $visa->staff_profile_id === (int) $staffProfile->id, 404);
 
         $visa->delete();
 

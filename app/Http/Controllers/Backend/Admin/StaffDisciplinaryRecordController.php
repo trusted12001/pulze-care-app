@@ -103,7 +103,7 @@ class StaffDisciplinaryRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($disciplinary);
 
-        abort_unless($disciplinary->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $disciplinary->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-disciplinary-records.edit', [
             'staffProfile' => $staffProfile,
@@ -116,7 +116,7 @@ class StaffDisciplinaryRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($disciplinary);
 
-        abort_unless($disciplinary->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $disciplinary->staff_profile_id === (int) $staffProfile->id, 404);
 
         $disciplinary->update($request->validated());
 
@@ -130,7 +130,7 @@ class StaffDisciplinaryRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($disciplinary);
 
-        abort_unless($disciplinary->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $disciplinary->staff_profile_id === (int) $staffProfile->id, 404);
 
         $disciplinary->delete();
 

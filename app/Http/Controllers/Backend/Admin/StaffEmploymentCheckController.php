@@ -111,7 +111,7 @@ class StaffEmploymentCheckController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeCheck($employment_check);
 
-        abort_unless($employment_check->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $employment_check->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -150,7 +150,7 @@ class StaffEmploymentCheckController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeCheck($employment_check);
 
-        abort_unless($employment_check->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $employment_check->staff_profile_id === (int) $staffProfile->id, 404);
 
         $employment_check->update($request->validated());
 
@@ -164,7 +164,7 @@ class StaffEmploymentCheckController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeCheck($employment_check);
 
-        abort_unless($employment_check->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $employment_check->staff_profile_id === (int) $staffProfile->id, 404);
 
         $employment_check->delete();
 

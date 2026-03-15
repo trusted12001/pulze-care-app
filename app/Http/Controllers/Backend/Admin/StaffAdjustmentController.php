@@ -117,7 +117,7 @@ class StaffAdjustmentController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($adjustment);
 
-        abort_unless($adjustment->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $adjustment->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-adjustments.edit', compact('staffProfile', 'adjustment'));
     }
@@ -127,7 +127,7 @@ class StaffAdjustmentController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($adjustment);
 
-        abort_unless($adjustment->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $adjustment->staff_profile_id === (int) $staffProfile->id, 404);
 
         $adjustment->update($request->validated());
 
@@ -141,7 +141,7 @@ class StaffAdjustmentController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($adjustment);
 
-        abort_unless($adjustment->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $adjustment->staff_profile_id === (int) $staffProfile->id, 404);
 
         $adjustment->delete();
 

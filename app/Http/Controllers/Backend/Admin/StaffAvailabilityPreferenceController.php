@@ -127,7 +127,7 @@ class StaffAvailabilityPreferenceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($availability);
 
-        abort_unless($availability->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $availability->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -162,7 +162,7 @@ class StaffAvailabilityPreferenceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($availability);
 
-        abort_unless($availability->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $availability->staff_profile_id === (int) $staffProfile->id, 404);
 
         $availability->update($request->validated());
 
@@ -176,7 +176,7 @@ class StaffAvailabilityPreferenceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($availability);
 
-        abort_unless($availability->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $availability->staff_profile_id === (int) $staffProfile->id, 404);
 
         $availability->delete();
 

@@ -107,7 +107,7 @@ class StaffLeaveEntitlementController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_entitlement);
 
-        abort_unless($leave_entitlement->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $leave_entitlement->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -141,7 +141,7 @@ class StaffLeaveEntitlementController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_entitlement);
 
-        abort_unless($leave_entitlement->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $leave_entitlement->staff_profile_id === (int) $staffProfile->id, 404);
 
         $leave_entitlement->update($request->validated());
 
@@ -155,7 +155,7 @@ class StaffLeaveEntitlementController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_entitlement);
 
-        abort_unless($leave_entitlement->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $leave_entitlement->staff_profile_id === (int) $staffProfile->id, 404);
 
         $leave_entitlement->delete();
 

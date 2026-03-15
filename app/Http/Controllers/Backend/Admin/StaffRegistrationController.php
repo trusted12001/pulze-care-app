@@ -63,7 +63,7 @@ class StaffRegistrationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeRegistration($registration);
 
-        abort_unless($registration->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $registration->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-registrations.edit', compact('staffProfile', 'registration'));
     }
@@ -73,7 +73,7 @@ class StaffRegistrationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeRegistration($registration);
 
-        abort_unless($registration->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $registration->staff_profile_id === (int) $staffProfile->id, 404);
 
         $registration->update($request->validated());
 
@@ -87,7 +87,7 @@ class StaffRegistrationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeRegistration($registration);
 
-        abort_unless($registration->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $registration->staff_profile_id === (int) $staffProfile->id, 404);
 
         $registration->delete();
 

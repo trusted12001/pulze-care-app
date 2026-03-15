@@ -118,7 +118,7 @@ class StaffEmergencyContactController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($emergency_contact);
 
-        abort_unless($emergency_contact->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $emergency_contact->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-emergency-contacts.edit', [
             'staffProfile' => $staffProfile,
@@ -131,7 +131,7 @@ class StaffEmergencyContactController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($emergency_contact);
 
-        abort_unless($emergency_contact->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $emergency_contact->staff_profile_id === (int) $staffProfile->id, 404);
 
         $emergency_contact->update($request->validated());
 
@@ -145,7 +145,7 @@ class StaffEmergencyContactController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($emergency_contact);
 
-        abort_unless($emergency_contact->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $emergency_contact->staff_profile_id === (int) $staffProfile->id, 404);
 
         $emergency_contact->delete();
 

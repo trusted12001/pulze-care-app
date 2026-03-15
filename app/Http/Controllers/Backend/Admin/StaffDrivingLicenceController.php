@@ -109,7 +109,7 @@ class StaffDrivingLicenceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($driving_licence);
 
-        abort_unless($driving_licence->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $driving_licence->staff_profile_id === (int) $staffProfile->id, 404);
 
         return view('backend.admin.staff-driving-licences.edit', compact('staffProfile', 'driving_licence'));
     }
@@ -119,7 +119,7 @@ class StaffDrivingLicenceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($driving_licence);
 
-        abort_unless($driving_licence->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $driving_licence->staff_profile_id === (int) $staffProfile->id, 404);
 
         $driving_licence->update($request->validated());
 
@@ -133,7 +133,7 @@ class StaffDrivingLicenceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($driving_licence);
 
-        abort_unless($driving_licence->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $driving_licence->staff_profile_id === (int) $staffProfile->id, 404);
 
         $driving_licence->delete();
 

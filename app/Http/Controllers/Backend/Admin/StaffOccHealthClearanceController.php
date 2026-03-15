@@ -109,7 +109,7 @@ class StaffOccHealthClearanceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($occ_health);
 
-        abort_unless($occ_health->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $occ_health->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -140,7 +140,7 @@ class StaffOccHealthClearanceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($occ_health);
 
-        abort_unless($occ_health->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $occ_health->staff_profile_id === (int) $staffProfile->id, 404);
 
         $occ_health->update($request->validated());
 
@@ -154,7 +154,7 @@ class StaffOccHealthClearanceController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($occ_health);
 
-        abort_unless($occ_health->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $occ_health->staff_profile_id === (int) $staffProfile->id, 404);
 
         $occ_health->delete();
 

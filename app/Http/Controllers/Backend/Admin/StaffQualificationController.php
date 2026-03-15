@@ -119,7 +119,7 @@ class StaffQualificationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeQualification($qualification);
 
-        abort_unless($qualification->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $qualification->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -150,7 +150,7 @@ class StaffQualificationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeQualification($qualification);
 
-        abort_unless($qualification->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $qualification->staff_profile_id === (int) $staffProfile->id, 404);
 
         $qualification->update($request->validated());
 
@@ -164,7 +164,7 @@ class StaffQualificationController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeQualification($qualification);
 
-        abort_unless($qualification->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $qualification->staff_profile_id === (int) $staffProfile->id, 404);
 
         $qualification->delete();
 

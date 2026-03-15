@@ -123,7 +123,7 @@ class StaffLeaveRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_record);
 
-        abort_unless($leave_record->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $leave_record->staff_profile_id === (int) $staffProfile->id, 404);
 
         $staffProfile->loadCount([
             'disciplinaryRecords',
@@ -157,7 +157,7 @@ class StaffLeaveRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_record);
 
-        abort_unless($leave_record->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $leave_record->staff_profile_id === (int) $staffProfile->id, 404);
 
         $leave_record->update($request->validated());
 
@@ -171,7 +171,7 @@ class StaffLeaveRecordController extends Controller
         $this->authorizeProfile($staffProfile);
         $this->authorizeItem($leave_record);
 
-        abort_unless($leave_record->staff_profile_id === $staffProfile->id, 404);
+        abort_unless((int) $leave_record->staff_profile_id === (int) $staffProfile->id, 404);
 
         $leave_record->delete();
 
