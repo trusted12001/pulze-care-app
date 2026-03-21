@@ -237,3 +237,100 @@ You now have **a complete AI-assisted development framework**:
 
 This is **enterprise-grade AI engineering workflow**.
 ```
+
+# 🧠 Pulze AI Memory Update
+
+**Version:** v1.2  
+**Last Updated:** 21 March 2026  
+**Context:** Assignments Stabilization & Policy Hardening
+
+---
+
+## 🔄 Recent Development Update
+
+Assignments module has been stabilized and partially hardened.
+
+---
+
+## ✅ Key Fix Applied
+
+### AssignmentPolicy TypeError
+
+Issue:
+
+- `verify()` returned `null`
+- Violated strict `bool` return type
+- Caused runtime crash
+
+Fix:
+
+- Replaced `return null` with `return false`
+- Standardized all policy methods to return `bool`
+
+---
+
+## 🔐 Security Improvement
+
+### Tenant Isolation Enforcement
+
+Explicit tenant checks added to:
+
+- `verify()`
+- `delete()`
+- `scoped()`
+
+Rule reinforced:
+
+> No cross-tenant access under any condition
+
+---
+
+## 🧱 Policy Standardization
+
+- `before()` handles global Super Admin override
+- All other methods:
+    - return strict boolean
+    - enforce tenant boundaries
+    - follow minimal, predictable logic
+
+---
+
+## ⚠️ Known Gaps
+
+UI and controller logic may not fully align with policy:
+
+- Button visibility may not reflect permissions
+- Controller may not enforce authorization consistently
+
+---
+
+## 🎯 Next Focus Area
+
+Assignment module workflow validation:
+
+1. Controller authorization checks
+2. UI permission alignment
+3. End-to-end workflow testing
+
+---
+
+## 🧠 AI Behaviour Update
+
+When working on Pulze:
+
+- Always enforce tenant boundaries
+- Never return `null` in boolean policy methods
+- Assume UI may be inconsistent → trust backend rules
+- Prefer minimal, safe, incremental improvements
+
+---
+
+## ✅ System State
+
+Assignments module:
+
+| Aspect     | Status       |
+| ---------- | ------------ |
+| Functional | ✅ Yes       |
+| Stable     | ✅ Yes       |
+| Secure     | ⚠️ Improving |
