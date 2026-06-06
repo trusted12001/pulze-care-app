@@ -606,3 +606,60 @@ Pulze is a **multi-tenant care system**
 | Policy Logic    | ✅ Hardened  |
 | Tenant Safety   | ⚠️ Improving |
 | UI Consistency  | ⏳ Pending   |
+
+# HANDOFF.md
+
+## Date
+
+2026-06-06
+
+## Contributors
+
+- Abdulfatah Abdussalam
+- Saheed
+- ChatGPT (Consultant)
+
+## Feature Completed
+
+### Staff Assignment Removal Prior To Publication
+
+Background:
+During client review, a usability issue was identified whereby incorrectly assigned staff members could not be easily removed before rota publication.
+
+Solution Delivered:
+
+- Added remove action (×) beside assigned staff names.
+- Connected removal to existing ShiftController::unassign() functionality.
+- Added confirmation dialog before removal.
+- Added publication protection so published rotas cannot be modified through the assignment removal interface.
+
+Technical Notes:
+Backend:
+
+- Existing unassign route reused.
+- Existing unassign controller method reused.
+- No database changes required.
+
+Frontend:
+
+- Staff badges converted to removable badges.
+- Conditional display added based on rota_period status.
+
+Business Rules:
+
+- Draft rotas are editable.
+- Published rotas are locked.
+- Removal affects only ShiftAssignment records.
+- Historical reporting remains unaffected.
+
+Testing Outcome:
+PASS ✅
+
+Deployment Risk:
+LOW
+
+Rollback:
+Revert changes in:
+resources/views/backend/admin/shifts/periods/show.blade.php
+
+No migration rollback required.

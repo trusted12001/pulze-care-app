@@ -454,3 +454,59 @@ docs/AI_PROMPT_LIBRARY.md
 ```
 
 That file will contain **ready-made prompts** for AI to safely work on Pulze without breaking architecture.
+
+# TASK_BOARD.md
+
+## Current Sprint
+
+### Completed
+
+#### Rota Management - Staff Assignment Removal Enhancement
+
+Status: COMPLETED ✅
+
+Client Feedback:
+
+- Users could accidentally assign the wrong staff member to a shift.
+- Prior to publication there was no convenient way to remove an incorrectly assigned staff member.
+
+Implemented Solution:
+
+- Added removable staff assignment badges.
+- Each assigned staff member now displays a remove (×) action.
+- Confirmation dialog appears before removal.
+- Removal deletes only the ShiftAssignment record.
+- Shift record remains unchanged.
+- No database schema changes required.
+
+Behaviour:
+
+Draft Rota:
+
+- Staff can be assigned.
+- Staff can be removed.
+- Confirmation required before removal.
+
+Published Rota:
+
+- Staff assignments remain visible.
+- Remove (×) action hidden.
+- Published rota protected from accidental modification.
+
+Files Updated:
+
+- app/Http/Controllers/Backend/Admin/ShiftController.php
+- resources/views/backend/admin/shifts/periods/show.blade.php
+
+Testing Completed:
+
+- Assign staff
+- Remove assigned staff
+- Remove multiple staff
+- Refresh page validation
+- Published rota protection
+- Report integrity verification
+
+Result:
+Client requirement satisfied.
+No impact on reporting or rota generation.
