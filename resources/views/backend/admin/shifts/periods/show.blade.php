@@ -63,8 +63,26 @@
                         </td>
                         <td class="p-3">
                             @forelse($s->assignments as $a)
-                                <span
-                                    class="inline-block px-2 py-1 bg-gray-100 rounded mr-1">{{ $a->staff->first_name . ' ' . $a->staff->last_name . ' ' . $a->staff->other_names }}</span>
+
+                                <span class="inline-flex items-center px-2 py-1 bg-gray-100 rounded mr-1 mb-1">
+
+                                    {{ $a->staff->first_name . ' ' . $a->staff->last_name . ' ' . $a->staff->other_names }}
+                                    @if($rota_period->status !== 'published')
+                                        <form action="{{ route('backend.admin.shifts.unassign', [$s->id, $a->staff->id]) }}"
+                                            method="POST" class="inline ml-2"
+                                            onsubmit="return confirm('Remove this staff from the shift?');">
+
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit" class="text-red-600 hover:text-red-800 font-bold">
+                                                ×
+                                            </button>
+
+                                        </form>
+                                    @endif
+                                </span>
+
                             @empty
                                 <span class="text-gray-400">—</span>
                             @endforelse
