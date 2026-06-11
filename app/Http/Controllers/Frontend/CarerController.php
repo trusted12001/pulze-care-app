@@ -316,15 +316,30 @@ class CarerController extends Controller
         ];
     }
 
-    public function notifications()
+    public function notifications(Request $request)
     {
-        $notifications = auth()->user()
-            ->notifications()
-            ->latest()
-            ->paginate(15);
+        $filter = $request->get('filter', 'all');
 
-        return view('frontend.carer.notifications', compact('notifications'));
+        $query = auth()->user()
+            ->notifications()
+            ->latest();
+
+        if ($filter === 'unread') {
+            $query->whereNull('read_at');
+        }
+
+        if ($filter === 'rota') {
+            $query->where('data->type', 'rota');
+        }
+
+        $notifications = $query->paginate(15);
+
+        return view('frontend.carer.notifications', [
+            'notifications' => $notifications,
+            'filter' => $filter,
+        ]);
     }
+
 
     public function openNotification(string $notification)
     {

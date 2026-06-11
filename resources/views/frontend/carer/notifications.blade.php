@@ -31,6 +31,25 @@
 
         </div>
 
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+
+            <a href="{{ route('frontend.carer.notifications') }}"
+                class="btn btn-sm {{ $filter === 'all' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                All
+            </a>
+
+            <a href="{{ route('frontend.carer.notifications', ['filter' => 'unread']) }}"
+                class="btn btn-sm {{ $filter === 'unread' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                Unread
+            </a>
+
+            <a href="{{ route('frontend.carer.notifications', ['filter' => 'rota']) }}"
+                class="btn btn-sm {{ $filter === 'rota' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                Rota
+            </a>
+
+        </div>
+
         @forelse($notifications as $notification)
 
             <a href="{{ route('frontend.carer.notifications.open', $notification->id) }}"
