@@ -554,13 +554,25 @@ Improves staff communication and rota awareness.
 
 ## Notification Centre Enhancements
 
-- [x] Notification Infrastructure
-- [x] Notification Bell
+## Notification Engine
+
+- [x] Laravel Notifications Installed
+- [x] Notifications Table Created
+- [x] Rota Published Notification
+- [x] Prevent Duplicate Publication
+- [x] Bell Notification Counter
 - [x] Notification Centre
-- [x] Read / Unread Tracking
-- [x] Open Notification Routing
-- [ ] Rich Notification Cards
-- [ ] Notification Icons
-- [ ] Mark All Read
-- [ ] Notification Filters
-- [ ] Email Notifications
+- [x] Rich Notification Cards
+- [x] Dynamic Notification Icons
+- [x] Mark Notification Read
+- [x] Redirect To Rota
+- [x] Mark All Read
+- [x] Mobile UI Polish
+
+## In Progress
+
+### Phase 5D - Notification Filters
+
+- [ ] All Notifications
+- [ ] Unread Notifications
+- [ ] Rota Notifications

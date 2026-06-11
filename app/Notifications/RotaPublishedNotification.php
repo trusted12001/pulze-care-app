@@ -22,10 +22,10 @@ class RotaPublishedNotification extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
-            'title' => 'New Shift Assignment',
+            'title' => 'Rota Published',
 
             'message' => sprintf(
-                'A rota has been published for %s.',
+                'Your rota is now available for viewing at %s.',
                 $this->rotaPeriod->location?->name ?? 'your location'
             ),
 

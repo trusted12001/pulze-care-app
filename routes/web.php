@@ -572,6 +572,11 @@ Route::middleware(['auth', 'role:carer'])
             '/notifications/{notification}',
             [CarerController::class, 'openNotification']
         )->name('carer.notifications.open');
+
+        Route::post(
+            '/notifications/mark-all-read',
+            [CarerController::class, 'markAllNotificationsRead']
+        )->name('carer.notifications.mark-all-read');
     });
 
 

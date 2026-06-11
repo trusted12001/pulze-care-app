@@ -9,9 +9,26 @@
                 ← Back
             </a>
 
-            <h4 class="mb-0">
-                Notifications
-            </h4>
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h4 class="mb-0 fw-bold">
+                    Notifications
+                </h4>
+
+                @if(auth()->user()->unreadNotifications()->count() > 0)
+
+                    <form method="POST" action="{{ route('frontend.carer.notifications.mark-all-read') }}">
+                        @csrf
+
+                        <button type="submit" class="btn btn-link p-0 text-decoration-none small fw-semibold">
+                            Mark all read
+                        </button>
+                    </form>
+
+                @endif
+
+            </div>
+
         </div>
 
         @forelse($notifications as $notification)
@@ -27,25 +44,50 @@
 
                             <div>
 
-                                <h6 class="mb-1 fw-bold">
-                                    {{ $notification->data['title'] ?? 'Notification' }}
-                                </h6>
+                                <div>
 
-                                <p class="mb-1 text-muted">
-                                    {{ $notification->data['message'] ?? '' }}
-                                </p>
+                                    @php
+                                        $icon = match ($notification->data['type'] ?? '') {
+                                            'rota' => '📅',
+                                            'assignment' => '📋',
+                                            'incident' => '⚠️',
+                                            'medication' => '💊',
+                                            'handover' => '📖',
+                                            'training' => '🎓',
+                                            default => '🔔',
+                                        };
+                                    @endphp
 
-                                @if(isset($notification->data['location_name']))
-                                    <small class="text-secondary">
-                                        📍 {{ $notification->data['location_name'] }}
+                                    <h6 class="mb-1 fw-bold">
+                                        {{ $icon }} {{ $notification->data['title'] ?? 'Notification' }}
+                                    </h6>
+
+                                    @if(!empty($notification->data['location_name']))
+                                        <p class="mb-1 fw-semibold text-dark">
+                                            {{ $notification->data['location_name'] }}
+                                        </p>
+                                    @endif
+
+                                    @if(
+                                            !empty($notification->data['start_date']) &&
+                                            !empty($notification->data['end_date'])
+                                        )
+                                        <p class="mb-1 small text-primary">
+                                            {{ $notification->data['start_date'] }}
+                                            –
+                                            {{ $notification->data['end_date'] }}
+                                        </p>
+                                    @endif
+
+                                    <p class="mb-1 text-muted small">
+                                        {{ $notification->data['message'] ?? '' }}
+                                    </p>
+
+                                    <small class="text-muted">
+                                        {{ $notification->created_at->diffForHumans() }}
                                     </small>
-                                @endif
 
-                                <br>
-
-                                <small class="text-muted">
-                                    {{ $notification->created_at->diffForHumans() }}
-                                </small>
+                                </div>
 
                             </div>
 

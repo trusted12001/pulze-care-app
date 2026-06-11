@@ -680,3 +680,24 @@ Implemented:
 Next:
 
 Phase 5A – Notification Centre Enhancements
+
+## Phase Completed
+
+Phase 5A – Notification Centre Enhancements
+
+Completed:
+
+- Rich notification cards
+- Dynamic notification icons
+- Individual notification reading
+- Mark all read
+- Notification routing to carer rota
+- Mobile UI refinements
+
+Current Status:
+
+Notification lifecycle is fully operational.
+
+Next Phase:
+
+Phase 5D – Notification Filters

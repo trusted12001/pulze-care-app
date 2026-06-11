@@ -342,4 +342,16 @@ class CarerController extends Controller
                 ?? route('frontend.carer.notifications')
         );
     }
+
+    public function markAllNotificationsRead()
+    {
+        auth()->user()
+            ->unreadNotifications
+            ->markAsRead();
+
+        return back()->with(
+            'success',
+            'All notifications marked as read.'
+        );
+    }
 }
