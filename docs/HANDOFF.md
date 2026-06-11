@@ -663,3 +663,20 @@ Revert changes in:
 resources/views/backend/admin/shifts/periods/show.blade.php
 
 No migration rollback required.
+
+Phase 4 Completed
+
+Notification lifecycle fully operational.
+
+Implemented:
+
+- Database notifications
+- Bell unread counter
+- Notification centre
+- Individual notification reading
+- Redirect to rota
+- Read state tracking
+
+Next:
+
+Phase 5A – Notification Centre Enhancements

@@ -315,4 +315,31 @@ class CarerController extends Controller
             'currentLocationName' => $currentLocationName,
         ];
     }
+
+    public function notifications()
+    {
+        $notifications = auth()->user()
+            ->notifications()
+            ->latest()
+            ->paginate(15);
+
+        return view('frontend.carer.notifications', compact('notifications'));
+    }
+
+    public function openNotification(string $notification)
+    {
+        $notification = auth()->user()
+            ->notifications()
+            ->where('id', $notification)
+            ->firstOrFail();
+
+        if (!$notification->read_at) {
+            $notification->markAsRead();
+        }
+
+        return redirect(
+            $notification->data['url']
+                ?? route('frontend.carer.notifications')
+        );
+    }
 }

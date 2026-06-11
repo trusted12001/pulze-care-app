@@ -510,3 +510,57 @@ Testing Completed:
 Result:
 Client requirement satisfied.
 No impact on reporting or rota generation.
+
+## Next Priority Task
+
+Feature:
+Rota Publication Notifications
+
+Status:
+Planned
+
+Requirements:
+
+- Create in-app notification system.
+- Create notification bell with unread counter.
+- Generate notifications when rota is published.
+- Notify only staff assigned within published rota.
+- Queue email notifications.
+- Allow staff to mark notifications as read.
+- Notification click should open relevant rota.
+
+Priority:
+High
+
+Dependencies:
+
+- Existing Rota Publication Module
+- Existing Staff Assignment Module
+
+Estimated Effort:
+1-2 Development Sessions
+
+Risk:
+Low
+
+Database Changes:
+Yes
+
+- notifications table
+
+Business Value:
+High
+Improves staff communication and rota awareness.
+
+## Notification Centre Enhancements
+
+- [x] Notification Infrastructure
+- [x] Notification Bell
+- [x] Notification Centre
+- [x] Read / Unread Tracking
+- [x] Open Notification Routing
+- [ ] Rich Notification Cards
+- [ ] Notification Icons
+- [ ] Mark All Read
+- [ ] Notification Filters
+- [ ] Email Notifications

@@ -42,7 +42,7 @@
             </div>
 
             <div class="d-flex justify-content-end align-items-center header-right gap-2 flex-wrap">
-                <a href="{{ route('frontend.rota.index') }}"
+                <a href="{{ route('frontend.carer.notifications') }}"
                     class="p-2 flex-center rounded-circle bg-white shadow-sm text-decoration-none">
                     <i class="ph ph-caret-left fs-5"></i>
                 </a>

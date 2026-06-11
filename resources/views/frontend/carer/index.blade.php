@@ -3,6 +3,22 @@
 @section('title', 'Carer Home')
 
 @section('content')
+    <style>
+        .notification-badge {
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: #dc3545;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 18px;
+            border: 2px solid #fff;
+        }
+    </style>
+
 
     @php
         use Illuminate\Support\Facades\Route as RouteFacade;
@@ -76,6 +92,11 @@
 
     <main class="home-screen position-relative top-0 start-0 end-0 pb-5">
 
+        @php
+            $unreadNotificationCount = auth()->check()
+                ? auth()->user()->unreadNotifications()->count()
+                : 0;
+        @endphp
         {{-- ================= HEADER ================= --}}
         <section class="home-header-section w-100 px-3 px-md-4 pt-3 pb-2">
             <div class="d-flex justify-content-between align-items-center gap-2 gap-md-3">
@@ -105,12 +126,18 @@
                 </div>
 
                 {{-- Notification Icon --}}
-                <button type="button" class="notification-header-btn flex-center bg-transparent border-0 flex-shrink-0"
-                    id="notificationModalOpenButton" style="position: relative;">
+                <a href="{{ route('frontend.carer.notifications') }}"
+                    class="notification-header-btn flex-center bg-transparent border-0 flex-shrink-0"
+                    style="position: relative; text-decoration: none;">
                     <i class="ph ph-bell" style="font-size: 1.5rem; color: var(--n1);"></i>
-                    {{-- Notification Badge --}}
-                    <span class="notification-badge position-absolute rounded-circle"></span>
-                </button>
+
+                    @if($unreadNotificationCount > 0)
+                        <span
+                            class="notification-badge position-absolute rounded-circle d-flex align-items-center justify-content-center">
+                            {{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}
+                        </span>
+                    @endif
+                </a>
             </div>
         </section>
         {{-- ================= HEADER END ============= --}}

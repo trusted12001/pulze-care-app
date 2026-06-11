@@ -564,6 +564,14 @@ Route::middleware(['auth', 'role:carer'])
 
         Route::get('/carer/residents/load-more', [CarerController::class, 'loadMoreResidents'])
             ->name('carer.residents.load-more');
+
+        Route::get('/carer/notifications', [CarerController::class, 'notifications'])
+            ->name('carer.notifications');
+
+        Route::get(
+            '/notifications/{notification}',
+            [CarerController::class, 'openNotification']
+        )->name('carer.notifications.open');
     });
 
 

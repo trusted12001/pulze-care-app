@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Models\ShiftAssignment;
+use App\Notifications\RotaPublishedNotification;
 use App\Http\Controllers\Controller;
 use App\Models\RotaPeriod;
 use App\Models\ShiftTemplate;
@@ -14,6 +16,7 @@ use Illuminate\Validation\Rule;
 use App\Models\Timesheet;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+
 
 
 class RotaPeriodController extends Controller
@@ -196,19 +199,50 @@ class RotaPeriodController extends Controller
     }
 
 
-
     public function publish(RotaPeriod $rota_period, Request $request)
     {
+        if ($rota_period->status === 'published') {
+            return back()->with('info', 'This rota has already been published.');
+        }
+
         $rota_period->status = 'published';
         $rota_period->published_at = now();
         $rota_period->save();
 
         // cascade status to shifts
-        $rota_period->shifts()->update(['status' => 'published']);
+        $rota_period->shifts()->update([
+            'status' => 'published'
+        ]);
 
-        // TODO: emit event (RotaPublished) for Assignments module later
-        return back()->with('success', 'Rota published.');
+        /*
+    |--------------------------------------------------------------------------
+    | Notify Assigned Staff
+    |--------------------------------------------------------------------------
+    */
+
+        $staffMembers = ShiftAssignment::query()
+            ->whereHas('shift', function ($query) use ($rota_period) {
+                $query->where('rota_period_id', $rota_period->id);
+            })
+            ->with('staff')
+            ->get()
+            ->pluck('staff')
+            ->filter()
+            ->unique('id');
+
+        foreach ($staffMembers as $staff) {
+            $staff->notify(
+                new RotaPublishedNotification($rota_period)
+            );
+        }
+
+        return back()->with(
+            'success',
+            'Rota published and staff notified.'
+        );
     }
+
+
 
     public function table(RotaPeriod $rota_period)
     {

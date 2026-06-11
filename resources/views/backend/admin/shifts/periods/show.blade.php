@@ -37,6 +37,11 @@
             {{ session('error') }}
         </div>
     @endif
+    @if(session('info'))
+        <div class="mb-4 p-3 bg-info-50 border-l-4 border-blue-500 text-blue-800 rounded">
+            {{ session('info') }}
+        </div>
+    @endif
 
 
 
