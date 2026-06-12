@@ -16,6 +16,8 @@ use Illuminate\Validation\Rule;
 use App\Models\Timesheet;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RotaPublishedMail;
 
 
 
@@ -231,11 +233,23 @@ class RotaPeriodController extends Controller
             ->unique('id');
 
         foreach ($staffMembers as $staff) {
+
+            // In-app notification
             $staff->notify(
                 new RotaPublishedNotification($rota_period)
             );
-        }
 
+            // Branded email notification
+            if (!empty($staff->email)) {
+                Mail::to($staff->email)
+                    ->queue(
+                        new RotaPublishedMail(
+                            $rota_period,
+                            $staff
+                        )
+                    );
+            }
+        }
         return back()->with(
             'success',
             'Rota published and staff notified.'

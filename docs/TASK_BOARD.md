@@ -569,10 +569,15 @@ Improves staff communication and rota awareness.
 - [x] Mark All Read
 - [x] Mobile UI Polish
 
+### Notification Centre
+
+- [x] Bell Counter
+- [x] Notification Centre
+- [x] Rich Notification Cards
+- [x] Dynamic Icons
+- [x] Individual Read Tracking
+- [x] Mark All Read
+- [x] Deep Linking
+- [x] Filters (All, Unread, Rota)
+
 ## In Progress
-
-### Phase 5D - Notification Filters
-
-- [ ] All Notifications
-- [ ] Unread Notifications
-- [ ] Rota Notifications

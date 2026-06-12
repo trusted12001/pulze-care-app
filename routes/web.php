@@ -73,7 +73,7 @@ use App\Http\Controllers\Backend\Admin\TenantSettingsController;
 
 use App\Http\Controllers\Backend\SuperAdmin\SupportModeController;
 use App\Http\Controllers\Account\AccountSettingsController;
-
+use Illuminate\Support\Facades\Mail;
 
 
 
@@ -95,6 +95,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::get('/test-mail', function () {
+    Mail::raw('Pulze email test', function ($message) {
+        $message->to('test@example.com')
+            ->subject('Pulze Test');
+    });
+    return 'Mail sent';
 });
 
 /*

@@ -5,8 +5,11 @@ namespace App\Notifications;
 use App\Models\RotaPeriod;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RotaPublishedNotification extends Notification
+
+class RotaPublishedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -14,7 +17,7 @@ class RotaPublishedNotification extends Notification
         public RotaPeriod $rotaPeriod
     ) {}
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['database'];
     }
@@ -45,5 +48,29 @@ class RotaPublishedNotification extends Notification
 
 
         ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $tenant = $this->rotaPeriod
+            ->location
+            ->tenant;
+
+        $settings = $tenant?->settings;
+
+        return (new MailMessage)
+            ->subject(
+                'New Rota Published – '
+                    . $this->rotaPeriod->location->name
+            )
+            ->view(
+                'emails.rota-published',
+                [
+                    'user'       => $notifiable,
+                    'rotaPeriod' => $this->rotaPeriod,
+                    'tenant'     => $tenant,
+                    'settings'   => $settings,
+                ]
+            );
     }
 }

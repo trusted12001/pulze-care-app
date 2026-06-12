@@ -701,3 +701,24 @@ Notification lifecycle is fully operational.
 Next Phase:
 
 Phase 5D – Notification Filters
+
+## Phase Completed
+
+Phase 5D – Notification Centre
+
+Completed:
+
+- Rich notification cards
+- Dynamic notification icons
+- Read tracking
+- Mark all read
+- Deep linking to rota
+- Filters (All, Unread, Rota)
+
+Status:
+
+Notification Centre V1 Complete
+
+Next Phase:
+
+Phase 6 – Email Notifications
