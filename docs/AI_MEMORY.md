@@ -334,3 +334,24 @@ Assignments module:
 | Functional | ✅ Yes       |
 | Stable     | ✅ Yes       |
 | Secure     | ⚠️ Improving |
+
+14 June 2026
+
+Production environment (rmbj.online) successfully migrated from manual deployment to Git-managed deployment.
+
+Three rollback points retained:
+
+- public_html_old_live
+- public_html_backup_before_notifications_20260614
+- public_html_pre_cutover_20260614
+
+Notification System V1 validated in production.
+
+Email branding issue discovered:
+tenant_settings.logo_path was null.
+
+Resolved by updating rota-published email template to render fallback logo from:
+
+public/assets/logos/rmbj_logo_png.png
+
+All notification and email tests passed.

@@ -722,3 +722,33 @@ Notification Centre V1 Complete
 Next Phase:
 
 Phase 6 – Email Notifications
+
+14 June 2026
+
+Production Git Migration completed.
+
+Live environment successfully migrated from manual ZIP deployment to Git-managed deployment.
+
+Production now follows:
+
+git pull origin main
+php artisan migrate --force
+php artisan optimize:clear
+
+Notification System V1 deployed and validated.
+
+Features:
+
+- Notification Bell
+- Notification Centre
+- Database Notifications
+- Mark All Read
+- Deep Links
+- Email Notifications
+- Tenant Branded Emails
+
+Production smoke testing completed successfully.
+
+Tenant branding issue resolved by updating email template to support fallback logo rendering when tenant_settings.logo_path is null.
+
+System fully operational.

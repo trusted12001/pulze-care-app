@@ -581,3 +581,18 @@ Improves staff communication and rota awareness.
 - [x] Filters (All, Unread, Rota)
 
 ## In Progress
+
+Task: Deploy Notification System V1 to Production
+Status: ✅ Completed
+
+Task: Deploy Email Notification System
+Status: ✅ Completed
+
+Task: Convert Production to Git Deployment
+Status: ✅ Completed
+
+Task: Production Smoke Testing
+Status: ✅ Completed
+
+Task: Tenant Branding Email Validation
+Status: ✅ Completed
