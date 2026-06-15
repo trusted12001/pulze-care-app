@@ -8,15 +8,15 @@
 
 <body style="font-family: Arial, sans-serif; line-height:1.6; color:#333;">
 
-    @if($settings && $settings->logo_path)
-        <div style="margin-bottom:20px;">
-            @if($settings?->logo_url)
-                <img src="{{ $settings->logo_url }}">
-            @endif
+    @php
+        $emailLogoUrl = $settings?->logo_url ?? asset('assets/logos/rmbj_logo_png.png');
+    @endphp
 
+    @if($emailLogoUrl)
+        <div style="margin-bottom:20px;">
+            <img src="{{ $emailLogoUrl }}" alt="{{ $tenant?->name ?? 'Pulze' }}" style="max-height:80px; width:auto;">
         </div>
     @endif
-
     <h2>{{ $tenant?->name ?? 'Pulze' }}</h2>
 
     <p>Hello {{ $user->first_name }},</p>
